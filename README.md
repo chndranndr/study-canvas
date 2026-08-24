@@ -2,6 +2,10 @@
 
 Tablet-first Japanese learning workspace: one lesson per zoomable canvas, handwriting exercises with stylus input, progressive hints, adaptive probing, and a personal AI tutor orchestrated by Pi.
 
+## Product documentation
+
+- [Product Requirements Document](docs/PRD.md) — product vision, learning model, canvas UX, probe design, Pi tutor responsibilities, SQLite data model, API boundaries, MVP phases, and definition of done.
+
 ## Architecture
 
 - `android/` — Kotlin + Jetpack Compose tablet client
