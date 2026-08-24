@@ -1,0 +1,21 @@
+# macOS / IDE
+.DS_Store
+.idea/
+*.iml
+
+# Android
+android/.gradle/
+android/local.properties
+android/**/build/
+
+# Node
+server/node_modules/
+server/dist/
+server/.env
+
+# SQLite runtime data
+server/data/*.db
+server/data/*.db-*
+
+# Logs
+*.log
