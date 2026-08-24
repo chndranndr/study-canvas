@@ -2,10 +2,6 @@
 
 Tablet-first Japanese learning workspace: one lesson per zoomable canvas, handwriting exercises with stylus input, progressive hints, adaptive probing, and a personal AI tutor orchestrated by Pi.
 
-## Product documentation
-
-- [Product Requirements Document](docs/PRD.md) — product vision, learning model, canvas UX, probe design, Pi tutor responsibilities, SQLite data model, API boundaries, MVP phases, and definition of done.
-
 ## Architecture
 
 - `android/` — Kotlin + Jetpack Compose tablet client
@@ -22,6 +18,8 @@ The tutor is agentic only where judgment is useful. Mastery, curriculum dependen
 
 ## Current scaffold
 
+**Phase 1 — Canvas foundation: complete** (`world coordinates`, centroid-aware pan/zoom, selection, movable lesson text, SQLite-backed layout persistence).
+
 - [x] Android Compose app shell
 - [x] Zoom/pan world canvas
 - [x] Movable, read-only lesson text element
@@ -31,10 +29,10 @@ The tutor is agentic only where judgment is useful. Mastery, curriculum dependen
 - [x] SQLite/Drizzle schema
 - [x] Pi tutor session wrapper
 - [x] Japanese tutor Pi skill
-- [ ] Persist canvas elements
+- [x] Persist element layout to backend SQLite
 - [ ] Jetpack Ink stroke capture
 - [ ] ML Kit recognition pipeline
-- [ ] Android <-> API client
+- [x] Android <-> lesson/layout API client
 - [ ] Probe engine
 - [ ] Mastery/SRS engine
 - [ ] Structured grading

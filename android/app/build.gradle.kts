@@ -13,10 +13,12 @@ android {
         targetSdk = 37
         versionCode = 1
         versionName = "0.1.0"
+        buildConfigField("String", "API_BASE_URL", "\"http://10.0.2.2:8787\"")
     }
 
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 
     compileOptions {
@@ -35,6 +37,7 @@ dependencies {
     implementation("androidx.compose.material3:material3")
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.ui:ui-tooling-preview")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2")
     debugImplementation("androidx.compose.ui:ui-tooling")
 
     // Stable stylus foundation. Integration starts in the next implementation slice.
@@ -46,4 +49,6 @@ dependencies {
 
     // On-device Japanese handwriting recognition.
     implementation("com.google.mlkit:digital-ink-recognition:19.0.0")
+
+    testImplementation("junit:junit:4.13.2")
 }
