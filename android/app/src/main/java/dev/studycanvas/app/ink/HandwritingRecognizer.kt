@@ -1,15 +1,89 @@
 package dev.studycanvas.app.ink
 
-/**
- * Boundary for ML Kit Digital Ink recognition.
- *
- * The implementation will receive world-space stroke points captured by Jetpack Ink,
- * translate them to ML Kit Ink strokes, and return Japanese recognition candidates.
- */
-interface HandwritingRecognizer {
-    suspend fun recognize(strokes: List<InkStroke>): RecognitionResult
+import com.google.mlkit.common.model.DownloadConditions
+import com.google.mlkit.common.model.RemoteModelManager
+import com.google.mlkit.vision.digitalink.DigitalInkRecognition
+import com.google.mlkit.vision.digitalink.DigitalInkRecognitionModel
+import com.google.mlkit.vision.digitalink.DigitalInkRecognitionModelIdentifier
+import com.google.mlkit.vision.digitalink.DigitalInkRecognizer
+import com.google.mlkit.vision.digitalink.DigitalInkRecognizerOptions
+import com.google.mlkit.vision.digitalink.Ink
+import com.google.mlkit.vision.digitalink.RecognitionContext
+import com.google.mlkit.vision.digitalink.WritingArea
+import kotlinx.coroutines.tasks.await
+
+interface HandwritingRecognizer : AutoCloseable {
+    suspend fun prepare()
+    suspend fun recognize(request: RecognitionRequest): RecognitionResult
 }
 
-data class InkPoint(val x: Float, val y: Float, val timestampMs: Long)
-data class InkStroke(val points: List<InkPoint>)
-data class RecognitionResult(val text: String, val alternatives: List<String> = emptyList())
+class JapaneseHandwritingRecognizer : HandwritingRecognizer {
+    private val model = DigitalInkRecognitionModel.builder(
+        DigitalInkRecognitionModelIdentifier.JA,
+    ).build()
+    private val remoteModelManager = RemoteModelManager.getInstance()
+    private val recognizer: DigitalInkRecognizer = DigitalInkRecognition.getClient(
+        DigitalInkRecognizerOptions.builder(model).build(),
+    )
+
+    override suspend fun prepare() {
+        val downloaded = remoteModelManager.isModelDownloaded(model).await()
+        if (!downloaded) {
+            remoteModelManager.download(
+                model,
+                DownloadConditions.Builder().build(),
+            ).await()
+        }
+    }
+
+    override suspend fun recognize(request: RecognitionRequest): RecognitionResult {
+        require(request.strokes.isNotEmpty()) { "At least one stroke is required." }
+        prepare()
+
+        val inkBuilder = Ink.builder()
+        request.strokes.sortedBy { it.sequence }.forEach { stroke ->
+            val mlStroke = Ink.Stroke.builder()
+            stroke.points.sortedBy { it.elapsedTimeMs }.forEach { point ->
+                mlStroke.addPoint(
+                    Ink.Point.create(
+                        point.x,
+                        point.y,
+                        point.elapsedTimeMs,
+                    ),
+                )
+            }
+            inkBuilder.addStroke(mlStroke.build())
+        }
+
+        val contextBuilder = RecognitionContext.builder()
+            .setWritingArea(
+                WritingArea(
+                    request.writingArea.width,
+                    request.writingArea.height,
+                ),
+            )
+
+        request.preContext
+            .takeLast(MAX_PRE_CONTEXT_CHARS)
+            .takeIf { it.isNotBlank() }
+            ?.let(contextBuilder::setPreContext)
+
+        val result = recognizer.recognize(inkBuilder.build(), contextBuilder.build()).await()
+        return RecognitionResult(
+            candidates = result.candidates.map { candidate ->
+                RecognitionCandidate(
+                    text = candidate.text,
+                    score = candidate.score,
+                )
+            },
+        )
+    }
+
+    override fun close() {
+        recognizer.close()
+    }
+
+    private companion object {
+        const val MAX_PRE_CONTEXT_CHARS = 20
+    }
+}

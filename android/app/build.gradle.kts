@@ -38,16 +38,16 @@ dependencies {
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.10.2")
     debugImplementation("androidx.compose.ui:ui-tooling")
 
-    // Stable stylus foundation. Integration starts in the next implementation slice.
     implementation("androidx.ink:ink-authoring:1.0.0")
     implementation("androidx.ink:ink-authoring-compose:1.0.0")
     implementation("androidx.ink:ink-brush:1.0.0")
+    implementation("androidx.ink:ink-rendering:1.0.0")
     implementation("androidx.ink:ink-strokes:1.0.0")
     implementation("androidx.ink:ink-storage:1.0.0")
 
-    // On-device Japanese handwriting recognition.
     implementation("com.google.mlkit:digital-ink-recognition:19.0.0")
 
     testImplementation("junit:junit:4.13.2")

@@ -77,6 +77,23 @@ export const lessonElements = sqliteTable("lesson_elements", {
   ...timestamps,
 });
 
+export const inkStrokes = sqliteTable(
+  "ink_strokes",
+  {
+    id: text("id").primaryKey(),
+    lessonId: text("lesson_id").notNull().references(() => lessons.id, { onDelete: "cascade" }),
+    exerciseElementId: text("exercise_element_id").notNull().references(() => lessonElements.id, { onDelete: "cascade" }),
+    sequence: integer("sequence").notNull(),
+    toolType: text("tool_type").notNull().default("stylus"),
+    brushJson: text("brush_json").notNull(),
+    pointsJson: text("points_json").notNull(),
+    ...timestamps,
+  },
+  (table) => [
+    uniqueIndex("ink_stroke_exercise_sequence_unique").on(table.exerciseElementId, table.sequence),
+  ],
+);
+
 export const exerciseAttempts = sqliteTable("exercise_attempts", {
   id: text("id").primaryKey(),
   learnerId: text("learner_id").notNull().references(() => learnerProfiles.id),

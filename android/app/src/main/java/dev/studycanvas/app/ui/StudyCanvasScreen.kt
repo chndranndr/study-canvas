@@ -45,6 +45,7 @@ import dev.studycanvas.app.canvas.CanvasElementLayout
 import dev.studycanvas.app.canvas.HttpCanvasRepository
 import dev.studycanvas.app.canvas.ViewportState
 import dev.studycanvas.app.canvas.phaseOneFallbackLesson
+import dev.studycanvas.app.ink.HandwritingSurface
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
@@ -76,7 +77,6 @@ fun StudyCanvasScreen() {
                 syncState = SyncState.SAVED
             }
             .onFailure {
-                // Keep a readable local lesson if the development backend is unavailable.
                 syncState = SyncState.OFFLINE
             }
     }
@@ -144,6 +144,7 @@ fun StudyCanvasScreen() {
                 .sortedBy { it.zIndex }
                 .forEach { element ->
                     CanvasElementView(
+                        lessonId = lesson.id,
                         element = element,
                         selected = element.id == selectedElementId,
                         viewportScale = viewport.scale,
@@ -172,6 +173,7 @@ fun StudyCanvasScreen() {
 
 @Composable
 private fun CanvasElementView(
+    lessonId: String,
     element: CanvasElement,
     selected: Boolean,
     viewportScale: Float,
@@ -209,6 +211,7 @@ private fun CanvasElementView(
         )
 
         CanvasElementKind.EXERCISE -> ExerciseCard(
+            lessonId = lessonId,
             element = element,
             selected = selected,
             onSelect = onSelect,
@@ -254,6 +257,7 @@ private fun LessonMaterialCard(
 
 @Composable
 private fun ExerciseCard(
+    lessonId: String,
     element: CanvasElement,
     selected: Boolean,
     onSelect: () -> Unit,
@@ -284,19 +288,10 @@ private fun ExerciseCard(
                 AssistChip(onClick = {}, label = { Text("Hint 3 · romaji") })
             }
             Spacer(Modifier.height(20.dp))
-            Box(
-                modifier = Modifier
-                    .width((element.size.width - 80f).coerceAtLeast(200f).dp)
-                    .height(240.dp)
-                    .border(1.dp, Color(0xFFAAA69D))
-                    .background(Color.White.copy(alpha = 0.45f))
-                    .padding(20.dp),
-            ) {
-                Text(
-                    "Stylus writing area\n\nHandwriting starts in Phase 2.",
-                    color = Color(0xFF77736A),
-                )
-            }
+            HandwritingSurface(
+                lessonId = lessonId,
+                exerciseElementId = element.id,
+            )
         }
     }
 }
