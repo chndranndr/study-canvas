@@ -51,6 +51,7 @@ import dev.studycanvas.app.data.AppDatabase
 import dev.studycanvas.app.canvas.ViewportState
 import dev.studycanvas.app.canvas.phaseOneFallbackLesson
 import dev.studycanvas.app.ink.HandwritingSurface
+import dev.studycanvas.app.tutor.GeminiAiTutorClient
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
@@ -61,6 +62,7 @@ private enum class SyncState {
     SAVING,
     SAVED,
     OFFLINE,
+    GENERATING,
 }
 
 @Composable
@@ -70,6 +72,7 @@ fun StudyCanvasScreen() {
         val db = AppDatabase.getInstance(context)
         LocalCanvasRepository(db.lessonDao())
     }
+    val tutorClient = remember { GeminiAiTutorClient() }
     val scope = rememberCoroutineScope()
     val density = LocalDensity.current.density
 
@@ -176,6 +179,19 @@ fun StudyCanvasScreen() {
             scale = viewport.scale,
             selectedElementId = selectedElementId,
             syncState = syncState,
+            onGenerateAiLesson = {
+                syncState = SyncState.GENERATING
+                scope.launch {
+                    repository.generateAndSaveLesson(DemoLessonId, "tai-desu", tutorClient)
+                        .onSuccess {
+                            lesson = it
+                            syncState = SyncState.SAVED
+                        }
+                        .onFailure {
+                            syncState = SyncState.SAVED
+                        }
+                }
+            },
         )
     }
 }
@@ -325,23 +341,39 @@ private fun CanvasStatusOverlay(
     scale: Float,
     selectedElementId: String?,
     syncState: SyncState,
+    onGenerateAiLesson: () -> Unit,
 ) {
     val syncLabel = when (syncState) {
         SyncState.LOADING -> "loading layout…"
         SyncState.SAVING -> "saving layout…"
         SyncState.SAVED -> "layout saved"
         SyncState.OFFLINE -> "offline fallback"
+        SyncState.GENERATING -> "menghasilkan materi AI…"
     }
 
-    Column(modifier = Modifier.padding(16.dp)) {
-        Text(
-            text = "${(scale * 100).roundToInt()}%  •  pinch to zoom  •  drag empty canvas to pan",
-            style = MaterialTheme.typography.labelLarge,
-        )
-        Text(
-            text = "selected: ${selectedElementId ?: "none"}  •  $syncLabel",
-            style = MaterialTheme.typography.labelMedium,
-            color = Color(0xFF68645C),
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.Top,
+    ) {
+        Column {
+            Text(
+                text = "${(scale * 100).roundToInt()}%  •  pinch to zoom  •  drag empty canvas to pan",
+                style = MaterialTheme.typography.labelLarge,
+            )
+            Text(
+                text = "selected: ${selectedElementId ?: "none"}  •  $syncLabel",
+                style = MaterialTheme.typography.labelMedium,
+                color = Color(0xFF68645C),
+            )
+        }
+
+        AssistChip(
+            onClick = onGenerateAiLesson,
+            label = { Text("✦ Perbarui Materi (AI)") },
+            enabled = syncState != SyncState.GENERATING && syncState != SyncState.SAVING,
         )
     }
 }

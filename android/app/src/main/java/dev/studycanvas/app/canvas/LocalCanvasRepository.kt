@@ -6,6 +6,7 @@ import dev.studycanvas.app.data.LessonEntity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.json.JSONObject
+import dev.studycanvas.app.tutor.AiTutorClient
 
 class LocalCanvasRepository(
     private val lessonDao: LessonDao,
@@ -40,6 +41,69 @@ class LocalCanvasRepository(
     ) = withContext(Dispatchers.IO) {
         for (layout in layouts) {
             lessonDao.updateElementPosition(layout.id, layout.position.x, layout.position.y)
+        }
+    }
+
+    suspend fun generateAndSaveLesson(
+        lessonId: String,
+        conceptId: String,
+        tutorClient: AiTutorClient,
+    ): Result<LessonCanvas> = withContext(Dispatchers.IO) {
+        runCatching {
+            val material = tutorClient.generateLessonMaterial(conceptId).getOrThrow()
+            val exercises = tutorClient.generateExerciseBatch(conceptId, count = 5).getOrThrow()
+
+            val exampleText = material.examples.joinToString("\n") { "${it.japanese} (${it.meaning})" }
+            val materialBody = "${material.shortExplanation}\n\n${material.formationRule}\n\n$exampleText"
+
+            val elements = mutableListOf<CanvasElement>()
+            elements += CanvasElement(
+                id = "${conceptId}-material",
+                kind = CanvasElementKind.LESSON_TEXT,
+                position = WorldPoint(180f, 100f),
+                size = WorldSize(880f, 320f),
+                zIndex = 10,
+                readOnly = true,
+                movable = true,
+                content = CanvasElementContent.LessonText(
+                    title = material.title,
+                    body = materialBody,
+                ),
+            )
+
+            var yOffset = 460f
+            exercises.forEachIndexed { index, ex ->
+                elements += CanvasElement(
+                    id = "${conceptId}-exercise-${index + 1}",
+                    kind = CanvasElementKind.EXERCISE,
+                    position = WorldPoint(180f, yOffset),
+                    size = WorldSize(880f, 440f),
+                    zIndex = 5,
+                    readOnly = true,
+                    movable = false,
+                    content = CanvasElementContent.Exercise(
+                        title = "Latihan ${index + 1}",
+                        prompt = ex.prompt,
+                        hint1Kosakata = ex.hintVocabulary,
+                        hint2Pola = ex.hintPattern,
+                        hint3Romaji = ex.hintReadingFallback,
+                        solution = ex.referenceAnswers.firstOrNull().orEmpty(),
+                        targetConceptId = conceptId,
+                    ),
+                )
+                yOffset += 480f
+            }
+
+            val newLesson = LessonCanvas(
+                id = lessonId,
+                title = material.title,
+                worldSize = WorldSize(2400f, maxOf(3600f, yOffset + 400f)),
+                elements = elements,
+            )
+
+            lessonDao.deleteElementsForLesson(lessonId)
+            seedLesson(newLesson)
+            newLesson
         }
     }
 

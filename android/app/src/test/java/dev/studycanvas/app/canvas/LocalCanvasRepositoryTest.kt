@@ -84,4 +84,19 @@ class LocalCanvasRepositoryTest {
         assertEquals(300f, material.position.x, 0.001f)
         assertEquals(400f, material.position.y, 0.001f)
     }
+
+    @Test
+    fun generateAndSaveLesson_cachesGeneratedElementsLocally() = runBlocking {
+        val fakeDao = FakeLessonDao()
+        val repo = LocalCanvasRepository(fakeDao)
+        val tutorClient = dev.studycanvas.app.tutor.DeterministicAiTutorClient()
+
+        val generated = repo.generateAndSaveLesson("new-lesson", "tai-desu", tutorClient).getOrThrow()
+        assertEquals("～たいです", generated.title)
+        assertEquals(6, generated.elements.size)
+        assertEquals(6, fakeDao.getElementsForLesson("new-lesson").size)
+
+        val loaded = repo.loadLesson("new-lesson")
+        assertEquals(6, loaded.elements.size)
+    }
 }
