@@ -55,6 +55,7 @@ import dev.studycanvas.app.tutor.GeminiAiTutorClient
 import dev.studycanvas.app.tutor.GradeResult
 import java.util.UUID
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.delay
 import org.json.JSONArray
 
 private const val WritingAreaWidth = 820f
@@ -119,6 +120,40 @@ fun HandwritingSurface(
 
         runCatching { recognizer.prepare() }
     }
+    LaunchedEffect(strokes) {
+        if (strokes.isEmpty()) {
+            if (!exerciseState.isCompleted) {
+                exerciseState = exerciseState.copy(recognizedText = null)
+            }
+            return@LaunchedEffect
+        }
+        if (exerciseState.isCompleted || exerciseState.stage == ExerciseStage.GRADING) return@LaunchedEffect
+
+        delay(1000L)
+
+        val recResult = runCatching {
+            recognizer.recognize(
+                RecognitionRequest(
+                    strokes = strokes,
+                    writingArea = InkWritingArea(
+                        width = WritingAreaWidth * density,
+                        height = WritingAreaHeight * density,
+                    ),
+                ),
+            )
+        }.getOrNull()
+
+        val recognized = recResult?.candidates?.firstOrNull()?.text?.trim().orEmpty()
+        exerciseState = exerciseState.copy(
+            recognizedText = recognized.ifBlank { null },
+            stage = if (exerciseState.stage == ExerciseStage.WRITING || exerciseState.stage == ExerciseStage.READY) {
+                ExerciseStage.READY_TO_CHECK
+            } else {
+                exerciseState.stage
+            },
+        )
+    }
+
 
     fun commitFinished(finished: List<androidx.ink.strokes.Stroke>) {
         val firstSequence = (strokes.maxOfOrNull(InkStroke::sequence) ?: -1) + 1
@@ -150,7 +185,10 @@ fun HandwritingSurface(
         if (newlyErasedIds.isNotEmpty()) {
             val remaining = currentStrokes.value.filterNot { it.id in erasedIds }
             strokes = remaining
-            exerciseState = currentExerciseState.value.copy(strokeCount = remaining.size)
+            exerciseState = currentExerciseState.value.copy(
+                strokeCount = remaining.size,
+                recognizedText = if (remaining.isEmpty()) null else currentExerciseState.value.recognizedText,
+            )
             scope.launch {
                 runCatching {
                     newlyErasedIds.forEach { strokeId ->
@@ -177,7 +215,7 @@ fun HandwritingSurface(
         statusText = "Mengenali tulisan tangan…"
 
         scope.launch {
-            val recResult = runCatching {
+            val recognized = exerciseState.recognizedText?.takeIf { it.isNotBlank() } ?: runCatching {
                 recognizer.recognize(
                     RecognitionRequest(
                         strokes = strokes,
@@ -187,9 +225,7 @@ fun HandwritingSurface(
                         ),
                     ),
                 )
-            }.getOrNull()
-
-            val recognized = recResult?.candidates?.firstOrNull()?.text.orEmpty()
+            }.getOrNull()?.candidates?.firstOrNull()?.text.orEmpty()
             if (recognized.isBlank()) {
                 statusText = "Tulisan belum terdeteksi jelas. Coba tulis kembali."
                 exerciseState = exerciseState.copy(stage = ExerciseStage.WRITING)
@@ -457,7 +493,7 @@ fun HandwritingSurface(
             )
         }
 
-        if (exerciseState.recognizedText != null) {
+        if (!exerciseState.recognizedText.isNullOrBlank()) {
             Row(
                 modifier = Modifier
                     .width(WritingAreaWidth.dp)

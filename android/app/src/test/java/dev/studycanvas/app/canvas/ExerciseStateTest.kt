@@ -88,4 +88,23 @@ class ExerciseStateTest {
         assertFalse(state.canRetry)
         assertFalse(state.canWrite)
     }
+
+    @Test
+    fun liveRecognition_preservesWritingAndCheckingFlags() {
+        val state = ExerciseState().onStrokeAdded(3).onRecognized("日本")
+        assertEquals(ExerciseStage.READY_TO_CHECK, state.stage)
+        assertEquals("日本", state.recognizedText)
+        assertTrue(state.canWrite)
+        assertTrue(state.canCheck)
+    }
+
+    @Test
+    fun clearingStrokes_clearsRecognizedText() {
+        var state = ExerciseState().onStrokeAdded(3).onRecognized("日本")
+        state = state.copy(strokeCount = 0, recognizedText = null)
+        assertNull(state.recognizedText)
+        assertEquals(0, state.strokeCount)
+        assertFalse(state.canCheck)
+        assertTrue(state.canWrite)
+    }
 }
