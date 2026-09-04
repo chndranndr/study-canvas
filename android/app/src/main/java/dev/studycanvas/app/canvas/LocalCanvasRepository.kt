@@ -13,13 +13,18 @@ class LocalCanvasRepository(
 
     override suspend fun loadLesson(lessonId: String): LessonCanvas = withContext(Dispatchers.IO) {
         val existing = lessonDao.getLesson(lessonId)
+        val fallback = phaseOneFallbackLesson()
         if (existing == null) {
-            val fallback = phaseOneFallbackLesson()
             seedLesson(fallback)
             return@withContext fallback
         }
 
         val elementEntities = lessonDao.getElementsForLesson(lessonId)
+        if (elementEntities.size < fallback.elements.size) {
+            seedLesson(fallback)
+            return@withContext fallback
+        }
+
         val elements = elementEntities.mapNotNull { it.toCanvasElement() }
         LessonCanvas(
             id = existing.id,
@@ -57,6 +62,11 @@ class LocalCanvasRepository(
                 is CanvasElementContent.Exercise -> {
                     payload.put("title", c.title)
                     payload.put("prompt", c.prompt)
+                    payload.put("hint1Kosakata", c.hint1Kosakata)
+                    payload.put("hint2Pola", c.hint2Pola)
+                    payload.put("hint3Romaji", c.hint3Romaji)
+                    payload.put("solution", c.solution)
+                    payload.put("targetConceptId", c.targetConceptId)
                 }
             }
             LessonElementEntity(
@@ -91,6 +101,11 @@ class LocalCanvasRepository(
             CanvasElementKind.EXERCISE -> CanvasElementContent.Exercise(
                 title = payload.optString("title", ""),
                 prompt = payload.optString("prompt", ""),
+                hint1Kosakata = payload.optString("hint1Kosakata", ""),
+                hint2Pola = payload.optString("hint2Pola", ""),
+                hint3Romaji = payload.optString("hint3Romaji", ""),
+                solution = payload.optString("solution", ""),
+                targetConceptId = payload.optString("targetConceptId", "tai-desu"),
             )
         }
         return CanvasElement(

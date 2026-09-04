@@ -66,9 +66,23 @@ class DeterministicAiTutorClient : AiTutorClient {
     ): Result<GradeResult> = runCatching {
         val trimmed = recognizedText.trim().replace("\\s+".toRegex(), "")
         val isMatch = when {
-            exercisePrompt.contains("Jepang") && (trimmed.contains("日本に行きたい") || trimmed.contains("日本へ行きたい")) -> true
-            trimmed.endsWith("たいです") || trimmed.endsWith("たい") -> true
-            else -> false
+            exercisePrompt.contains("Jepang") && exercisePrompt.contains("teman") ->
+                (trimmed.contains("友達") || trimmed.contains("ともだち")) &&
+                    (trimmed.contains("京都") || trimmed.contains("きょうと")) &&
+                    (trimmed.contains("行きたい") || trimmed.contains("いきたい"))
+            exercisePrompt.contains("Jepang") && exercisePrompt.contains("belajar") ->
+                (trimmed.contains("日本語") || trimmed.contains("にほんご")) &&
+                    (trimmed.contains("勉強したい") || trimmed.contains("べんきょうしたい"))
+            exercisePrompt.contains("Jepang") ->
+                (trimmed.contains("日本") || trimmed.contains("にほん")) &&
+                    (trimmed.contains("行きたい") || trimmed.contains("いきたい"))
+            exercisePrompt.contains("sushi") ->
+                (trimmed.contains("寿司") || trimmed.contains("すし")) &&
+                    (trimmed.contains("食べたい") || trimmed.contains("たべたい"))
+            exercisePrompt.contains("buku") ->
+                (trimmed.contains("本") || trimmed.contains("ほん")) &&
+                    (trimmed.contains("買いたい") || trimmed.contains("かいたい"))
+            else -> trimmed.endsWith("たいです") || trimmed.endsWith("たい")
         }
 
         if (isMatch) {
@@ -82,7 +96,8 @@ class DeterministicAiTutorClient : AiTutorClient {
         } else {
             val errors = mutableListOf<String>()
             val explanation = when {
-                trimmed.contains("に行きます") || trimmed.contains("へ行きます") || trimmed.endsWith("ます") -> {
+                trimmed.contains("行きます") || trimmed.contains("食べます") ||
+                    trimmed.contains("勉強します") || trimmed.contains("買います") || trimmed.endsWith("ます") -> {
                     errors += "unconjugated-masu"
                     "Ganti ます dengan たいです untuk menyatakan keinginan."
                 }
@@ -92,7 +107,7 @@ class DeterministicAiTutorClient : AiTutorClient {
                 }
                 else -> {
                     errors += "incorrect-structure"
-                    "Periksa kembali ejaan partikel dan konjugasi kata kerja."
+                    "Periksa kembali ejaan kata, partikel, atau kanji yang digunakan."
                 }
             }
             GradeResult(

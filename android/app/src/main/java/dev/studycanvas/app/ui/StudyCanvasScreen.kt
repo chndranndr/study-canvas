@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
@@ -29,6 +30,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
@@ -236,28 +238,40 @@ private fun LessonMaterialCard(
 ) {
     val content = element.content as CanvasElementContent.LessonText
     val shape = RoundedCornerShape(16.dp)
+    var expanded by remember { mutableStateOf(true) }
 
     Card(
-        onClick = onSelect,
         modifier = modifier
             .width(element.size.width.dp)
             .then(
-                if (selected) Modifier.border(3.dp, MaterialTheme.colorScheme.primary, shape)
+                if (selected) Modifier.border(2.dp, MaterialTheme.colorScheme.primary, shape)
                 else Modifier,
             ),
         shape = shape,
         colors = CardDefaults.cardColors(containerColor = Color(0xFFFFFCF6)),
     ) {
-        Column(modifier = Modifier.padding(32.dp)) {
-            Text(content.title, fontSize = 34.sp, style = MaterialTheme.typography.headlineLarge)
-            Spacer(Modifier.height(18.dp))
-            Text(content.body)
-            Spacer(Modifier.height(18.dp))
-            Text(
-                "Read-only content • drag card to rearrange",
-                style = MaterialTheme.typography.bodySmall,
-                color = Color(0xFF77736A),
-            )
+        Column(modifier = Modifier.padding(20.dp)) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    text = content.title,
+                    fontSize = 24.sp,
+                    style = MaterialTheme.typography.titleLarge,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.clickable { onSelect() },
+                )
+                AssistChip(
+                    onClick = { expanded = !expanded },
+                    label = { Text(if (expanded) "Ciutkan ▲" else "Buka Materi ▼") },
+                )
+            }
+            if (expanded) {
+                Spacer(Modifier.height(10.dp))
+                Text(content.body, style = MaterialTheme.typography.bodyMedium)
+            }
         }
     }
 }
@@ -277,30 +291,30 @@ private fun ExerciseCard(
         modifier = modifier
             .width(element.size.width.dp)
             .then(
-                if (selected) Modifier.border(3.dp, MaterialTheme.colorScheme.primary, shape)
+                if (selected) Modifier.border(2.dp, MaterialTheme.colorScheme.primary, shape)
                 else Modifier,
             ),
         shape = shape,
         colors = CardDefaults.cardColors(containerColor = Color(0xFFFFFCF6)),
     ) {
-        Column(modifier = Modifier.padding(32.dp)) {
+        Column(modifier = Modifier.padding(20.dp)) {
             Text(
                 text = content.title,
-                style = MaterialTheme.typography.titleLarge,
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.clickable { onSelect() },
             )
-            Spacer(Modifier.height(12.dp))
-            Text(content.prompt, style = MaterialTheme.typography.headlineSmall)
-            Spacer(Modifier.height(20.dp))
-            Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                AssistChip(onClick = {}, label = { Text("Hint 1 · kosakata") })
-                AssistChip(onClick = {}, label = { Text("Hint 2 · pola") })
-                AssistChip(onClick = {}, label = { Text("Hint 3 · romaji") })
-            }
-            Spacer(Modifier.height(20.dp))
+            Spacer(Modifier.height(4.dp))
+            Text(
+                text = content.prompt,
+                style = MaterialTheme.typography.titleLarge,
+                color = Color(0xFF1F1F1F),
+            )
+            Spacer(Modifier.height(10.dp))
             HandwritingSurface(
                 lessonId = lessonId,
                 exerciseElementId = element.id,
+                exerciseContent = content,
             )
         }
     }

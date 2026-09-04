@@ -55,9 +55,13 @@ class LocalCanvasRepositoryTest {
 
         assertEquals("tai-desu-demo", lesson.id)
         assertEquals("～たいです", lesson.title)
-        assertEquals(2, lesson.elements.size)
+        assertEquals(6, lesson.elements.size)
         assertNotNull(fakeDao.getLesson("tai-desu-demo"))
-        assertEquals(2, fakeDao.getElementsForLesson("tai-desu-demo").size)
+        assertEquals(6, fakeDao.getElementsForLesson("tai-desu-demo").size)
+        val ex1 = lesson.elements.first { it.id == "tai-desu-exercise-1" }
+        val content = ex1.content as CanvasElementContent.Exercise
+        assertEquals("日本に行きたいです", content.solution)
+        assertTrue(content.hint1Kosakata.isNotEmpty())
     }
 
     @Test

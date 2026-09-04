@@ -10,16 +10,18 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -29,6 +31,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
@@ -38,8 +41,11 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.ink.rendering.android.canvas.CanvasStrokeRenderer
-import androidx.ink.authoring.compose.InProgressStrokes
+import dev.studycanvas.app.canvas.CanvasElementContent
+import dev.studycanvas.app.canvas.ExerciseStage
+import dev.studycanvas.app.canvas.ExerciseState
 import dev.studycanvas.app.data.AppDatabase
 import dev.studycanvas.app.data.ExerciseAttemptEntity
 import dev.studycanvas.app.tutor.DeterministicAiTutorClient
@@ -49,13 +55,14 @@ import kotlinx.coroutines.launch
 import org.json.JSONArray
 
 private const val WritingAreaWidth = 820f
-private const val WritingAreaHeight = 240f
-private const val EraserRadius = 18f
+private const val WritingAreaHeight = 220f
+private const val EraserRadius = 24f
 
 @Composable
 fun HandwritingSurface(
     lessonId: String,
     exerciseElementId: String,
+    exerciseContent: CanvasElementContent.Exercise,
     modifier: Modifier = Modifier,
 ) {
     val density = LocalDensity.current.density
@@ -70,25 +77,43 @@ fun HandwritingSurface(
 
     var tool by remember { mutableStateOf(InkTool.PEN) }
     var strokes by remember { mutableStateOf<List<InkStroke>>(emptyList()) }
-    var recognition by remember { mutableStateOf<RecognitionResult?>(null) }
-    var tutorFeedback by remember { mutableStateOf<GradeResult?>(null) }
-    var status by remember { mutableStateOf("loading ink…") }
-    var recognizing by remember { mutableStateOf(false) }
+    var exerciseState by remember { mutableStateOf(ExerciseState()) }
+    var statusText by remember { mutableStateOf("") }
+
     DisposableEffect(recognizer) {
         onDispose { recognizer.close() }
     }
 
     LaunchedEffect(lessonId, exerciseElementId) {
         runCatching { repository.loadStrokes(lessonId, exerciseElementId) }
-            .onSuccess {
-                strokes = it.sortedBy(InkStroke::sequence)
-                status = "${it.size} stroke(s) loaded"
+            .onSuccess { loaded ->
+                strokes = loaded.sortedBy(InkStroke::sequence)
+                exerciseState = exerciseState.copy(strokeCount = loaded.size)
             }
-            .onFailure {
-                status = "ink persistence offline"
+
+        // Restore previous attempt if any
+        runCatching { db.attemptDao().getAttempts(exerciseElementId) }
+            .onSuccess { attempts ->
+                val latest = attempts.firstOrNull()
+                if (latest != null) {
+                    val grade = GradeResult(
+                        correct = latest.correct,
+                        meaningScore = latest.meaningScore ?: 1f,
+                        grammarScore = latest.grammarScore ?: 1f,
+                        naturalnessScore = latest.naturalnessScore ?: 1f,
+                        explanation = if (latest.correct) "Tepat sekali! Sudah diselesaikan sebelumnya." else "Coba tulis kembali dengan pola yang benar.",
+                    )
+                    exerciseState = exerciseState.copy(
+                        recognizedText = latest.recognizedText,
+                        gradeResult = grade,
+                        isCompleted = latest.correct,
+                        hintLevel = latest.hintLevel,
+                        stage = ExerciseStage.FEEDBACK,
+                    )
+                }
             }
+
         runCatching { recognizer.prepare() }
-            .onFailure { status = "Japanese model pending download" }
     }
 
     fun commitFinished(finished: List<androidx.ink.strokes.Stroke>) {
@@ -99,106 +124,236 @@ fun HandwritingSurface(
         if (committed.isEmpty()) return
 
         strokes = (strokes + committed).sortedBy(InkStroke::sequence)
-        recognition = null
-        tutorFeedback = null
-        status = "saving ink…"
+        exerciseState = exerciseState.onStrokeAdded(strokes.size)
         scope.launch {
-            val saved = runCatching {
+            runCatching {
                 committed.forEach { repository.saveStroke(lessonId, exerciseElementId, it) }
-            }.isSuccess
-            status = if (saved) "${strokes.size} stroke(s) saved" else "ink saved locally only"
+            }
         }
     }
 
     fun eraseAt(positionPx: Offset) {
         val target = findStrokeNear(strokes, positionPx, EraserRadius * density) ?: return
         strokes = strokes.filterNot { it.id == target.id }
-        recognition = null
-        tutorFeedback = null
-        status = "erasing…"
+        exerciseState = exerciseState.copy(strokeCount = strokes.size)
         scope.launch {
-            val deleted = runCatching {
+            runCatching {
                 repository.deleteStroke(lessonId, exerciseElementId, target.id)
-            }.isSuccess
-            status = if (deleted) "${strokes.size} stroke(s) saved" else "erase pending sync"
+            }
+        }
+    }
+
+    fun clearAllStrokes() {
+        strokes = emptyList()
+        exerciseState = exerciseState.onRetry()
+        scope.launch {
+            runCatching {
+                db.inkDao().deleteStrokesForExercise(lessonId, exerciseElementId)
+            }
+        }
+    }
+
+    fun checkAnswer() {
+        if (strokes.isEmpty()) return
+        exerciseState = exerciseState.onRecognizing()
+        statusText = "Mengenali tulisan tangan…"
+
+        scope.launch {
+            val recResult = runCatching {
+                recognizer.recognize(
+                    RecognitionRequest(
+                        strokes = strokes,
+                        writingArea = InkWritingArea(
+                            width = WritingAreaWidth * density,
+                            height = WritingAreaHeight * density,
+                        ),
+                    ),
+                )
+            }.getOrNull()
+
+            val recognized = recResult?.candidates?.firstOrNull()?.text.orEmpty()
+            if (recognized.isBlank()) {
+                statusText = "Tulisan belum terdeteksi jelas. Coba tulis kembali."
+                exerciseState = exerciseState.copy(stage = ExerciseStage.WRITING)
+                return@launch
+            }
+
+            exerciseState = exerciseState.onRecognized(recognized)
+            exerciseState = exerciseState.onGrading()
+            statusText = "AI Tutor sedang memeriksa…"
+
+            val grade = tutorClient.gradeAttempt(
+                exercisePrompt = exerciseContent.prompt,
+                recognizedText = recognized,
+                targetConceptId = exerciseContent.targetConceptId,
+            ).getOrElse {
+                GradeResult(
+                    correct = false,
+                    meaningScore = 0.5f,
+                    grammarScore = 0.5f,
+                    naturalnessScore = 0.5f,
+                    explanation = "Gagal memeriksa jawaban. Coba periksa koneksi atau ulangi.",
+                )
+            }
+
+            exerciseState = exerciseState.onGraded(grade)
+            statusText = ""
+
+            // Persist attempt evidence
+            runCatching {
+                db.attemptDao().insertAttempt(
+                    ExerciseAttemptEntity(
+                        id = UUID.randomUUID().toString(),
+                        lessonId = lessonId,
+                        exerciseElementId = exerciseElementId,
+                        recognizedText = recognized,
+                        correct = grade.correct,
+                        grammarScore = grade.grammarScore,
+                        meaningScore = grade.meaningScore,
+                        naturalnessScore = grade.naturalnessScore,
+                        hintLevel = exerciseState.hintLevel,
+                        errorsJson = JSONArray(grade.errors).toString(),
+                    ),
+                )
+            }
         }
     }
 
     Column(modifier = modifier) {
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            FilterChip(
-                selected = tool == InkTool.PEN,
-                onClick = { tool = InkTool.PEN },
-                label = { Text("Pen") },
-            )
-            FilterChip(
-                selected = tool == InkTool.ERASER,
-                onClick = { tool = InkTool.ERASER },
-                label = { Text("Eraser") },
-            )
-            Button(
-                enabled = strokes.isNotEmpty() && !recognizing,
-                onClick = {
-                    recognizing = true
-                    recognition = null
-                    status = "recognizing Japanese…"
-                    scope.launch {
-                        runCatching {
-                            recognizer.recognize(
-                                RecognitionRequest(
-                                    strokes = strokes,
-                                    writingArea = InkWritingArea(
-                                        width = WritingAreaWidth * density,
-                                        height = WritingAreaHeight * density,
-                                    ),
-                                ),
-                            )
-                        }.onSuccess {
-                            recognition = it
-                            status = "recognition complete"
-                            val topCandidate = it.candidates.firstOrNull()?.text
-                            if (!topCandidate.isNullOrBlank()) {
-                                scope.launch {
-                                    val grade = tutorClient.gradeAttempt(
-                                        exercisePrompt = "Saya ingin pergi ke Jepang.",
-                                        recognizedText = topCandidate,
-                                    ).getOrNull()
-                                    tutorFeedback = grade
-                                    grade?.let { g ->
-                                        db.attemptDao().insertAttempt(
-                                            ExerciseAttemptEntity(
-                                                id = UUID.randomUUID().toString(),
-                                                lessonId = lessonId,
-                                                exerciseElementId = exerciseElementId,
-                                                recognizedText = topCandidate,
-                                                correct = g.correct,
-                                                grammarScore = g.grammarScore,
-                                                meaningScore = g.meaningScore,
-                                                naturalnessScore = g.naturalnessScore,
-                                                errorsJson = JSONArray(g.errors).toString(),
-                                            ),
-                                        )
-                                    }
-                                }
-                            }
-                        }.onFailure {
-                            status = "recognition failed: ${it.message ?: "unknown error"}"
+        // Minimal, low-chrome contextual toolbar
+        Row(
+            modifier = Modifier.width(WritingAreaWidth.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                FilterChip(
+                    selected = tool == InkTool.PEN,
+                    onClick = { tool = InkTool.PEN },
+                    label = { Text("Pen") },
+                    enabled = exerciseState.canWrite,
+                )
+                FilterChip(
+                    selected = tool == InkTool.ERASER,
+                    onClick = { tool = InkTool.ERASER },
+                    label = { Text("Eraser") },
+                    enabled = exerciseState.canWrite,
+                )
+                OutlinedButton(
+                    onClick = { clearAllStrokes() },
+                    enabled = strokes.isNotEmpty() && !exerciseState.isCompleted,
+                ) {
+                    Text("Hapus", fontSize = 13.sp)
+                }
+            }
+
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                // Progressive hint button
+                AssistChip(
+                    onClick = {
+                        if (exerciseState.hintLevel < 3) {
+                            exerciseState = exerciseState.onAdvanceHint(3)
+                        } else if (!exerciseState.isAnswerRevealed) {
+                            exerciseState = exerciseState.onRevealAnswer()
                         }
-                        recognizing = false
+                    },
+                    label = {
+                        val label = when (exerciseState.hintLevel) {
+                            0 -> "Bantuan 💡"
+                            1 -> "Petunjuk 2 💡"
+                            2 -> "Petunjuk 3 💡"
+                            3 -> if (exerciseState.isAnswerRevealed) "Jawaban Terbuka" else "Buka Jawaban 👁️"
+                            else -> "Jawaban Terbuka"
+                        }
+                        Text(label, fontSize = 12.sp)
+                    },
+                )
+
+                // Check or retry button
+                if (exerciseState.isCompleted) {
+                    Button(
+                        onClick = {},
+                        enabled = false,
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2E7D32)),
+                    ) {
+                        Text("Selesai ✓", color = Color.White)
                     }
-                },
-            ) {
-                Text(if (recognizing) "Recognizing…" else "Recognize")
+                } else if (exerciseState.canRetry) {
+                    Button(
+                        onClick = { clearAllStrokes() },
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE65100)),
+                    ) {
+                        Text("Ulangi ↺", color = Color.White)
+                    }
+                } else {
+                    Button(
+                        onClick = { checkAnswer() },
+                        enabled = exerciseState.canCheck,
+                    ) {
+                        val text = when (exerciseState.stage) {
+                            ExerciseStage.RECOGNIZING -> "Mengenali…"
+                            ExerciseStage.GRADING -> "Memeriksa…"
+                            else -> "Periksa"
+                        }
+                        Text(text)
+                    }
+                }
             }
         }
 
+        // Progressive hints banner (compact, low-chrome)
+        if (exerciseState.hintLevel > 0) {
+            Spacer(Modifier.height(6.dp))
+            Column(
+                modifier = Modifier
+                    .width(WritingAreaWidth.dp)
+                    .background(Color(0xFFFFFBEA), RoundedCornerShape(8.dp))
+                    .padding(horizontal = 12.dp, vertical = 6.dp),
+            ) {
+                if (exerciseState.hintLevel >= 1 && exerciseContent.hint1Kosakata.isNotBlank()) {
+                    Text(
+                        text = "💡 Kosakata: ${exerciseContent.hint1Kosakata}",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = Color(0xFF5D4037),
+                    )
+                }
+                if (exerciseState.hintLevel >= 2 && exerciseContent.hint2Pola.isNotBlank()) {
+                    Text(
+                        text = "💡 Pola: ${exerciseContent.hint2Pola}",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = Color(0xFF5D4037),
+                    )
+                }
+                if (exerciseState.hintLevel >= 3 && exerciseContent.hint3Romaji.isNotBlank()) {
+                    Text(
+                        text = "💡 Romaji: ${exerciseContent.hint3Romaji}",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = Color(0xFF5D4037),
+                    )
+                }
+                if (exerciseState.isAnswerRevealed && exerciseContent.solution.isNotBlank()) {
+                    Text(
+                        text = "🎯 Kunci: ${exerciseContent.solution}",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = Color(0xFF1B5E20),
+                    )
+                }
+            }
+        }
+
+        Spacer(Modifier.height(8.dp))
+
+        // Open practice writing area
         Box(
             modifier = Modifier
-                .padding(top = 10.dp)
                 .width(WritingAreaWidth.dp)
                 .height(WritingAreaHeight.dp)
-                .border(1.dp, Color(0xFFAAA69D))
-                .background(Color.White.copy(alpha = 0.7f)),
+                .border(
+                    width = if (exerciseState.isCompleted) 2.dp else 1.dp,
+                    color = if (exerciseState.isCompleted) Color(0xFF4CAF50) else Color(0xFFBDBDBD),
+                    shape = RoundedCornerShape(8.dp),
+                )
+                .background(Color.White, RoundedCornerShape(8.dp)),
         ) {
             val renderedStrokes = remember(strokes) {
                 strokes.mapNotNull { stroke -> runCatching { stroke.toJetpackStroke() }.getOrNull() }
@@ -214,14 +369,14 @@ fun HandwritingSurface(
                 }
             }
 
-            if (tool == InkTool.PEN) {
+            if (exerciseState.canWrite && tool == InkTool.PEN) {
                 JetpackInkAuthoringLayer(
                     enabled = true,
                     brush = brush,
                     onStrokesFinished = ::commitFinished,
                     modifier = Modifier.fillMaxSize(),
                 )
-            } else {
+            } else if (exerciseState.canWrite && tool == InkTool.ERASER) {
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
@@ -250,60 +405,49 @@ fun HandwritingSurface(
             }
         }
 
-        Text(
-            text = status,
-            modifier = Modifier.padding(top = 8.dp),
-            style = MaterialTheme.typography.labelSmall,
-            color = Color(0xFF68645C),
-        )
+        // Inline recognition & concise feedback (clean, not wrapped in heavy cards)
+        if (statusText.isNotBlank()) {
+            Text(
+                text = statusText,
+                modifier = Modifier.padding(top = 4.dp),
+                style = MaterialTheme.typography.bodySmall,
+                color = Color(0xFF757575),
+            )
+        }
 
-        recognition?.let { result ->
-            Column(modifier = Modifier.padding(top = 8.dp)) {
+        if (exerciseState.recognizedText != null) {
+            Row(
+                modifier = Modifier
+                    .width(WritingAreaWidth.dp)
+                    .padding(top = 4.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
                 Text(
-                    text = "ML Kit candidates",
-                    style = MaterialTheme.typography.labelLarge,
+                    text = "Terbaca: ${exerciseState.recognizedText}",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = Color(0xFF212121),
                 )
-                if (result.candidates.isEmpty()) {
-                    Text("No candidate returned.", style = MaterialTheme.typography.bodySmall)
-                } else {
-                    result.candidates.take(5).forEachIndexed { index, candidate ->
-                        val score = candidate.score?.let { " · score %.3f".format(it) }.orEmpty()
-                        Text(
-                            text = "${index + 1}. ${candidate.text}$score",
-                            style = if (index == 0) {
-                                MaterialTheme.typography.titleMedium
-                            } else {
-                                MaterialTheme.typography.bodySmall
-                            },
-                        )
-                    }
+                if (exerciseState.isCompleted) {
+                    Text(
+                        text = "Benar! ✓",
+                        style = MaterialTheme.typography.labelLarge,
+                        color = Color(0xFF2E7D32),
+                    )
                 }
             }
         }
 
-        tutorFeedback?.let { feedback ->
-            Spacer(Modifier.height(10.dp))
-            Card(
-                colors = CardDefaults.cardColors(
-                    containerColor = if (feedback.correct) Color(0xFFE8F5E9) else Color(0xFFFFF3E0),
-                ),
-                modifier = Modifier
-                    .width(WritingAreaWidth.dp)
-                    .padding(top = 4.dp),
-            ) {
-                Column(modifier = Modifier.padding(12.dp)) {
-                    Text(
-                        text = if (feedback.correct) "AI Tutor: Benar! ✓" else "AI Tutor: Perlu Koreksi",
-                        style = MaterialTheme.typography.labelLarge,
-                        color = if (feedback.correct) Color(0xFF2E7D32) else Color(0xFFE65100),
-                    )
-                    Spacer(Modifier.height(4.dp))
-                    Text(
-                        text = feedback.explanation,
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = Color(0xFF212121),
-                    )
-                }
+        exerciseState.gradeResult?.let { feedback ->
+            if (!feedback.correct) {
+                Text(
+                    text = "AI Tutor: ${feedback.explanation}",
+                    modifier = Modifier
+                        .width(WritingAreaWidth.dp)
+                        .padding(top = 2.dp),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = Color(0xFFD84315),
+                )
             }
         }
     }
