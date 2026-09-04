@@ -1,9 +1,9 @@
 # Study Canvas — Product Requirements Document
 
-**Status:** Draft v1  
+**Status:** Draft v2  
 **Repository:** `chndranndr/study-canvas`  
 **Primary platform:** Android tablet  
-**Architecture:** Android frontend + TypeScript/Pi backend + SQLite  
+**Architecture:** Android-only, local-first, managed AI API  
 **Product type:** AI-assisted Japanese learning workspace
 
 ---
@@ -12,9 +12,11 @@
 
 Study Canvas is a tablet-first Japanese learning application built around one primary interaction model: **one learning topic lives on one large, zoomable canvas**.
 
-Instead of presenting Japanese lessons as linear screens, flashcards, or chat messages, Study Canvas treats each lesson as a spatial notebook page. The learner can pan and zoom across the canvas, move read-only lesson elements, write directly with a stylus, request progressive hints, and receive AI feedback directly beside their writing.
+Instead of presenting Japanese lessons as linear screens, flashcards, or chat messages, Study Canvas treats each lesson as a spatial notebook. The learner can pan and zoom, move reference material, write directly with a stylus, reveal progressive hints, complete many production exercises on the same canvas, and receive concise feedback near their writing.
 
-The AI tutor is not intended to behave like a generic chatbot. It maintains a persistent learner model, probes the learner's knowledge frontier, plans a personalized learning path, adapts explanations and exercises, diagnoses recurring mistakes, and decides what the learner should study next.
+The product is intentionally **local-first**. Durable learner state lives on the Android device. The app does not require a custom Node/Fastify backend for the MVP.
+
+The AI tutor is a bounded capability accessed through a managed API. It helps with semantic grading, explanations, exercise generation, and choosing the next pedagogical action. Deterministic application code remains responsible for mastery, curriculum rules, review scheduling, validation, and persistence.
 
 Core learning loop:
 
@@ -32,19 +34,17 @@ Most Japanese learning apps optimize for one or more of the following:
 - generic AI chat;
 - handwriting practice without adaptive teaching.
 
-These approaches often fail to combine **active production**, **handwriting**, **personalized tutoring**, and **long-term learner memory** in one experience.
+These approaches often fail to combine **active production**, **handwriting**, **personalized tutoring**, and **long-term learner memory** in one workspace.
 
-A learner may recognize a grammar pattern but still be unable to produce it from memory. Another learner may answer correctly only after several hints. Another may repeatedly confuse similar particles or kana. A static course usually treats these learners as equivalent.
-
-Study Canvas models those differences explicitly and uses them to change what happens next.
+Study Canvas focuses on repeated handwritten production. The learner should be able to keep writing and practicing without being interrupted by excessive navigation, card chrome, chat interfaces, or dashboard-style framing.
 
 ---
 
 ## 3. Product Vision
 
-Create a Japanese learning environment that feels like a living notebook: the learner writes naturally, the tutor understands the learner over time, and the lesson evolves around the learner's needs.
+Create a Japanese learning environment that feels like a living notebook: the learner writes naturally, the tutor understands recurring weaknesses, and the lesson evolves around the learner's needs.
 
-The product should feel closer to **a personal tutor living inside a notebook** than to a quiz app or chat interface.
+The product should feel closer to **a personal tutor annotating a notebook** than to a quiz app, LMS, or chatbot.
 
 ---
 
@@ -58,25 +58,67 @@ Prefer tasks where the learner must produce Japanese from memory rather than sel
 
 Stylus writing is not decoration. It is a primary learning interaction and a measurable learning signal.
 
-### 4.3 Progressive assistance
+### 4.3 Practice surface over UI chrome
+
+The lesson canvas should maximize writable space. Permanent controls stay small and unobtrusive.
+
+Do not wrap every exercise, recognition result, hint, and AI response in a separate card. Use framing only when it improves hierarchy or selection.
+
+### 4.4 Many exercises on one canvas
+
+A learner should be able to work through several exercises without leaving the canvas.
+
+The default practice experience should resemble:
+
+```text
+Practice 1
+Saya ingin pergi ke Jepang.
+-----------------------------------------
+[ large handwriting area ]
+
+recognized text / concise feedback
+
+Practice 2
+Saya ingin makan sushi.
+-----------------------------------------
+[ large handwriting area ]
+
+Practice 3
+...
+```
+
+### 4.5 Progressive assistance
 
 Hints reveal information gradually instead of immediately exposing the answer.
 
-### 4.4 Personalization optimizes learning, not comfort
+### 4.6 Personalization optimizes learning, not comfort
 
 If a learner frequently requests romaji, the tutor should not simply provide more romaji. It should infer possible kana weakness and adapt practice accordingly.
 
-### 4.5 AI chooses pedagogy; deterministic code owns state
+### 4.7 AI chooses pedagogy; deterministic code owns state
 
-AI decides what explanation, remediation, or exercise is pedagogically useful. Deterministic application logic owns mastery scores, review schedules, curriculum dependencies, validation, and persistence.
+AI may decide what explanation, remediation, or exercise is pedagogically useful. Deterministic application logic owns:
 
-### 4.6 The canvas is structured, not a rendered image
+- mastery scores;
+- review schedules;
+- curriculum dependencies;
+- validation;
+- persistence;
+- local transactions.
+
+### 4.8 The canvas is structured, not a rendered image
 
 Lesson content, exercises, user ink, and AI annotations are native elements in world coordinates. They remain crisp at any zoom level and can be repositioned independently.
 
-### 4.7 Curated knowledge over unconstrained generation
+### 4.9 Local-first and YAGNI
 
-Grammar rules, vocabulary definitions, conjugation rules, and canonical curriculum dependencies should come from validated sources. The AI tutor teaches from those sources rather than inventing foundational knowledge.
+For the MVP, keep product state on-device and avoid infrastructure that is not yet required.
+
+Do not add a custom backend, remote database, authentication service, or multi-agent orchestration until a real requirement exists.
+
+### 4.10 Curated knowledge over unconstrained generation
+
+Grammar rules, vocabulary definitions, conjugation rules, and canonical curriculum dependencies should come from validated sources. AI teaches from those sources rather than inventing foundational knowledge.
 
 ---
 
@@ -95,23 +137,24 @@ A self-directed learner who:
 
 ### Initial target range
 
-MVP content targets approximately JLPT N5–N4 skills while keeping the architecture expandable toward N3 and beyond.
+MVP content targets approximately JLPT N5–N4 while keeping the content model expandable toward N3 and beyond.
 
 ---
 
 ## 6. MVP Goals
 
 1. Deliver a smooth zoomable and pannable lesson canvas on Android tablet.
-2. Support read-only but movable lesson text elements.
+2. Support movable read-only lesson/reference elements.
 3. Support low-latency stylus handwriting.
 4. Recognize Japanese handwriting from stroke data.
-5. Present sentence-production exercises with progressive hints.
-6. Grade recognized Japanese answers and explain mistakes.
-7. Maintain persistent learner mastery and mistake history.
-8. Run an adaptive probe to estimate the learner's knowledge frontier.
-9. Use Pi as the central AI tutor harness.
-10. Persist backend product state in SQLite.
-11. Let the tutor choose the next learning action based on learner state.
+5. Let the learner complete many sentence-production exercises on one open canvas.
+6. Provide progressive hints without covering the writing area.
+7. Grade recognized Japanese answers and explain mistakes.
+8. Maintain persistent learner mastery and mistake history locally.
+9. Run an adaptive probe to estimate the learner's knowledge frontier.
+10. Let the AI tutor choose a bounded next pedagogical action.
+11. Persist durable product state in on-device Room/SQLite.
+12. Keep the app usable for reading, writing, recognition, and deterministic review when AI is unavailable.
 
 ---
 
@@ -126,6 +169,8 @@ MVP content targets approximately JLPT N5–N4 skills while keeping the architec
 - richer AI annotations and diagrams on the canvas;
 - cross-device synchronization;
 - multi-user accounts.
+
+These goals do not justify backend infrastructure in the MVP.
 
 ---
 
@@ -143,6 +188,8 @@ The MVP will not include:
 - vector database or generic RAG framework;
 - Kubernetes or microservices;
 - PostgreSQL;
+- a custom application backend;
+- cross-device synchronization;
 - offline local LLM inference;
 - speech recognition;
 - advanced calligraphy scoring.
@@ -151,7 +198,18 @@ The MVP will not include:
 
 ## 9. Core User Experience
 
-### 9.1 One topic = one canvas
+### 9.1 Home / Learning Hub
+
+The home screen gives a compact view of:
+
+- Continue Learning;
+- Recommended Next;
+- Today's Review;
+- a small learning snapshot.
+
+Analytics must remain secondary to learning actions.
+
+### 9.2 One topic = one canvas
 
 Examples:
 
@@ -163,15 +221,39 @@ Examples:
 A lesson canvas can contain:
 
 - lesson title;
-- grammar explanation;
+- concise grammar explanation;
 - examples;
 - warnings and common mistakes;
-- exercises;
+- many exercises;
 - user ink;
+- recognition results;
 - AI corrections;
 - optional personal notes.
 
-### 9.2 Canvas interaction
+### 9.3 Canvas visual direction
+
+The canvas background should be plain, quiet, and low-contrast.
+
+Preferred characteristics:
+
+- off-white or light neutral background;
+- subtle optional dot/grid texture;
+- minimal permanent chrome;
+- floating pen/eraser/select/pan tools;
+- minimal top bar;
+- large uninterrupted writing areas;
+- inline text instead of nested cards where possible.
+
+Avoid:
+
+- dashboard-like card grids inside the lesson;
+- thick containers around every exercise;
+- large AI panels;
+- chatbot bubbles;
+- decorative elements that compete with writing;
+- modal transitions for routine practice actions.
+
+### 9.4 Canvas interaction
 
 The learner can:
 
@@ -179,14 +261,16 @@ The learner can:
 - pan freely;
 - select a movable element;
 - drag lesson material to a new position;
+- collapse or move reference material away;
 - write with a stylus;
 - erase strokes;
+- complete multiple exercises on the same canvas;
 - preserve layout and viewport state;
 - reopen the lesson at the same layout.
 
 Material text content is read-only, but its container can be repositioned.
 
-### 9.3 World coordinates
+### 9.5 World coordinates
 
 All elements use world coordinates independent of screen pixels.
 
@@ -208,6 +292,7 @@ LessonTextElement
 ExampleElement
 ExerciseElement
 InkElement
+RecognitionElement
 AiAnnotationElement
 UserTextElement
 ```
@@ -234,6 +319,7 @@ locked
 - native rendered text;
 - read-only content;
 - movable;
+- collapsible;
 - selectable;
 - persisted coordinates and width.
 
@@ -241,21 +327,27 @@ locked
 
 Contains:
 
-- Indonesian prompt;
+- prompt;
 - target concept(s);
 - semantic intent;
 - vocabulary context;
 - progressive hints;
 - answer criteria;
-- associated learner writing area.
+- associated learner writing region.
+
+The element does not need a visible card border in its normal state.
 
 ### InkElement
 
 Contains vector stylus data, not a rendered PNG.
 
+### RecognitionElement
+
+Displays recognized Japanese text near the associated writing. It should be visually secondary to the handwriting.
+
 ### AiAnnotationElement
 
-Contains AI feedback associated with another element, stroke region, or exercise.
+Contains concise AI feedback associated with an exercise, text range, or writing region.
 
 ---
 
@@ -268,9 +360,12 @@ Example prompt:
 Initial state:
 
 ```text
+Practice 1
 Saya ingin pergi ke Jepang.
 
-[ handwriting area ]
+------------------------------------------------
+large open handwriting space
+------------------------------------------------
 
 Hint
 ```
@@ -283,14 +378,19 @@ Learner writes:
 
 End-to-end flow:
 
-1. frontend collects ink strokes;
-2. handwriting recognition produces Japanese candidates;
-3. recognized text is submitted as an attempt;
-4. backend grading evaluates meaning and grammar;
-5. deterministic learning engines update evidence;
-6. Pi tutor reads learner context and grading result;
-7. Pi returns a pedagogical next action;
-8. frontend renders feedback directly on the canvas.
+1. Android captures raw ink strokes with Jetpack Ink.
+2. Raw strokes are persisted locally.
+3. ML Kit Digital Ink produces Japanese candidates.
+4. Recognized text is stored as an attempt draft.
+5. Local deterministic logic calculates immediately available evidence.
+6. The app sends only the required attempt context to `AiTutorClient` when semantic grading or explanation is needed.
+7. The AI returns structured grading/feedback or a bounded next action.
+8. The app validates the result.
+9. Local deterministic engines update mastery, mistakes, and review state.
+10. Feedback appears inline near the writing.
+11. The learner continues to the next exercise on the same canvas.
+
+AI failure must not lose raw ink or prevent the learner from continuing local practice.
 
 ---
 
@@ -309,8 +409,6 @@ Jepang -> 日本
 pergi -> 行く
 ingin melakukan -> ～たい
 ```
-
-The learner must still construct the grammar independently.
 
 ### Hint 2 — Grammar pattern
 
@@ -339,6 +437,10 @@ tai desu
 ### Final fallback — Show answer
 
 Only after explicit learner action.
+
+### Hint presentation
+
+Hints should appear inline or in a small anchored panel beside the current exercise. They must not cover the handwriting region.
 
 ### Hint usage as evidence
 
@@ -398,7 +500,7 @@ Example structured grade:
 }
 ```
 
-The frontend should be able to anchor feedback near the relevant handwriting.
+Feedback should remain concise by default. Deeper explanation appears only after the learner asks for it.
 
 ---
 
@@ -417,84 +519,6 @@ Its purpose is to identify the learner's **knowledge frontier**: what is reliabl
 5. verb conjugation;
 6. sentence production.
 
-### Future domains
-
-- adjective conjugation;
-- broader grammar patterns;
-- reading comprehension;
-- kanji reading;
-- kanji writing;
-- listening;
-- speaking.
-
-### 14.1 Kana recognition
-
-Track hiragana and katakana separately, including confusion pairs such as:
-
-- シ / ツ;
-- ソ / ン;
-- ぬ / め;
-- れ / わ.
-
-### 14.2 Kana production
-
-Prompt from a sound, romaji token, or known word and require handwritten kana. Recognition and production are separate mastery dimensions.
-
-### 14.3 Vocabulary
-
-Test both directions:
-
-```text
-Japanese -> Indonesian
-Indonesian -> Japanese
-```
-
-Production direction carries more weight for active recall.
-
-### 14.4 Particles
-
-Initial set:
-
-```text
-は
-が
-を
-に
-で
-へ
-と
-の
-も
-から
-まで
-```
-
-Use both focused contrast questions and free sentence production.
-
-### 14.5 Verb conjugation
-
-Initial forms:
-
-```text
-dictionary
-ます
-て
-た
-ない
-たい
-```
-
-### 14.6 Sentence production
-
-Increase complexity until performance becomes unstable.
-
-Example sequence:
-
-1. Saya makan sushi.
-2. Saya ingin makan sushi.
-3. Kemarin saya makan sushi dengan teman.
-4. Karena hujan, saya tidak pergi ke sekolah.
-
 ### Adaptive behavior
 
 The probe should not test every concept exhaustively.
@@ -511,13 +535,11 @@ harder  easier
    frontier
 ```
 
-Probe scoring is deterministic. Pi may decide which domain requires more probing, but Pi must not invent mastery values.
+Probe scoring remains deterministic. AI may help choose a useful next question or explanation, but it must not invent mastery values.
 
 ---
 
 ## 15. Learner Model
-
-The AI tutor requires persistent structured learner state.
 
 ### LearnerProfile
 
@@ -541,8 +563,6 @@ production skill
 
 ### MistakeMemory
 
-Stores recurring errors and confusion patterns.
-
 Examples:
 
 ```text
@@ -560,14 +580,13 @@ Stores observed teaching preferences such as:
 - example-first vs rule-first preference;
 - tolerance for romaji;
 - useful topic domains;
-- preferred exercise count;
-- fatigue signals.
+- preferred exercise count.
 
-These are observations, not hard constraints. The tutor may deliberately use a less comfortable approach if it improves learning.
+These are observations, not hard constraints.
 
 ### SessionMemory
 
-Stores recent learning activity, exercise history, and tutor decisions.
+Stores recent learning activity, exercise history, and validated tutor decisions that are useful to retain.
 
 ---
 
@@ -598,13 +617,13 @@ Hint-assisted accuracy: 0.81
 Recent confusion: に vs で
 ```
 
-Pi may interpret these values but must not write arbitrary mastery numbers.
+AI may interpret these values but must not write arbitrary mastery numbers.
 
 ---
 
 ## 17. Curriculum Knowledge Graph
 
-The curriculum is a canonical DAG stored in SQLite.
+The curriculum is a canonical DAG stored locally in Room/SQLite.
 
 ### Node types
 
@@ -645,7 +664,7 @@ basic particles
 
 The canonical graph defines valid learning dependencies. The personalized path is an overlay based on mastery, goals, mistakes, and review needs.
 
-Pi must not regenerate the canonical curriculum from scratch each session.
+AI must not regenerate the canonical curriculum from scratch each session.
 
 ---
 
@@ -665,14 +684,14 @@ REMEDIAL
 Possible tutor actions:
 
 ```text
-NEXT_CONCEPT
+NEXT_EXERCISE
 RETRY
-SHOW_EXPLANATION
-GENERATE_EXTRA_EXERCISE
+EXPLAIN
 INSERT_PREREQUISITE
-CONTRAST_CONFUSION_PAIR
 SCHEDULE_REVIEW
 ```
+
+The set stays intentionally small for the MVP.
 
 ---
 
@@ -684,7 +703,7 @@ Identify the learner's current frontier.
 
 ### Step 2 — Plan
 
-Select relevant nodes based on:
+Select relevant concepts based on:
 
 - learner goal;
 - prerequisites;
@@ -694,23 +713,23 @@ Select relevant nodes based on:
 
 ### Step 3 — Teach
 
-Compose an explanation appropriate to the learner while grounding rules in curated data.
+Present a concise explanation grounded in curated data.
 
 ### Step 4 — Practice
 
-Prefer active production, especially handwritten sentence construction.
+Prefer active handwritten production and allow repeated exercises on the same canvas.
 
 ### Step 5 — Grade
 
-Return structured grading.
+Combine handwriting recognition, deterministic evidence, and AI semantic judgment where useful.
 
 ### Step 6 — Update learner state
 
-Deterministic engines update mastery, mistakes, and review scheduling.
+Deterministic engines update mastery, mistakes, and review scheduling locally.
 
 ### Step 7 — Adapt
 
-Pi chooses the next pedagogical action.
+AI may choose one bounded next pedagogical action.
 
 ### Step 8 — Review
 
@@ -718,100 +737,92 @@ Weak or decaying concepts return to the learning queue.
 
 ---
 
-## 20. Pi Tutor Harness
+## 20. AI Tutor Boundary
 
-Pi is the primary AI orchestration layer on the backend.
+The project does not use Pi Agent SDK in the MVP.
 
-The initial architecture uses **one JapaneseTutorAgent**, not multiple autonomous agents.
+The Android app depends on a small provider-neutral interface such as:
 
-### Pi responsibilities
+```text
+AiTutorClient
+```
 
-Pi may:
+### AI responsibilities
 
-- choose what to teach next;
-- interpret learner history;
-- decide whether remediation is needed;
-- produce personalized explanations;
-- generate appropriate exercises;
+AI may:
+
+- evaluate semantic correctness and naturalness;
+- explain a mistake;
+- generate a bounded exercise variation;
+- choose what to practice next from allowed actions;
 - diagnose unusual mistakes;
 - choose a useful hint style;
-- insert prerequisite or contrast lessons;
-- generate canvas annotation content.
+- create concise annotation content.
 
-### Pi must not own
+### AI must not own
 
-Pi must not directly own:
+AI must not directly own:
 
-- arbitrary SQL;
+- Room/SQLite access;
 - persistence semantics;
 - mastery calculation;
 - SRS interval calculation;
 - canonical dependency rules;
-- input validation;
-- authentication or authorization.
+- arbitrary state mutation;
+- application navigation.
 
-### Initial Pi tools
+### Primary MVP provider path
+
+Preferred:
 
 ```text
-learner.getProfile
-learner.getMastery
-learner.getMistakes
-learner.getHintHistory
-
-curriculum.getNode
-curriculum.getPrerequisites
-curriculum.getConfusableConcepts
-
-lesson.getCurrent
-lesson.getReference
-
-exercise.generate
-exercise.getContext
-
-canvas.createAnnotation
-
-review.getDueConcepts
+Android
+  |
+Firebase AI Logic
+  |
+Gemini
 ```
 
-Mutation tools must be narrow and validated.
+Reason: the app can use a managed mobile-oriented AI path without operating a custom backend or embedding a production provider secret directly in the APK.
+
+### Alternative adapters
+
+Future adapters may include:
+
+- user-supplied API key for personal/dev use;
+- a tiny serverless proxy for another model provider;
+- another managed mobile-safe AI gateway.
+
+The domain layer must not depend on provider-specific response types.
 
 ---
 
-## 21. Pi Skill: Japanese Learning
+## 21. Tutor Decision Contract
 
-Suggested structure:
+Keep model output narrow and structured.
 
-```text
-server/src/agent/skills/japanese-learning/
-├── SKILL.md
-├── probe.md
-├── teaching-policy.md
-├── hint-policy.md
-├── grading-policy.md
-└── adaptation-policy.md
+Example:
+
+```json
+{
+  "action": "RETRY",
+  "message": "Use に for the destination of movement.",
+  "targetConceptId": "particle-ni-destination",
+  "reason": "The intended meaning is correct but the destination particle is wrong."
+}
 ```
 
-Core policy:
+Allowed actions:
 
 ```text
-PROBE
--> identify frontier
-
-PLAN
--> choose dependency-aware path
-
-TEACH
--> one concept at a time
-
-PRACTICE
--> prefer active handwritten production
-
-EVALUATE
--> structured grade + learning evidence
-
-ADAPT
--> advance, retry, remediate, or review
+NEXT_EXERCISE
+RETRY
+EXPLAIN
+INSERT_PREREQUISITE
+SCHEDULE_REVIEW
 ```
+
+The response must be validated before local state changes occur.
 
 ---
 
@@ -831,11 +842,11 @@ Jetpack Ink
   |
 vector strokes
   |
+Room persistence
+  |
 ML Kit Digital Ink
   |
 Japanese candidates
-  |
-exercise context / pre-context
   |
 recognized answer
 ```
@@ -844,9 +855,9 @@ Raw strokes should be preserved so recognition can be retried later with better 
 
 ---
 
-## 23. Frontend Responsibilities
+## 23. Android Responsibilities
 
-The Android client owns interaction and rendering.
+The Android app owns both presentation and product state for the MVP.
 
 Responsibilities:
 
@@ -858,12 +869,18 @@ Responsibilities:
 - erasing;
 - handwriting recognition;
 - hint interaction;
-- displaying grades;
-- displaying AI annotations;
-- streaming tutor responses;
-- local transient UI state.
+- structured grading state;
+- AI annotations;
+- mastery engine;
+- mistake memory;
+- probe engine;
+- curriculum graph;
+- personalized learning path;
+- review scheduling;
+- local persistence;
+- AI request orchestration.
 
-Frontend stack:
+Stack:
 
 ```text
 Kotlin
@@ -872,50 +889,18 @@ Material 3
 Jetpack Ink
 ML Kit Digital Ink
 Coroutines / Flow
-Ktor Client or Retrofit
+Room / SQLite
+Firebase AI Logic / Gemini
+kotlinx.serialization or equivalent validation layer
 ```
 
 ---
 
-## 24. Backend Responsibilities
+## 24. Local Persistence
 
-The backend owns learning intelligence and persistent state.
+Room/SQLite is the single durable source of truth for the MVP.
 
-Responsibilities:
-
-- Pi tutor runtime;
-- grading orchestration;
-- learner profile;
-- mastery engine;
-- mistake memory;
-- probe engine;
-- curriculum graph;
-- personalized learning path;
-- lesson generation;
-- exercise generation;
-- review scheduling;
-- tutor memory;
-- SQLite persistence.
-
-Backend stack:
-
-```text
-Node.js
-TypeScript
-Fastify
-Pi Agent SDK
-Zod
-Drizzle ORM
-SQLite
-```
-
----
-
-## 25. Database
-
-SQLite is the single backend source of truth for MVP.
-
-Core tables:
+Core entities/tables:
 
 ```text
 learner_profiles
@@ -924,13 +909,11 @@ knowledge_edges
 learner_mastery
 lessons
 lesson_elements
-exercises
+ink_strokes
 exercise_attempts
 hint_usage
 mistake_memory
 tutor_memories
-learning_paths
-learning_path_nodes
 review_schedule
 ```
 
@@ -938,96 +921,46 @@ review_schedule
 
 Ink should not be stored as one giant canvas JSON object.
 
-Suggested model:
+Store strokes independently and associate them with the lesson and exercise/writing region.
+
+Stroke data may use a compact serialized vector representation.
+
+### Repository boundaries
+
+Suggested repositories:
 
 ```text
-canvas_elements
-ink_strokes
-```
-
-Stroke data may use compact binary/blob representation or structured serialized vectors.
-
----
-
-## 26. Initial API Surface
-
-Exact routes may evolve.
-
-### Learner
-
-```text
-GET  /api/learner/profile
-PUT  /api/learner/profile
-GET  /api/learner/mastery
-GET  /api/learner/mistakes
-```
-
-### Probe
-
-```text
-POST /api/probe/start
-POST /api/probe/:sessionId/answer
-GET  /api/probe/:sessionId
-```
-
-### Lessons
-
-```text
-GET  /api/lessons/:id
-GET  /api/lessons/next
-POST /api/lessons/:id/elements/layout
-```
-
-### Exercises
-
-```text
-POST /api/exercises/:id/attempts
-POST /api/exercises/:id/hints/:level
-```
-
-### Tutor
-
-```text
-POST /api/tutor/next-action
-GET  /api/tutor/stream
-```
-
-Backend responses should prefer structured state changes over raw free-form chat.
-
----
-
-## 27. Tutor Action Contract
-
-Example:
-
-```json
-{
-  "type": "ANNOTATE_AND_RETRY",
-  "annotation": {
-    "message": "Use に for the destination of movement.",
-    "anchor": {
-      "elementId": "ink-123"
-    }
-  },
-  "nextExerciseId": "exercise-456"
-}
-```
-
-Possible action types:
-
-```text
-NEXT_EXERCISE
-RETRY
-SHOW_EXPLANATION
-SHOW_CONTRAST
-INSERT_REMEDIAL_LESSON
-SCHEDULE_REVIEW
-LESSON_COMPLETE
+LessonRepository
+InkRepository
+AttemptRepository
+MasteryRepository
+CurriculumRepository
+ReviewRepository
+TutorMemoryRepository
 ```
 
 ---
 
-## 28. Lesson Content Strategy
+## 25. No Internal REST API
+
+The Android app should not call a project-owned REST API for normal MVP operations.
+
+Replace previous endpoints such as:
+
+```text
+/api/lessons
+/api/ink
+/api/tutor
+/api/probe
+```
+
+with local repository/domain calls.
+
+Only the external managed AI provider requires network access.
+
+---
+
+## 26. Lesson Content Strategy
 
 Lesson content is structured, not stored as rendered images.
 
@@ -1043,15 +976,17 @@ commonMistakes
 relatedConcepts
 ```
 
-The frontend renders these as movable read-only canvas elements.
+Reference content may appear as movable/collapsible canvas elements.
 
-AI may adapt presentation and examples, but canonical grammar facts come from validated reference data.
+Practice content should use as little framing as possible so the learner can dedicate most of the screen to handwriting.
+
+AI may adapt examples and explanations, but canonical grammar facts come from validated reference data.
 
 ---
 
-## 29. Personalization Signals
+## 27. Personalization Signals
 
-The system should collect:
+The system should collect locally:
 
 - correctness;
 - response time;
@@ -1067,15 +1002,17 @@ The system should collect:
 - skipped exercise;
 - explanation requests.
 
-These signals feed deterministic mastery and Pi tutor context.
+These signals feed deterministic mastery and selected AI tutor context.
+
+Do not send the entire local database to the model. Build the smallest context required for the current decision.
 
 ---
 
-## 30. Spaced Review
+## 28. Spaced Review
 
-The initial scheduler remains deterministic.
+The initial scheduler remains deterministic and local.
 
-The scheduler decides **when** a concept is due. Pi decides **how** to review it.
+The scheduler decides **when** a concept is due. AI may decide **how** to review it.
 
 Example:
 
@@ -1083,21 +1020,22 @@ Example:
 Scheduler:
 particle-de is due today
 
-Pi:
+AI tutor:
 learner repeatedly confuses に and で
--> generate contrastive sentence-production exercise
+-> generate a contrastive sentence-production exercise
 ```
 
 A future implementation may use FSRS.
 
 ---
 
-## 31. Success Metrics
+## 29. Success Metrics
 
 ### Product metrics
 
 - lesson completion rate;
 - exercise completion rate;
+- exercises completed per canvas session;
 - handwriting recognition correction rate;
 - average hint level per concept;
 - no-hint accuracy;
@@ -1112,98 +1050,101 @@ A future implementation may use FSRS.
 - stylus latency feels natural;
 - zoom/pan remains smooth with realistic lesson complexity;
 - no accidental canvas movement while writing;
-- annotations appear near relevant content;
+- learner can continue through several exercises without leaving the canvas;
+- writable area dominates the practice screen;
+- feedback appears near relevant writing;
 - reopening a lesson restores expected spatial layout.
 
 ---
 
-## 32. Performance Requirements
+## 30. Performance Requirements
 
 Initial expectations:
 
 - stylus ink appears visually immediate;
 - pan/zoom stays near display refresh rate under normal lesson complexity;
 - handwriting recognition never blocks drawing UI;
-- grading exposes visible progress or streaming state;
-- SQLite work does not block the event loop unnecessarily;
+- Room work does not block the main thread;
+- AI requests never block local drawing or navigation;
 - a normal lesson supports hundreds of elements/strokes without obvious degradation.
 
 Exact budgets should be measured after the first working vertical slice.
 
 ---
 
-## 33. Reliability Requirements
+## 31. Reliability Requirements
 
 - raw learner ink must not be lost when AI grading fails;
-- failed AI requests are retryable without duplicate attempts;
-- attempt submission should support idempotent attempt IDs;
+- AI requests are retryable without duplicating local attempts;
 - deterministic learner state updates are transactional;
-- Pi failure must not corrupt mastery state;
-- invalid AI tool calls fail validation instead of mutating storage;
-- lesson material remains readable if AI is unavailable.
+- invalid AI responses fail validation instead of mutating storage;
+- lesson material remains readable if AI is unavailable;
+- handwriting recognition and local practice remain usable without AI;
+- local database migration failures are surfaced clearly and do not silently discard data.
 
 ---
 
-## 34. Privacy and Security
+## 32. Privacy and Security
 
 For MVP:
 
-- provider secrets live only on the backend;
-- Android never contains production provider API keys;
-- Pi tools do not expose arbitrary SQL;
-- input and tool outputs are validated with Zod;
-- SQLite database files are not committed;
-- logs avoid unnecessary sensitive learner notes;
-- auth may be deferred for single-user development, but route design must allow auth later.
+- do not embed production model-provider secrets in the APK;
+- prefer Firebase AI Logic/App Check or another mobile-safe managed gateway;
+- BYOK is acceptable only as an explicit personal/dev option;
+- Room database files are not committed;
+- logs avoid unnecessary learner content;
+- only minimal context required for the current AI operation is transmitted;
+- no account/auth system is required while the product remains single-user and local-first.
 
 ---
 
-## 35. Observability
+## 33. Observability
 
-MVP logging should capture:
+Keep observability lightweight for the MVP.
 
-- request ID;
-- learner/session ID when appropriate;
+Useful local diagnostic events:
+
+- session ID;
+- lesson ID;
 - attempt ID;
-- Pi session/tool usage;
-- grading latency;
-- recognition confidence received from client;
+- recognition latency/confidence;
+- AI request latency and result type;
 - tutor action;
 - mastery update result;
-- errors.
+- persistence errors.
 
-Never log provider secrets.
+Never log provider secrets or full learner history unnecessarily.
 
 ---
 
-## 36. MVP Vertical Slice
+## 34. MVP Vertical Slice
 
 The first complete slice uses **～たいです**.
 
 Required flow:
 
 1. Open lesson canvas.
-2. Display movable read-only explanation elements.
+2. Display movable/collapsible reference material.
 3. Pan and zoom.
-4. Show one Indonesian sentence-production prompt.
-5. Write answer with stylus.
+4. Show several Indonesian sentence-production prompts on the same open canvas.
+5. Write answers with a stylus.
 6. Capture vector strokes with Jetpack Ink.
-7. Recognize Japanese using ML Kit Digital Ink.
-8. Send recognized answer to backend.
-9. Grade answer.
-10. Update attempt, mistake, and mastery state in SQLite.
-11. Let Pi choose the next tutor action.
-12. Render feedback near the learner's answer.
-13. Allow retry or next exercise.
+7. Persist strokes locally.
+8. Recognize Japanese using ML Kit Digital Ink.
+9. Show recognized text inline.
+10. Grade the answer using deterministic logic plus AI where required.
+11. Update attempt, mistake, mastery, and review state in Room.
+12. Render concise feedback near the learner's answer.
+13. Allow retry or continue directly to the next exercise on the same canvas.
 14. Restore lesson state after reopening.
 
 Initial exercise set: at least five `～たいです` exercises with particle variation.
 
 ---
 
-## 37. MVP Implementation Phases
+## 35. MVP Implementation Phases
 
-### Phase 1 — Canvas foundation
+### Phase 1 — Canvas foundation — complete
 
 - world coordinate model;
 - pan/zoom;
@@ -1211,7 +1152,7 @@ Initial exercise set: at least five `～たいです` exercises with particle va
 - movable lesson text;
 - persisted element layout.
 
-### Phase 2 — Handwriting
+### Phase 2 — Handwriting — complete
 
 - Jetpack Ink stroke capture;
 - eraser;
@@ -1219,13 +1160,28 @@ Initial exercise set: at least five `～たいです` exercises with particle va
 - ML Kit Japanese recognition;
 - recognition debug/candidate view.
 
-### Phase 3 — Exercise loop
+### Phase 2.5 — Local-first migration
 
-- exercise model;
+Do this before building the remaining learning features.
+
+- add Room entities/DAOs/repositories on Android;
+- move lesson/layout persistence from server SQLite to Room;
+- move ink persistence from REST to Room;
+- remove `API_BASE_URL` dependency;
+- add provider-neutral `AiTutorClient`;
+- remove Pi SDK usage;
+- remove Node/Fastify/Drizzle runtime from the target architecture;
+- keep existing server code only temporarily until equivalent Android paths are working, then delete it.
+
+### Phase 3 — Practice loop
+
+- open low-frame exercise layout;
+- multiple exercises on one canvas;
 - progressive hints;
-- attempt submission;
+- attempt persistence;
 - structured grade contract;
-- canvas annotation rendering.
+- inline recognition state;
+- inline AI annotation rendering.
 
 ### Phase 4 — Learner model
 
@@ -1234,13 +1190,13 @@ Initial exercise set: at least five `～たいです` exercises with particle va
 - hint evidence;
 - review schedule.
 
-### Phase 5 — Pi tutor
+### Phase 5 — AI tutor
 
-- Japanese learning skill;
-- read-only learner tools;
-- bounded tutor action tools;
+- managed AI provider integration;
+- structured output validation;
 - adaptive next-action decision;
-- remedial exercise generation.
+- concise remediation/explanations;
+- bounded exercise generation.
 
 ### Phase 6 — Probe
 
@@ -1252,7 +1208,8 @@ Initial exercise set: at least five `～たいです` exercises with particle va
 ### Phase 7 — Hardening
 
 - error handling;
-- idempotency;
+- Room migrations;
+- AI retry behavior;
 - persistence recovery;
 - performance profiling;
 - test coverage;
@@ -1260,80 +1217,77 @@ Initial exercise set: at least five `～たいです` exercises with particle va
 
 ---
 
-## 38. Testing Strategy
+## 36. Testing Strategy
 
-### Android
+### Android / domain
 
 - coordinate transform unit tests;
 - canvas state tests;
 - stylus/gesture conflict tests;
 - handwriting recognition adapter tests;
 - hint progression UI tests;
-- restore-state tests.
-
-### Backend
-
-- repository tests against temporary SQLite;
+- restore-state tests;
+- Room DAO/repository tests;
 - mastery engine unit tests;
 - probe engine unit tests;
-- grading schema validation tests;
 - curriculum traversal tests;
-- Pi tool contract tests;
-- tutor action validation tests;
-- API integration tests.
+- tutor decision validation tests.
 
 ### AI regression evaluation
 
-Maintain a dataset containing:
+Maintain a small evaluation dataset containing:
 
 - correct alternatives;
 - particle mistakes;
 - conjugation mistakes;
 - unnatural but acceptable sentences;
 - meaning-correct grammar-wrong answers;
-- OCR-like recognition errors.
+- recognition/OCR-like errors.
 
-AI changes should be evaluated against this set before release.
+AI provider or prompt changes should be checked against this set before release.
 
 ---
 
-## 39. Target Repository Structure
+## 37. Target Repository Structure
 
 ```text
 study-canvas/
 ├── android/
-│   ├── app/
-│   └── ...
-│
-├── server/
-│   ├── src/
-│   │   ├── api/
-│   │   ├── agent/
-│   │   │   ├── tools/
-│   │   │   └── skills/
-│   │   ├── db/
-│   │   ├── learning/
-│   │   │   ├── probe/
-│   │   │   ├── mastery/
-│   │   │   ├── review/
-│   │   │   ├── grading/
-│   │   │   └── curriculum/
-│   │   └── app.ts
-│   └── data/
-│
+│   └── app/
+│       └── src/main/java/dev/studycanvas/app/
+│           ├── data/
+│           │   ├── db/
+│           │   ├── dao/
+│           │   └── repository/
+│           ├── domain/
+│           │   ├── grading/
+│           │   ├── mastery/
+│           │   ├── probe/
+│           │   ├── review/
+│           │   └── curriculum/
+│           ├── handwriting/
+│           ├── ai/
+│           │   ├── AiTutorClient.kt
+│           │   ├── TutorDecision.kt
+│           │   └── firebase/
+│           └── ui/
+│               ├── home/
+│               └── canvas/
 ├── docs/
-│   └── PRD.md
-│
+│   ├── PRD.md
+│   └── architecture.md
 └── README.md
 ```
 
+The existing `server/` directory is transitional and should be removed after the Android local-first migration is complete.
+
 ---
 
-## 40. Open Product Decisions
+## 38. Open Product Decisions
 
-These do not block the first vertical slice:
+These do not block the next vertical slice:
 
-1. Whether user-created notes sync as first-class canvas elements.
+1. Whether user-created notes become first-class canvas elements.
 2. Exact handwriting quality scoring beyond recognition confidence.
 3. Whether full-sentence romaji is ever allowed.
 4. Whether element movement is always enabled or uses layout/edit mode.
@@ -1341,27 +1295,28 @@ These do not block the first vertical slice:
 6. Exact SRS algorithm.
 7. Curated grammar content source and licensing.
 8. Whether lesson explanations are generated, templated, or hybrid.
-9. Authentication strategy for multi-user support.
-10. Cross-device sync architecture.
+9. Which managed AI provider remains the default after MVP evaluation.
+10. Whether cross-device sync is ever necessary.
 
 ---
 
-## 41. Definition of MVP Done
+## 39. Definition of MVP Done
 
 The MVP is done when a learner can install the Android app on a tablet and complete this sequence without developer intervention:
 
 1. run an initial adaptive probe;
 2. receive an initial learning recommendation;
 3. open a `～たいです` lesson canvas;
-4. move lesson material around the canvas;
+4. move or collapse lesson reference material;
 5. zoom and pan naturally;
-6. answer exercises by handwriting Japanese;
+6. complete several handwritten exercises on the same uncluttered canvas;
 7. use progressive hints;
-8. receive structured AI corrections on the canvas;
-9. have mastery and mistakes persisted;
-10. receive a personalized next exercise or remediation from Pi;
-11. close and reopen the lesson with state preserved.
+8. receive recognized Japanese text and concise structured AI corrections inline;
+9. have mastery, mistakes, ink, attempts, and review state persisted locally;
+10. receive a personalized next exercise or remediation from the AI tutor;
+11. continue practicing even if the AI service temporarily fails;
+12. close and reopen the lesson with local state preserved.
 
 At that point the core product hypothesis has been validated:
 
-> **A stylus-first spatial canvas combined with a persistent AI tutor can provide a more personal Japanese production-learning experience than a conventional linear quiz or chat interface.**
+> **A stylus-first open practice canvas, local learner memory, and a bounded AI tutor can provide a more focused Japanese production-learning experience than a conventional linear quiz or chat interface.**
