@@ -39,8 +39,7 @@ Kotlin + Jetpack Compose
 
 No custom application backend is required for the MVP.
 
-The existing `server/` directory is transitional code from the previous Fastify/Pi architecture and is intended to be removed after local persistence and AI calls are migrated into the Android app.
-
+All persistence and AI tutor integration live directly in the Android app. No backend server is required.
 ## Product principles
 
 ### Practice first
@@ -83,12 +82,10 @@ The main interaction loop on the canvas is intentionally simpler:
 
 Open `android/` in the latest stable Android Studio, sync Gradle, then run on an Android tablet or emulator.
 
-The current Android client targets `compileSdk 37`, Compose BOM `2026.08.00`, Jetpack Ink `1.0.0`, and ML Kit Digital Ink `19.0.0`.
+The current Android client targets `compileSdk 36`, Compose BOM `2026.06.01`, Room `2.6.1`, Jetpack Ink `1.0.0`, and ML Kit Digital Ink `19.0.0`.
 
 The Japanese Digital Ink model is downloaded on demand on first use and requires network access for the initial model download. Finger gestures remain available for canvas navigation while the pen authoring layer accepts stylus input.
 
-## Current migration note
+## Local-first architecture status
 
-Until Phase 2.5 is complete, parts of the checked-in Android implementation still communicate with the transitional local Fastify server. This is an implementation gap, not the target architecture.
-
-New product work should target the local-first architecture documented in [`docs/architecture.md`](docs/architecture.md), rather than extending the old backend/Pi design.
+The local-first migration is complete. Lesson layouts, vector ink strokes, learner profiles, and exercise attempts are persisted on-device via Room + SQLite. Pedagogical feedback and grading operate via the on-device `AiTutorClient` boundary.

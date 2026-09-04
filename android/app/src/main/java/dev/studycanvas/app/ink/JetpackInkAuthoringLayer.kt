@@ -1,6 +1,5 @@
 package dev.studycanvas.app.ink
 
-import android.graphics.Matrix
 import android.graphics.Color as AndroidColor
 import android.view.MotionEvent
 import androidx.compose.runtime.Composable
@@ -17,7 +16,6 @@ import androidx.ink.strokes.Stroke
 @Composable
 fun JetpackInkAuthoringLayer(
     enabled: Boolean,
-    density: Float,
     brush: Brush,
     onStrokesFinished: (List<Stroke>) -> Unit,
     modifier: Modifier = Modifier,
@@ -27,14 +25,12 @@ fun JetpackInkAuthoringLayer(
     AndroidView(
         modifier = modifier,
         factory = { context ->
-            val eventToWorld = Matrix().apply {
-                setScale(1f / density, 1f / density)
-            }
-            val identity = Matrix()
             var activePointerId = INVALID_POINTER_ID
 
             InProgressStrokesView(context).apply {
                 setBackgroundColor(AndroidColor.TRANSPARENT)
+                @Suppress("DEPRECATION")
+                useHighLatencyRenderHelper = true
                 eagerInit()
                 addFinishedStrokesListener(
                     object : InProgressStrokesFinishedListener {
@@ -53,17 +49,20 @@ fun JetpackInkAuthoringLayer(
                     when (event.actionMasked) {
                         MotionEvent.ACTION_DOWN -> {
                             val pointerIndex = event.actionIndex
-                            if (event.getToolType(pointerIndex) != MotionEvent.TOOL_TYPE_STYLUS) {
+                            val toolType = event.getToolType(pointerIndex)
+                            // Strict palm rejection: only stylus and stylus-eraser can write
+                            if (toolType != MotionEvent.TOOL_TYPE_STYLUS &&
+                                toolType != MotionEvent.TOOL_TYPE_ERASER
+                            ) {
                                 return@setOnTouchListener false
                             }
+                            view.parent?.requestDisallowInterceptTouchEvent(true)
                             activePointerId = event.getPointerId(pointerIndex)
                             view.requestUnbufferedDispatch(event)
                             startStroke(
                                 event = event,
                                 pointerId = activePointerId,
                                 brush = brush,
-                                motionEventToWorldTransform = eventToWorld,
-                                strokeToWorldTransform = identity,
                             )
                             true
                         }
@@ -72,7 +71,8 @@ fun JetpackInkAuthoringLayer(
                             if (activePointerId == INVALID_POINTER_ID) {
                                 false
                             } else {
-                                addToStroke(event, activePointerId, null)
+                                view.parent?.requestDisallowInterceptTouchEvent(true)
+                                addToStroke(event, activePointerId)
                                 true
                             }
                         }
@@ -81,6 +81,7 @@ fun JetpackInkAuthoringLayer(
                             if (activePointerId == INVALID_POINTER_ID) {
                                 false
                             } else {
+                                view.parent?.requestDisallowInterceptTouchEvent(false)
                                 finishStroke(event, activePointerId)
                                 activePointerId = INVALID_POINTER_ID
                                 true
@@ -88,8 +89,9 @@ fun JetpackInkAuthoringLayer(
                         }
 
                         MotionEvent.ACTION_CANCEL -> {
+                            view.parent?.requestDisallowInterceptTouchEvent(false)
                             if (activePointerId != INVALID_POINTER_ID) {
-                                cancelStroke(event, activePointerId)
+                                finishStroke(event, activePointerId)
                                 activePointerId = INVALID_POINTER_ID
                                 true
                             } else {

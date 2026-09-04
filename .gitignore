@@ -8,14 +8,13 @@ android/.gradle/
 android/local.properties
 android/**/build/
 
-# Node
-server/node_modules/
-server/dist/
-server/.env
-
-# SQLite runtime data
-server/data/*.db
-server/data/*.db-*
-
 # Logs
 *.log
+
+# Agent & process files
+.codex/
+IDEA.md
+PLAN.md
+GATES.md
+gates/
+codex-prompts/

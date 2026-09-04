@@ -2,6 +2,7 @@ package dev.studycanvas.app.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.detectTransformGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -42,7 +43,9 @@ import dev.studycanvas.app.canvas.CanvasElement
 import dev.studycanvas.app.canvas.CanvasElementContent
 import dev.studycanvas.app.canvas.CanvasElementKind
 import dev.studycanvas.app.canvas.CanvasElementLayout
-import dev.studycanvas.app.canvas.HttpCanvasRepository
+import androidx.compose.ui.platform.LocalContext
+import dev.studycanvas.app.canvas.LocalCanvasRepository
+import dev.studycanvas.app.data.AppDatabase
 import dev.studycanvas.app.canvas.ViewportState
 import dev.studycanvas.app.canvas.phaseOneFallbackLesson
 import dev.studycanvas.app.ink.HandwritingSurface
@@ -60,7 +63,11 @@ private enum class SyncState {
 
 @Composable
 fun StudyCanvasScreen() {
-    val repository = remember { HttpCanvasRepository() }
+    val context = LocalContext.current
+    val repository = remember(context) {
+        val db = AppDatabase.getInstance(context)
+        LocalCanvasRepository(db.lessonDao())
+    }
     val scope = rememberCoroutineScope()
     val density = LocalDensity.current.density
 
@@ -267,7 +274,6 @@ private fun ExerciseCard(
     val shape = RoundedCornerShape(16.dp)
 
     Card(
-        onClick = onSelect,
         modifier = modifier
             .width(element.size.width.dp)
             .then(
@@ -278,7 +284,11 @@ private fun ExerciseCard(
         colors = CardDefaults.cardColors(containerColor = Color(0xFFFFFCF6)),
     ) {
         Column(modifier = Modifier.padding(32.dp)) {
-            Text(content.title, style = MaterialTheme.typography.titleLarge)
+            Text(
+                text = content.title,
+                style = MaterialTheme.typography.titleLarge,
+                modifier = Modifier.clickable { onSelect() },
+            )
             Spacer(Modifier.height(12.dp))
             Text(content.prompt, style = MaterialTheme.typography.headlineSmall)
             Spacer(Modifier.height(20.dp))

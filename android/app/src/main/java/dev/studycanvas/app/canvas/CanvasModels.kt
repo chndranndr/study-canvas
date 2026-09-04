@@ -19,8 +19,8 @@ data class WorldSize(
 )
 
 data class ViewportState(
-    val scale: Float = 0.8f,
-    val translationPx: Offset = Offset(80f, 60f),
+    val scale: Float = 1.0f,
+    val translationPx: Offset = Offset.Zero,
 ) {
     fun zoomAndPan(
         centroidPx: Offset,

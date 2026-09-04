@@ -11,10 +11,13 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -32,10 +35,18 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.ink.rendering.android.canvas.CanvasStrokeRenderer
+import androidx.ink.authoring.compose.InProgressStrokes
+import dev.studycanvas.app.data.AppDatabase
+import dev.studycanvas.app.data.ExerciseAttemptEntity
+import dev.studycanvas.app.tutor.DeterministicAiTutorClient
+import dev.studycanvas.app.tutor.GradeResult
+import java.util.UUID
 import kotlinx.coroutines.launch
+import org.json.JSONArray
 
 private const val WritingAreaWidth = 820f
 private const val WritingAreaHeight = 240f
@@ -48,18 +59,21 @@ fun HandwritingSurface(
     modifier: Modifier = Modifier,
 ) {
     val density = LocalDensity.current.density
-    val scope = rememberCoroutineScope()
-    val repository = remember { HttpInkRepository() }
+    val context = LocalContext.current
+    val db = remember(context) { AppDatabase.getInstance(context) }
+    val repository = remember(db) { LocalInkRepository(db.inkDao()) }
+    val tutorClient = remember { DeterministicAiTutorClient() }
     val recognizer = remember { JapaneseHandwritingRecognizer() }
     val renderer = remember { CanvasStrokeRenderer.create() }
     val brush = remember { createJetpackBrush() }
+    val scope = rememberCoroutineScope()
 
     var tool by remember { mutableStateOf(InkTool.PEN) }
     var strokes by remember { mutableStateOf<List<InkStroke>>(emptyList()) }
     var recognition by remember { mutableStateOf<RecognitionResult?>(null) }
+    var tutorFeedback by remember { mutableStateOf<GradeResult?>(null) }
     var status by remember { mutableStateOf("loading ink…") }
     var recognizing by remember { mutableStateOf(false) }
-
     DisposableEffect(recognizer) {
         onDispose { recognizer.close() }
     }
@@ -86,6 +100,7 @@ fun HandwritingSurface(
 
         strokes = (strokes + committed).sortedBy(InkStroke::sequence)
         recognition = null
+        tutorFeedback = null
         status = "saving ink…"
         scope.launch {
             val saved = runCatching {
@@ -96,10 +111,10 @@ fun HandwritingSurface(
     }
 
     fun eraseAt(positionPx: Offset) {
-        val point = Offset(positionPx.x / density, positionPx.y / density)
-        val target = findStrokeNear(strokes, point, EraserRadius) ?: return
+        val target = findStrokeNear(strokes, positionPx, EraserRadius * density) ?: return
         strokes = strokes.filterNot { it.id == target.id }
         recognition = null
+        tutorFeedback = null
         status = "erasing…"
         scope.launch {
             val deleted = runCatching {
@@ -133,14 +148,39 @@ fun HandwritingSurface(
                                 RecognitionRequest(
                                     strokes = strokes,
                                     writingArea = InkWritingArea(
-                                        width = WritingAreaWidth,
-                                        height = WritingAreaHeight,
+                                        width = WritingAreaWidth * density,
+                                        height = WritingAreaHeight * density,
                                     ),
                                 ),
                             )
                         }.onSuccess {
                             recognition = it
                             status = "recognition complete"
+                            val topCandidate = it.candidates.firstOrNull()?.text
+                            if (!topCandidate.isNullOrBlank()) {
+                                scope.launch {
+                                    val grade = tutorClient.gradeAttempt(
+                                        exercisePrompt = "Saya ingin pergi ke Jepang.",
+                                        recognizedText = topCandidate,
+                                    ).getOrNull()
+                                    tutorFeedback = grade
+                                    grade?.let { g ->
+                                        db.attemptDao().insertAttempt(
+                                            ExerciseAttemptEntity(
+                                                id = UUID.randomUUID().toString(),
+                                                lessonId = lessonId,
+                                                exerciseElementId = exerciseElementId,
+                                                recognizedText = topCandidate,
+                                                correct = g.correct,
+                                                grammarScore = g.grammarScore,
+                                                meaningScore = g.meaningScore,
+                                                naturalnessScore = g.naturalnessScore,
+                                                errorsJson = JSONArray(g.errors).toString(),
+                                            ),
+                                        )
+                                    }
+                                }
+                            }
                         }.onFailure {
                             status = "recognition failed: ${it.message ?: "unknown error"}"
                         }
@@ -165,22 +205,18 @@ fun HandwritingSurface(
             }
 
             Canvas(modifier = Modifier.fillMaxSize()) {
-                val strokeToScreen = Matrix().apply { setScale(density, density) }
+                val strokeToScreen = Matrix()
                 drawIntoCanvas { composeCanvas ->
                     val native = composeCanvas.nativeCanvas
-                    val checkpoint = native.save()
-                    native.scale(density, density)
                     renderedStrokes.forEach { stroke ->
                         renderer.draw(native, stroke, strokeToScreen)
                     }
-                    native.restoreToCount(checkpoint)
                 }
             }
 
             if (tool == InkTool.PEN) {
                 JetpackInkAuthoringLayer(
                     enabled = true,
-                    density = density,
                     brush = brush,
                     onStrokesFinished = ::commitFinished,
                     modifier = Modifier.fillMaxSize(),
@@ -241,6 +277,32 @@ fun HandwritingSurface(
                             },
                         )
                     }
+                }
+            }
+        }
+
+        tutorFeedback?.let { feedback ->
+            Spacer(Modifier.height(10.dp))
+            Card(
+                colors = CardDefaults.cardColors(
+                    containerColor = if (feedback.correct) Color(0xFFE8F5E9) else Color(0xFFFFF3E0),
+                ),
+                modifier = Modifier
+                    .width(WritingAreaWidth.dp)
+                    .padding(top = 4.dp),
+            ) {
+                Column(modifier = Modifier.padding(12.dp)) {
+                    Text(
+                        text = if (feedback.correct) "AI Tutor: Benar! ✓" else "AI Tutor: Perlu Koreksi",
+                        style = MaterialTheme.typography.labelLarge,
+                        color = if (feedback.correct) Color(0xFF2E7D32) else Color(0xFFE65100),
+                    )
+                    Spacer(Modifier.height(4.dp))
+                    Text(
+                        text = feedback.explanation,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = Color(0xFF212121),
+                    )
                 }
             }
         }
