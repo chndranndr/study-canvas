@@ -1,74 +1,137 @@
 # study-canvas
 
-Tablet-first Japanese learning workspace: one lesson per zoomable canvas, handwriting exercises with stylus input, progressive hints, adaptive probing, and a personal AI tutor orchestrated by Pi.
+Tablet-first Japanese learning workspace built around a large zoomable canvas, stylus handwriting, progressive hints, adaptive practice, and concise AI tutoring.
+
+The product is designed as an **Android-only, local-first app** for the MVP. Learner state, lesson state, ink, attempts, mastery, mistakes, and review scheduling live on-device. A managed AI API is used only where model judgment is useful.
 
 ## Product spec
 
-See [`docs/PRD.md`](docs/PRD.md) for the complete product requirements, learning model, architecture, API boundaries, MVP phases, and definition of done.
+- [`docs/PRD.md`](docs/PRD.md) — product requirements, learning model, UX principles, MVP phases, and definition of done
+- [`docs/architecture.md`](docs/architecture.md) — local-first Android architecture and layer boundaries
 
-## Architecture
+## Target architecture
 
-- `android/` — Kotlin + Jetpack Compose tablet client
-- `server/` — Node.js + TypeScript + Fastify + Pi Agent SDK
-- SQLite — single backend source of truth via Drizzle ORM
-- ML Kit Digital Ink — Japanese handwriting recognition on Android
-- Jetpack Ink — low-latency stylus capture and vector stroke rendering
+```text
+Android tablet
+Kotlin + Jetpack Compose
+  |
+  |-- zoomable lesson/practice canvas
+  |-- Jetpack Ink stylus capture + rendering
+  |-- ML Kit Digital Ink recognition
+  |-- deterministic learning domain
+  |-- Room -> SQLite
+  `-- AiTutorClient
+       |
+       v
+  Managed AI API
+  Primary MVP path: Firebase AI Logic -> Gemini
+```
+
+### Core stack
+
+- **Kotlin + Jetpack Compose** — Android tablet UI
+- **Jetpack Ink** — low-latency stylus capture and vector stroke rendering
+- **ML Kit Digital Ink** — Japanese handwriting recognition
+- **Room + SQLite** — on-device durable state
+- **Coroutines / Flow** — async and reactive application state
+- **AiTutorClient** — provider-independent boundary for grading, explanations, exercise generation, and next-action decisions
+- **Firebase AI Logic + Gemini** — preferred managed AI path for the MVP
+
+No custom application backend is required for the MVP.
+
+The existing `server/` directory is transitional code from the previous Fastify/Pi architecture and is intended to be removed after local persistence and AI calls are migrated into the Android app.
+
+## Product principles
+
+### Practice first
+
+The canvas should maximize writable space. Avoid wrapping every exercise, recognition result, hint, and AI response in separate cards.
+
+A learner should be able to complete many exercises on the same canvas with minimal navigation or UI chrome.
+
+### AI chooses pedagogy; deterministic code owns state
+
+AI may:
+
+- semantically grade an answer;
+- explain a mistake;
+- generate a suitable exercise;
+- choose a bounded next teaching action;
+- create concise feedback annotations.
+
+Deterministic Android code owns:
+
+- persistence;
+- mastery arithmetic;
+- hint evidence;
+- curriculum prerequisites;
+- review scheduling;
+- validation;
+- local transactions.
+
+The model must not invent or directly overwrite mastery state.
 
 ## Core learning loop
 
-`Probe -> Plan -> Teach -> Handwrite -> Grade -> Update mastery -> Adapt`
+`Probe -> Plan -> Teach -> Handwrite -> Grade -> Update mastery -> Adapt -> Review`
 
-The tutor is agentic only where judgment is useful. Mastery, curriculum dependencies, hint usage, and review scheduling remain deterministic application state.
+The main interaction loop on the canvas is intentionally simpler:
+
+`Learn -> Handwrite -> Check -> Feedback -> Adapt`
 
 ## Implementation status
 
-**Phase 1 — Canvas foundation: complete**
+### Phase 1 — Canvas foundation: complete
 
 - [x] Density-independent world coordinates
 - [x] Centroid-aware pan/zoom
 - [x] Element selection
 - [x] Movable read-only lesson text
-- [x] SQLite-backed element layout persistence
+- [x] Persisted element layout through the current implementation
 
-**Phase 2 — Handwriting: complete**
+### Phase 2 — Handwriting: complete
 
-- [x] Jetpack Ink pressure-pen stroke capture for stylus input
-- [x] Dry vector-stroke rendering
+- [x] Jetpack Ink pressure-pen stroke capture
+- [x] Vector-stroke rendering
 - [x] Whole-stroke eraser with hit testing
-- [x] `ink_strokes` persistence in SQLite
-- [x] Idempotent stroke save/delete API
+- [x] Ink stroke persistence through the current implementation
 - [x] ML Kit Japanese Digital Ink recognition
 - [x] On-demand Japanese model download
 - [x] Writing-area recognition context
 - [x] Recognition candidate/debug view
 
-Still pending:
+### Phase 2.5 — Local-first migration: next
 
+- [ ] Add Room database to Android
+- [ ] Move lesson persistence on-device
+- [ ] Move element layout persistence on-device
+- [ ] Move ink stroke persistence on-device
+- [ ] Remove Android dependency on the Fastify API
+- [ ] Add provider-independent `AiTutorClient`
+- [ ] Integrate the managed AI provider
+- [ ] Remove the transitional `server/` runtime
+
+### Still pending
+
+- [ ] Open, low-chrome multi-exercise practice canvas
 - [ ] Progressive hint behavior
 - [ ] Attempt submission and structured grading
-- [ ] Canvas AI annotation rendering
-- [ ] Probe engine
-- [ ] Mastery/SRS engine
-- [ ] Pi tools backed by SQLite repositories
-
-## Run backend
-
-```bash
-cd server
-npm install
-cp .env.example .env
-npm run db:push
-npm run dev
-```
-
-The ink API also creates its table defensively on startup for local development, but `npm run db:push` remains the canonical schema sync path.
-
-Pi credentials can be configured through Pi itself (`pi`, then `/login`) or provider environment variables supported by Pi.
+- [ ] Inline AI annotation rendering
+- [ ] Deterministic mastery and mistake-memory engine
+- [ ] Review scheduler
+- [ ] Adaptive probe
+- [ ] Personalized next-action loop
 
 ## Run Android
 
 Open `android/` in the latest stable Android Studio, sync Gradle, then run on an Android tablet or emulator.
 
-The Android client targets `compileSdk 37`, Compose BOM `2026.08.00`, Jetpack Ink `1.0.0`, and ML Kit Digital Ink `19.0.0`.
+The current Android client targets `compileSdk 37`, Compose BOM `2026.08.00`, Jetpack Ink `1.0.0`, and ML Kit Digital Ink `19.0.0`.
 
-The Japanese Digital Ink model is downloaded on demand on first use and requires network access for that initial model download. Finger gestures remain available for canvas navigation; the pen authoring layer accepts stylus input.
+The Japanese Digital Ink model is downloaded on demand on first use and requires network access for the initial model download. Finger gestures remain available for canvas navigation while the pen authoring layer accepts stylus input.
+
+## Current migration note
+
+Until Phase 2.5 is complete, parts of the checked-in Android implementation still communicate with the transitional local Fastify server. This is an implementation gap, not the target architecture.
+
+New product work should target the local-first architecture documented in [`docs/architecture.md`](docs/architecture.md), rather than extending the old backend/Pi design.
