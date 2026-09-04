@@ -48,7 +48,8 @@ import dev.studycanvas.app.canvas.ExerciseStage
 import dev.studycanvas.app.canvas.ExerciseState
 import dev.studycanvas.app.data.AppDatabase
 import dev.studycanvas.app.data.ExerciseAttemptEntity
-import dev.studycanvas.app.tutor.DeterministicAiTutorClient
+import dev.studycanvas.app.tutor.AiTutorClient
+import dev.studycanvas.app.tutor.GeminiAiTutorClient
 import dev.studycanvas.app.tutor.GradeResult
 import java.util.UUID
 import kotlinx.coroutines.launch
@@ -63,13 +64,14 @@ fun HandwritingSurface(
     lessonId: String,
     exerciseElementId: String,
     exerciseContent: CanvasElementContent.Exercise,
+    tutorClient: AiTutorClient = remember { GeminiAiTutorClient() },
     modifier: Modifier = Modifier,
 ) {
     val density = LocalDensity.current.density
     val context = LocalContext.current
     val db = remember(context) { AppDatabase.getInstance(context) }
     val repository = remember(db) { LocalInkRepository(db.inkDao()) }
-    val tutorClient = remember { DeterministicAiTutorClient() }
+
     val recognizer = remember { JapaneseHandwritingRecognizer() }
     val renderer = remember { CanvasStrokeRenderer.create() }
     val brush = remember { createJetpackBrush() }

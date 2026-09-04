@@ -18,11 +18,15 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.AssistChip
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -51,6 +55,8 @@ import dev.studycanvas.app.data.AppDatabase
 import dev.studycanvas.app.canvas.ViewportState
 import dev.studycanvas.app.canvas.phaseOneFallbackLesson
 import dev.studycanvas.app.ink.HandwritingSurface
+import dev.studycanvas.app.tutor.AiTutorClient
+import dev.studycanvas.app.tutor.ApiKeyStorage
 import dev.studycanvas.app.tutor.GeminiAiTutorClient
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
@@ -72,7 +78,9 @@ fun StudyCanvasScreen() {
         val db = AppDatabase.getInstance(context)
         LocalCanvasRepository(db.lessonDao())
     }
-    val tutorClient = remember { GeminiAiTutorClient() }
+    var apiKey by remember { mutableStateOf(ApiKeyStorage.getApiKey(context)) }
+    var showKeyDialog by remember { mutableStateOf(false) }
+    val tutorClient = remember(apiKey) { GeminiAiTutorClient(apiKey = apiKey.ifBlank { null }) }
     val scope = rememberCoroutineScope()
     val density = LocalDensity.current.density
 
@@ -171,6 +179,7 @@ fun StudyCanvasScreen() {
                             draggingElementId = null
                             persistElement(element.id)
                         },
+                        tutorClient = tutorClient,
                     )
                 }
         }
@@ -178,7 +187,9 @@ fun StudyCanvasScreen() {
         CanvasStatusOverlay(
             scale = viewport.scale,
             selectedElementId = selectedElementId,
+            apiKey = apiKey,
             syncState = syncState,
+            onOpenKeyDialog = { showKeyDialog = true },
             onGenerateAiLesson = {
                 syncState = SyncState.GENERATING
                 scope.launch {
@@ -193,6 +204,23 @@ fun StudyCanvasScreen() {
                 }
             },
         )
+
+        if (showKeyDialog) {
+            ApiKeyDialog(
+                currentKey = apiKey,
+                onDismiss = { showKeyDialog = false },
+                onSave = { newKey ->
+                    ApiKeyStorage.setApiKey(context, newKey)
+                    apiKey = newKey
+                    showKeyDialog = false
+                },
+                onClear = {
+                    ApiKeyStorage.clearApiKey(context)
+                    apiKey = ""
+                    showKeyDialog = false
+                },
+            )
+        }
     }
 }
 
@@ -207,6 +235,7 @@ private fun CanvasElementView(
     onDragStarted: () -> Unit,
     onDrag: (Offset) -> Unit,
     onDragFinished: () -> Unit,
+    tutorClient: AiTutorClient,
 ) {
     val baseModifier = Modifier
         .offset(x = element.position.x.dp, y = element.position.y.dp)
@@ -240,6 +269,7 @@ private fun CanvasElementView(
             element = element,
             selected = selected,
             onSelect = onSelect,
+            tutorClient = tutorClient,
             modifier = baseModifier,
         )
     }
@@ -298,6 +328,7 @@ private fun ExerciseCard(
     element: CanvasElement,
     selected: Boolean,
     onSelect: () -> Unit,
+    tutorClient: AiTutorClient,
     modifier: Modifier = Modifier,
 ) {
     val content = element.content as CanvasElementContent.Exercise
@@ -331,6 +362,7 @@ private fun ExerciseCard(
                 lessonId = lessonId,
                 exerciseElementId = element.id,
                 exerciseContent = content,
+                tutorClient = tutorClient,
             )
         }
     }
@@ -340,7 +372,9 @@ private fun ExerciseCard(
 private fun CanvasStatusOverlay(
     scale: Float,
     selectedElementId: String?,
+    apiKey: String,
     syncState: SyncState,
+    onOpenKeyDialog: () -> Unit,
     onGenerateAiLesson: () -> Unit,
 ) {
     val syncLabel = when (syncState) {
@@ -370,10 +404,69 @@ private fun CanvasStatusOverlay(
             )
         }
 
-        AssistChip(
-            onClick = onGenerateAiLesson,
-            label = { Text("✦ Perbarui Materi (AI)") },
-            enabled = syncState != SyncState.GENERATING && syncState != SyncState.SAVING,
-        )
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            AssistChip(
+                onClick = onOpenKeyDialog,
+                label = { Text(if (apiKey.isNotBlank()) "🔑 Gemini Aktif" else "⚙️ Atur API Key") },
+            )
+            AssistChip(
+                onClick = onGenerateAiLesson,
+                label = { Text("✦ Perbarui Materi (AI)") },
+                enabled = syncState != SyncState.GENERATING && syncState != SyncState.SAVING,
+            )
+        }
     }
+}
+
+@Composable
+private fun ApiKeyDialog(
+    currentKey: String,
+    onDismiss: () -> Unit,
+    onSave: (String) -> Unit,
+    onClear: () -> Unit,
+) {
+    var inputKey by remember { mutableStateOf(currentKey) }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Pengaturan Gemini AI", style = MaterialTheme.typography.titleLarge) },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                Text(
+                    text = "Masukkan Google Gemini API Key dari Google AI Studio untuk mengaktifkan grading semantik dan pembuatan latihan berbasis AI. Kunci disimpan lokal di tablet Anda.",
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+                Text(
+                    text = if (inputKey.isNotBlank()) "Status: Mode Online (Gemini 1.5 Flash)" else "Status: Evaluator Lokal (Offline)",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = if (inputKey.isNotBlank()) Color(0xFF2E7D32) else Color(0xFF68645C),
+                )
+                OutlinedTextField(
+                    value = inputKey,
+                    onValueChange = { inputKey = it },
+                    label = { Text("Gemini API Key") },
+                    placeholder = { Text("AIzaSy...") },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+            }
+        },
+        confirmButton = {
+            Button(onClick = { onSave(inputKey.trim()) }) {
+                Text("Simpan")
+            }
+        },
+        dismissButton = {
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                if (currentKey.isNotBlank()) {
+                    TextButton(onClick = onClear) {
+                        Text("Hapus Key", color = Color(0xFFD32F2F))
+                    }
+                }
+                TextButton(onClick = onDismiss) {
+                    Text("Tutup")
+                }
+            }
+        },
+    )
 }
