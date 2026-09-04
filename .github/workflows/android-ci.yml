@@ -17,4 +17,6 @@ jobs:
           java-version: "21"
       - name: Run Android unit tests
         working-directory: android
-        run: ./gradlew testDebugUnitTest --console=plain
+        run: |
+          chmod +x gradlew
+          ./gradlew testDebugUnitTest --console=plain
