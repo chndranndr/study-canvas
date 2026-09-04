@@ -30,6 +30,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -37,6 +38,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.nativeCanvas
+import androidx.compose.ui.input.pointer.PointerType
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
@@ -53,6 +55,7 @@ import dev.studycanvas.app.tutor.GeminiAiTutorClient
 import dev.studycanvas.app.tutor.GradeResult
 import java.util.UUID
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.delay
 import org.json.JSONArray
 
 private const val WritingAreaWidth = 820f
@@ -117,6 +120,40 @@ fun HandwritingSurface(
 
         runCatching { recognizer.prepare() }
     }
+    LaunchedEffect(strokes) {
+        if (strokes.isEmpty()) {
+            if (!exerciseState.isCompleted) {
+                exerciseState = exerciseState.copy(recognizedText = null)
+            }
+            return@LaunchedEffect
+        }
+        if (exerciseState.isCompleted || exerciseState.stage == ExerciseStage.GRADING) return@LaunchedEffect
+
+        delay(1000L)
+
+        val recResult = runCatching {
+            recognizer.recognize(
+                RecognitionRequest(
+                    strokes = strokes,
+                    writingArea = InkWritingArea(
+                        width = WritingAreaWidth * density,
+                        height = WritingAreaHeight * density,
+                    ),
+                ),
+            )
+        }.getOrNull()
+
+        val recognized = recResult?.candidates?.firstOrNull()?.text?.trim().orEmpty()
+        exerciseState = exerciseState.copy(
+            recognizedText = recognized.ifBlank { null },
+            stage = if (exerciseState.stage == ExerciseStage.WRITING || exerciseState.stage == ExerciseStage.READY) {
+                ExerciseStage.READY_TO_CHECK
+            } else {
+                exerciseState.stage
+            },
+        )
+    }
+
 
     fun commitFinished(finished: List<androidx.ink.strokes.Stroke>) {
         val firstSequence = (strokes.maxOfOrNull(InkStroke::sequence) ?: -1) + 1
@@ -134,13 +171,30 @@ fun HandwritingSurface(
         }
     }
 
-    fun eraseAt(positionPx: Offset) {
-        val target = findStrokeNear(strokes, positionPx, EraserRadius * density) ?: return
-        strokes = strokes.filterNot { it.id == target.id }
-        exerciseState = exerciseState.copy(strokeCount = strokes.size)
-        scope.launch {
-            runCatching {
-                repository.deleteStroke(lessonId, exerciseElementId, target.id)
+    val currentStrokes = rememberUpdatedState(strokes)
+    val currentExerciseState = rememberUpdatedState(exerciseState)
+    val eraseSegment = rememberUpdatedState<(Offset, Offset, MutableSet<String>) -> Unit> {
+        segmentStart, segmentEnd, erasedIds ->
+        val touched = findStrokesTouched(
+            strokes = currentStrokes.value,
+            segmentStart = segmentStart,
+            segmentEnd = segmentEnd,
+            radius = EraserRadius * density,
+        )
+        val newlyErasedIds = touched.map(InkStroke::id).filter { erasedIds.add(it) }
+        if (newlyErasedIds.isNotEmpty()) {
+            val remaining = currentStrokes.value.filterNot { it.id in erasedIds }
+            strokes = remaining
+            exerciseState = currentExerciseState.value.copy(
+                strokeCount = remaining.size,
+                recognizedText = if (remaining.isEmpty()) null else currentExerciseState.value.recognizedText,
+            )
+            scope.launch {
+                runCatching {
+                    newlyErasedIds.forEach { strokeId ->
+                        repository.deleteStroke(lessonId, exerciseElementId, strokeId)
+                    }
+                }
             }
         }
     }
@@ -161,7 +215,7 @@ fun HandwritingSurface(
         statusText = "Mengenali tulisan tangan…"
 
         scope.launch {
-            val recResult = runCatching {
+            val recognized = exerciseState.recognizedText?.takeIf { it.isNotBlank() } ?: runCatching {
                 recognizer.recognize(
                     RecognitionRequest(
                         strokes = strokes,
@@ -171,9 +225,7 @@ fun HandwritingSurface(
                         ),
                     ),
                 )
-            }.getOrNull()
-
-            val recognized = recResult?.candidates?.firstOrNull()?.text.orEmpty()
+            }.getOrNull()?.candidates?.firstOrNull()?.text.orEmpty()
             if (recognized.isBlank()) {
                 statusText = "Tulisan belum terdeteksi jelas. Coba tulis kembali."
                 exerciseState = exerciseState.copy(stage = ExerciseStage.WRITING)
@@ -382,23 +434,47 @@ fun HandwritingSurface(
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .pointerInput(strokes) {
+                        .pointerInput(lessonId, exerciseElementId) {
                             awaitEachGesture {
                                 val down = awaitFirstDown(requireUnconsumed = false)
-                                eraseAt(down.position)
-                                var active = true
-                                while (active) {
+                                if (down.type != PointerType.Stylus && down.type != PointerType.Eraser) {
+                                    while (true) {
+                                        val event = awaitPointerEvent()
+                                        if (event.changes.none { it.pressed }) break
+                                    }
+                                    return@awaitEachGesture
+                                }
+                                val erasedIds = mutableSetOf<String>()
+                                var previousPosition = down.position
+                                eraseSegment.value(
+                                    previousPosition,
+                                    previousPosition,
+                                    erasedIds,
+                                )
+
+                                while (true) {
                                     val event = awaitPointerEvent()
                                     val change = event.changes.firstOrNull { it.id == down.id }
                                     if (change == null) {
-                                        active = false
+                                        break
+                                    }
+
+                                    val currentPosition = change.position
+                                    if (change.pressed) {
+                                        eraseSegment.value(
+                                            previousPosition,
+                                            currentPosition,
+                                            erasedIds,
+                                        )
+                                        previousPosition = currentPosition
+                                        change.consume()
                                     } else {
-                                        if (change.pressed) {
-                                            eraseAt(change.position)
-                                            change.consume()
-                                        } else {
-                                            active = false
-                                        }
+                                        eraseSegment.value(
+                                            previousPosition,
+                                            currentPosition,
+                                            erasedIds,
+                                        )
+                                        break
                                     }
                                 }
                             }
@@ -417,7 +493,7 @@ fun HandwritingSurface(
             )
         }
 
-        if (exerciseState.recognizedText != null) {
+        if (!exerciseState.recognizedText.isNullOrBlank()) {
             Row(
                 modifier = Modifier
                     .width(WritingAreaWidth.dp)

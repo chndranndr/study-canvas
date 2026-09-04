@@ -4,7 +4,13 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectDragGestures
-import androidx.compose.foundation.gestures.detectTransformGestures
+import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.foundation.gestures.awaitFirstDown
+import androidx.compose.foundation.gestures.calculateCentroid
+import androidx.compose.foundation.gestures.calculateCentroidSize
+import androidx.compose.foundation.gestures.calculatePan
+import androidx.compose.foundation.gestures.calculateRotation
+import androidx.compose.foundation.gestures.calculateZoom
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -42,6 +48,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.input.pointer.PointerInputChange
+import androidx.compose.ui.input.pointer.PointerInputScope
+import androidx.compose.ui.input.pointer.PointerType
+import androidx.compose.ui.input.pointer.positionChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -60,6 +70,8 @@ import dev.studycanvas.app.tutor.AiTutorClient
 import dev.studycanvas.app.tutor.ApiKeyStorage
 import dev.studycanvas.app.tutor.GeminiAiTutorClient
 import kotlinx.coroutines.launch
+import kotlin.math.PI
+import kotlin.math.abs
 import kotlin.math.roundToInt
 
 private const val DemoLessonId = "tai-desu-demo"
@@ -71,6 +83,83 @@ private enum class SyncState {
     OFFLINE,
     GENERATING,
 }
+
+private fun PointerInputChange.isExcludedTransformPointer(): Boolean =
+    pressed && type != PointerType.Touch
+
+private suspend fun PointerInputScope.detectTouchTransformGestures(
+    onGesture: (centroid: Offset, pan: Offset, zoom: Float) -> Unit,
+) {
+    awaitEachGesture {
+        var rotation = 0f
+        var zoom = 1f
+        var pan = Offset.Zero
+        var pastTouchSlop = false
+        val touchSlop = viewConfiguration.touchSlop
+
+        val down = awaitFirstDown(requireUnconsumed = false)
+        if (down.type != PointerType.Touch) {
+            while (true) {
+                val event = awaitPointerEvent()
+                if (event.changes.none { it.pressed }) break
+            }
+            return@awaitEachGesture
+        }
+
+        do {
+            var event = awaitPointerEvent()
+            if (event.changes.any { it.isExcludedTransformPointer() }) {
+                while (event.changes.any { it.pressed }) {
+                    event = awaitPointerEvent()
+                }
+                return@awaitEachGesture
+            }
+
+            val canceled = event.changes.any { it.isConsumed }
+            if (!canceled) {
+                val zoomChange = event.calculateZoom()
+                val rotationChange = event.calculateRotation()
+                val panChange = event.calculatePan()
+
+                if (!pastTouchSlop) {
+                    zoom *= zoomChange
+                    rotation += rotationChange
+                    pan += panChange
+
+                    val centroidSize = event.calculateCentroidSize(useCurrent = false)
+                    val zoomMotion = abs(1 - zoom) * centroidSize
+                    val rotationMotion = abs(rotation * PI.toFloat() * centroidSize / 180f)
+                    val panMotion = pan.getDistance()
+
+                    if (
+                        zoomMotion > touchSlop ||
+                            rotationMotion > touchSlop ||
+                            panMotion > touchSlop
+                    ) {
+                        pastTouchSlop = true
+                    }
+                }
+
+                if (pastTouchSlop) {
+                    val centroid = event.calculateCentroid(useCurrent = false)
+                    if (
+                        rotationChange != 0f ||
+                            zoomChange != 1f ||
+                            panChange != Offset.Zero
+                    ) {
+                        onGesture(centroid, panChange, zoomChange)
+                    }
+                    event.changes.forEach {
+                        if (it.type == PointerType.Touch && it.positionChanged()) {
+                            it.consume()
+                        }
+                    }
+                }
+            }
+        } while (!canceled && event.changes.any { it.pressed })
+    }
+}
+
 
 @Composable
 fun StudyCanvasScreen() {
@@ -145,7 +234,7 @@ fun StudyCanvasScreen() {
             .fillMaxSize()
             .background(Color(0xFFF4F0E7))
             .pointerInput(draggingElementId) {
-                detectTransformGestures { centroid, pan, zoom, _ ->
+                detectTouchTransformGestures { centroid, pan, zoom ->
                     if (draggingElementId == null) {
                         viewport = viewport.zoomAndPan(
                             centroidPx = centroid,
