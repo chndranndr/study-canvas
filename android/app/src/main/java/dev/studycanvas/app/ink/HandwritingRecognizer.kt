@@ -62,11 +62,7 @@ class JapaneseHandwritingRecognizer : HandwritingRecognizer {
                     request.writingArea.height,
                 ),
             )
-
-        request.preContext
-            .takeLast(MAX_PRE_CONTEXT_CHARS)
-            .takeIf { it.isNotBlank() }
-            ?.let(contextBuilder::setPreContext)
+            .setPreContext(request.preContext.takeLast(MAX_PRE_CONTEXT_CHARS))
 
         val result = recognizer.recognize(inkBuilder.build(), contextBuilder.build()).await()
         return RecognitionResult(
