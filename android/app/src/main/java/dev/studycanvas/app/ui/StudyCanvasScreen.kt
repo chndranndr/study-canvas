@@ -21,6 +21,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Button
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
@@ -79,8 +80,14 @@ fun StudyCanvasScreen() {
         LocalCanvasRepository(db.lessonDao())
     }
     var apiKey by remember { mutableStateOf(ApiKeyStorage.getApiKey(context)) }
+    var modelName by remember { mutableStateOf(ApiKeyStorage.getModel(context)) }
     var showKeyDialog by remember { mutableStateOf(false) }
-    val tutorClient = remember(apiKey) { GeminiAiTutorClient(apiKey = apiKey.ifBlank { null }) }
+    val tutorClient = remember(apiKey, modelName) {
+        GeminiAiTutorClient(
+            apiKey = apiKey.ifBlank { null },
+            model = modelName.ifBlank { ApiKeyStorage.DEFAULT_MODEL },
+        )
+    }
     val scope = rememberCoroutineScope()
     val density = LocalDensity.current.density
 
@@ -188,6 +195,7 @@ fun StudyCanvasScreen() {
             scale = viewport.scale,
             selectedElementId = selectedElementId,
             apiKey = apiKey,
+            modelName = modelName,
             syncState = syncState,
             onOpenKeyDialog = { showKeyDialog = true },
             onGenerateAiLesson = {
@@ -208,10 +216,13 @@ fun StudyCanvasScreen() {
         if (showKeyDialog) {
             ApiKeyDialog(
                 currentKey = apiKey,
+                currentModel = modelName,
                 onDismiss = { showKeyDialog = false },
-                onSave = { newKey ->
+                onSave = { newKey, newModel ->
                     ApiKeyStorage.setApiKey(context, newKey)
+                    ApiKeyStorage.setModel(context, newModel)
                     apiKey = newKey
+                    modelName = newModel
                     showKeyDialog = false
                 },
                 onClear = {
@@ -373,6 +384,7 @@ private fun CanvasStatusOverlay(
     scale: Float,
     selectedElementId: String?,
     apiKey: String,
+    modelName: String,
     syncState: SyncState,
     onOpenKeyDialog: () -> Unit,
     onGenerateAiLesson: () -> Unit,
@@ -407,7 +419,7 @@ private fun CanvasStatusOverlay(
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             AssistChip(
                 onClick = onOpenKeyDialog,
-                label = { Text(if (apiKey.isNotBlank()) "🔑 Gemini Aktif" else "⚙️ Atur API Key") },
+                label = { Text(if (apiKey.isNotBlank()) "🔑 $modelName" else "⚙️ Atur Model AI") },
             )
             AssistChip(
                 onClick = onGenerateAiLesson,
@@ -421,11 +433,14 @@ private fun CanvasStatusOverlay(
 @Composable
 private fun ApiKeyDialog(
     currentKey: String,
+    currentModel: String,
     onDismiss: () -> Unit,
-    onSave: (String) -> Unit,
+    onSave: (key: String, model: String) -> Unit,
     onClear: () -> Unit,
 ) {
     var inputKey by remember { mutableStateOf(currentKey) }
+    var inputModel by remember { mutableStateOf(currentModel) }
+    val commonModels = listOf("gemini-1.5-flash", "gemini-2.0-flash", "gemini-1.5-pro", "gemini-2.5-flash")
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -433,11 +448,11 @@ private fun ApiKeyDialog(
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 Text(
-                    text = "Masukkan Google Gemini API Key dari Google AI Studio untuk mengaktifkan grading semantik dan pembuatan latihan berbasis AI. Kunci disimpan lokal di tablet Anda.",
+                    text = "Masukkan Google Gemini API Key dan pilih model AI yang diinginkan. Kunci dan pilihan model disimpan lokal di tablet Anda.",
                     style = MaterialTheme.typography.bodyMedium,
                 )
                 Text(
-                    text = if (inputKey.isNotBlank()) "Status: Mode Online (Gemini 1.5 Flash)" else "Status: Evaluator Lokal (Offline)",
+                    text = if (inputKey.isNotBlank()) "Status: Online ($inputModel)" else "Status: Evaluator Lokal (Offline)",
                     style = MaterialTheme.typography.labelMedium,
                     color = if (inputKey.isNotBlank()) Color(0xFF2E7D32) else Color(0xFF68645C),
                 )
@@ -449,10 +464,44 @@ private fun ApiKeyDialog(
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth(),
                 )
+                Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                    Text("Pilihan Model Gemini:", style = MaterialTheme.typography.labelMedium)
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(6.dp),
+                    ) {
+                        commonModels.take(2).forEach { m ->
+                            FilterChip(
+                                selected = inputModel == m,
+                                onClick = { inputModel = m },
+                                label = { Text(m.replace("gemini-", ""), fontSize = 12.sp) },
+                            )
+                        }
+                    }
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(6.dp),
+                    ) {
+                        commonModels.drop(2).forEach { m ->
+                            FilterChip(
+                                selected = inputModel == m,
+                                onClick = { inputModel = m },
+                                label = { Text(m.replace("gemini-", ""), fontSize = 12.sp) },
+                            )
+                        }
+                    }
+                    OutlinedTextField(
+                        value = inputModel,
+                        onValueChange = { inputModel = it },
+                        label = { Text("ID Model Custom") },
+                        singleLine = true,
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                }
             }
         },
         confirmButton = {
-            Button(onClick = { onSave(inputKey.trim()) }) {
+            Button(onClick = { onSave(inputKey.trim(), inputModel.trim()) }) {
                 Text("Simpan")
             }
         },
