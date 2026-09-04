@@ -79,49 +79,6 @@ The main interaction loop on the canvas is intentionally simpler:
 
 `Learn -> Handwrite -> Check -> Feedback -> Adapt`
 
-## Implementation status
-
-### Phase 1 — Canvas foundation: complete
-
-- [x] Density-independent world coordinates
-- [x] Centroid-aware pan/zoom
-- [x] Element selection
-- [x] Movable read-only lesson text
-- [x] Persisted element layout through the current implementation
-
-### Phase 2 — Handwriting: complete
-
-- [x] Jetpack Ink pressure-pen stroke capture
-- [x] Vector-stroke rendering
-- [x] Whole-stroke eraser with hit testing
-- [x] Ink stroke persistence through the current implementation
-- [x] ML Kit Japanese Digital Ink recognition
-- [x] On-demand Japanese model download
-- [x] Writing-area recognition context
-- [x] Recognition candidate/debug view
-
-### Phase 2.5 — Local-first migration: next
-
-- [ ] Add Room database to Android
-- [ ] Move lesson persistence on-device
-- [ ] Move element layout persistence on-device
-- [ ] Move ink stroke persistence on-device
-- [ ] Remove Android dependency on the Fastify API
-- [ ] Add provider-independent `AiTutorClient`
-- [ ] Integrate the managed AI provider
-- [ ] Remove the transitional `server/` runtime
-
-### Still pending
-
-- [ ] Open, low-chrome multi-exercise practice canvas
-- [ ] Progressive hint behavior
-- [ ] Attempt submission and structured grading
-- [ ] Inline AI annotation rendering
-- [ ] Deterministic mastery and mistake-memory engine
-- [ ] Review scheduler
-- [ ] Adaptive probe
-- [ ] Personalized next-action loop
-
 ## Run Android
 
 Open `android/` in the latest stable Android Studio, sync Gradle, then run on an Android tablet or emulator.
