@@ -83,6 +83,35 @@ object GeneratedLessonValidator {
                     )
                 }
             }
+
+            val vHint = ex.hints.vocabulary.trim()
+            if (vHint.isBlank() ||
+                vHint.equals("vocab hint", ignoreCase = true) ||
+                vHint.startsWith("Target:", ignoreCase = true) ||
+                vHint.equals(ex.promptEn, ignoreCase = true)
+            ) {
+                return Result.failure(
+                    IllegalArgumentException("Exercise $index has invalid or placeholder vocabulary hint: '$vHint'"),
+                )
+            }
+
+            val pHint = ex.hints.pattern.trim()
+            if (pHint.isBlank() || pHint.equals("pattern hint", ignoreCase = true)) {
+                return Result.failure(
+                    IllegalArgumentException("Exercise $index has blank or placeholder pattern hint: '$pHint'"),
+                )
+            }
+
+            val rHint = ex.hints.readingFallback.trim()
+            if (rHint.isBlank() ||
+                rHint.equals("reading hint", ignoreCase = true) ||
+                rHint.startsWith("Pattern:", ignoreCase = true) ||
+                rHint == pHint
+            ) {
+                return Result.failure(
+                    IllegalArgumentException("Exercise $index has invalid or placeholder reading hint: '$rHint'"),
+                )
+            }
         }
         return Result.success(Unit)
     }
@@ -117,8 +146,8 @@ class DeterministicGrammarLessonGenerator : GrammarLessonGenerator {
         val sampleSeeds = listOf(
             PracticeSeed(
                 promptEn = "Interesting.",
-                vocabHint = "interesting = おもしろい",
-                readingHint = "おもしろい (omoshiroi)",
+                vocabHint = "kosakata: おもしろい",
+                readingHint = "Romaji: omoshiroi desu",
                 acceptedAnswers = listOf("おもしろいです", "面白(おもしろ)いです"),
             ),
             PracticeSeed(
@@ -182,8 +211,16 @@ class DeterministicGrammarLessonGenerator : GrammarLessonGenerator {
             val item = if (i < grammar.examples.size) {
                 val ex = grammar.examples[i]
                 val segments = dev.studycanvas.app.grammar.FuriganaUtils.parseFurigana(ex.jp)
-                val kanjiPairs = segments.filter { it.ruby != null }.joinToString(", ") { "${it.text} = ${it.ruby}" }
-                val vocab = if (kanjiPairs.isNotBlank()) kanjiPairs else ex.en
+                val kanjiPairs = segments.filter { it.ruby != null }.joinToString(", ") { "${it.text} (${it.ruby})" }
+                val vocab = if (kanjiPairs.isNotBlank()) {
+                    "kanji: $kanjiPairs"
+                } else {
+                    val rootWord = dev.studycanvas.app.grammar.FuriganaUtils.stripFurigana(ex.jp)
+                        .removeSuffix("。")
+                        .removeSuffix("です")
+                        .removeSuffix("ます")
+                    "kosakata: $rootWord"
+                }
                 val reading = "Romaji: ${ex.romaji}"
                 val clean = listOf(dev.studycanvas.app.grammar.FuriganaUtils.stripFurigana(ex.jp))
                 PracticeSeed(ex.en, vocab, reading, clean)
@@ -191,8 +228,10 @@ class DeterministicGrammarLessonGenerator : GrammarLessonGenerator {
                 val seed = sampleSeeds[i % sampleSeeds.size]
                 PracticeSeed(seed.promptEn, seed.vocabHint, seed.readingHint, seed.acceptedAnswers)
             }
-
-            val cleanAnswers = item.acceptedAnswers.map { dev.studycanvas.app.grammar.FuriganaUtils.stripFurigana(it) }.distinct()
+            val cleanAnswers = item.acceptedAnswers.flatMap {
+                val s = dev.studycanvas.app.grammar.FuriganaUtils.stripFurigana(it).trim()
+                listOf(s, s.removeSuffix("。"))
+            }.distinct()
             exercises.add(
                 GeneratedGrammarExercise(
                     id = "generated-${grammar.id}-${i + 1}",

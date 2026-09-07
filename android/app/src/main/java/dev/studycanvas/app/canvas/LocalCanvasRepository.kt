@@ -27,6 +27,11 @@ class LocalCanvasRepository(
             val generatedExercises = parseGeneratedExercises(generatedEntity)
             val enrichmentNotes = parseEnrichmentNotes(generatedEntity)
 
+            // If a snapshot existed in DB but contained stale placeholders, purge it
+            if (generatedEntity != null && generatedExercises.isEmpty()) {
+                generatedLessonDao?.deleteGeneratedLesson(lessonId)
+                lessonDao.deleteElementsForLesson(lessonId)
+            }
             val baseCanvas = createGrammarLessonCanvas(
                 grammar = grammar,
                 generatedExercises = generatedExercises,
@@ -139,17 +144,39 @@ class LocalCanvasRepository(
 
         return runCatching {
             val array = JSONArray(entity.exercisesJson)
+            if (array.length() != 10) return emptyList()
+
             val list = mutableListOf<CanvasElementContent.Exercise>()
             for (i in 0 until array.length()) {
                 val obj = array.getJSONObject(i)
+                val prompt = obj.optString("promptEn", "").trim()
+                val hint1 = obj.optString("hint1Kosakata", "").trim()
+                val hint2 = obj.optString("hint2Pola", "").trim()
+                val hint3 = obj.optString("hint3Romaji", "").trim()
                 val acceptedAnswers = obj.optJSONArray("acceptedAnswers")?.toStringList() ?: emptyList()
+
+                // Reject stale snapshots with generic placeholders or blank hints
+                if (prompt.isBlank() ||
+                    hint1.isBlank() ||
+                    hint1.startsWith("Target:", ignoreCase = true) ||
+                    hint1.equals("vocab hint", ignoreCase = true) ||
+                    hint1.equals(prompt, ignoreCase = true) ||
+                    hint2.isBlank() ||
+                    hint3.isBlank() ||
+                    hint3.startsWith("Pattern:", ignoreCase = true) ||
+                    hint3.equals("reading hint", ignoreCase = true) ||
+                    acceptedAnswers.isEmpty()
+                ) {
+                    return emptyList()
+                }
+
                 list.add(
                     CanvasElementContent.Exercise(
                         title = "Practice ${i + 1}",
-                        prompt = obj.optString("promptEn", ""),
-                        hint1Kosakata = obj.optString("hint1Kosakata", ""),
-                        hint2Pola = obj.optString("hint2Pola", ""),
-                        hint3Romaji = obj.optString("hint3Romaji", ""),
+                        prompt = prompt,
+                        hint1Kosakata = hint1,
+                        hint2Pola = hint2,
+                        hint3Romaji = hint3,
                         acceptedAnswers = acceptedAnswers,
                         revealAnswer = acceptedAnswers.firstOrNull().orEmpty(),
                         targetConceptId = entity.grammarId,

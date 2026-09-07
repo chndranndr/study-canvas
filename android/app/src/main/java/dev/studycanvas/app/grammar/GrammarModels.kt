@@ -53,7 +53,7 @@ data class FuriganaSegment(
 )
 
 object FuriganaUtils {
-    private val furiganaRegex = Regex("([\\p{IsHan}々〆ヵヶ]+|[\\p{IsHan}々〆ヵヶ]+[ぁ-んァ-ヶー]+|[ぁ-んァ-ヶー]*[\\p{IsHan}々〆ヵヶ]+[ぁ-んァ-ヶー]*)\\(([ぁ-んァ-ヶー]+)\\)")
+    private val furiganaRegex = Regex("([\\p{IsHan}々〆ヵヶ]+(?:[ぁ-んァ-ヶー]+[\\p{IsHan}々〆ヵヶ]+)*[ぁ-んァ-ヶー]*)\\(([ぁ-んァ-ヶー]+)\\)")
     private val rubyOnlyRegex = Regex("\\(([ぁ-んァ-ヶー]+)\\)")
 
     /**

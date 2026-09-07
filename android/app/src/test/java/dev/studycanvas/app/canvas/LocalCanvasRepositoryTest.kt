@@ -20,6 +20,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
+import org.junit.Assert.assertNull
 import org.junit.Test
 
 class FakeLessonDao : LessonDao {
@@ -211,6 +212,59 @@ class LocalCanvasRepositoryTest {
         val reloadedCanvas = repository.loadLesson("1")
         val reloadedExercises = reloadedCanvas.elements.filter { it.kind == CanvasElementKind.EXERCISE }
         assertEquals(10, reloadedExercises.size)
+    }
+
+    @Test
+    fun loadLesson_invalidatesStaleTargetPlaceholderSnapshot_andPurgesIt() = runBlocking {
+        val lessonDao = FakeLessonDao()
+        val generatedDao = FakeGeneratedLessonDao()
+        val repository = LocalCanvasRepository(
+            lessonDao = lessonDao,
+            grammarRepository = grammarRepository,
+            generatedLessonDao = generatedDao,
+        )
+
+        // Seed legacy snapshot with "Target:" and "Pattern:" placeholders
+        val staleExercisesJson = org.json.JSONArray().apply {
+            for (i in 1..10) {
+                put(
+                    org.json.JSONObject().apply {
+                        put("id", "legacy-$i")
+                        put("promptEn", "Prompt $i")
+                        put("hint1Kosakata", "Target: Adjectives")
+                        put("hint2Pola", "~i desu")
+                        put("hint3Romaji", "Pattern: ~i desu")
+                        put("acceptedAnswers", org.json.JSONArray(listOf("おもしろいです")))
+                    },
+                )
+            }
+        }.toString()
+
+        generatedDao.insertGeneratedLesson(
+            GeneratedLessonEntity(
+                grammarId = "1",
+                exercisesJson = staleExercisesJson,
+            ),
+        )
+        assertEquals(1, generatedDao.store.size)
+
+        // loadLesson must reject and purge the stale snapshot
+        val canvas = repository.loadLesson("1")
+        val exercises = canvas.elements.filter { it.kind == CanvasElementKind.EXERCISE }
+        assertEquals("Stale exercises must not be rendered", 0, exercises.size)
+        assertNull("Stale snapshot must be purged from DAO", generatedDao.getGeneratedLesson("1"))
+
+        // Fresh generation now produces valid hints
+        val generator = DeterministicGrammarLessonGenerator()
+        val freshCanvas = repository.generateAndSaveLesson("1", generator).getOrThrow()
+        val freshExercises = freshCanvas.elements.filter { it.kind == CanvasElementKind.EXERCISE }
+        assertEquals(10, freshExercises.size)
+
+        for (ex in freshExercises) {
+            val content = ex.content as CanvasElementContent.Exercise
+            assertFalse(content.hint1Kosakata.startsWith("Target:"))
+            assertFalse(content.hint3Romaji.startsWith("Pattern:"))
+        }
     }
 
     @Test
