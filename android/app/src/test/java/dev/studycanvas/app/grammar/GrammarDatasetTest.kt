@@ -257,5 +257,22 @@ class GrammarDatasetTest {
         assertEquals(FuriganaSegment("おいしい"), foodSegments[0])
         assertEquals(FuriganaSegment("食べ物", "たべもの"), foodSegments[1])
         assertEquals(FuriganaSegment("です。"), foodSegments[2])
+
+        // Regression: multi-annotation bounded by previous ruby and punctuation
+        val spring = "春(はる)になると、暖かく(あたたかく)なります。"
+        val springSegments = FuriganaUtils.parseFurigana(spring)
+        assertEquals(4, springSegments.size)
+        assertEquals(FuriganaSegment("春", "はる"), springSegments[0])
+        assertEquals(FuriganaSegment("になると、"), springSegments[1])
+        assertEquals(FuriganaSegment("暖かく", "あたたかく"), springSegments[2])
+        assertEquals(FuriganaSegment("なります。"), springSegments[3])
+
+        // Regression: coordinating particle 'や' must not be swallowed into compound
+        val countries = "日本や韓国(かんこく)に行きます。"
+        val countriesSegments = FuriganaUtils.parseFurigana(countries)
+        assertEquals(3, countriesSegments.size)
+        assertEquals(FuriganaSegment("日本や"), countriesSegments[0])
+        assertEquals(FuriganaSegment("韓国", "かんこく"), countriesSegments[1])
+        assertEquals(FuriganaSegment("に行きます。"), countriesSegments[2])
     }
 }

@@ -54,7 +54,9 @@ data class FuriganaSegment(
 
 object FuriganaUtils {
     private val rubyPattern = Regex("\\(([ぁ-んァ-ヶー]+)\\)")
-    private val particles = setOf('の', 'は', 'が', 'を', 'に', 'で', 'へ', 'と', 'も')
+    private val trailingBoundaryParticles = setOf('の', 'は', 'が', 'を', 'に', 'で', 'へ', 'と', 'も')
+    private val compoundBoundaryParticles = setOf('の', 'は', 'が', 'を', 'に', 'で', 'へ', 'と', 'も', 'か', 'や', 'り', 'よ')
+    private val punctuation = setOf('。', '、', '！', '？', '!', '?', '（', '）', '(', ')', '\u3000', ' ', '\t', '\n')
 
     private fun isHan(c: Char): Boolean =
         Character.UnicodeScript.of(c.code) == Character.UnicodeScript.HAN ||
@@ -75,7 +77,7 @@ object FuriganaUtils {
         for (match in matches) {
             val ruby = match.groupValues[1]
             val parenStart = match.range.first
-            val baseStart = findBaseStart(text, parenStart)
+            val baseStart = findBaseStart(text, parenStart, minStart = cursor)
 
             if (baseStart > cursor) {
                 segments.add(FuriganaSegment(text = text.substring(cursor, baseStart)))
@@ -93,41 +95,36 @@ object FuriganaUtils {
         return segments
     }
 
-    private fun findBaseStart(text: String, parenStart: Int): Int {
+    private fun findBaseStart(text: String, parenStart: Int, minStart: Int): Int {
         var idx = parenStart - 1
-        if (idx < 0) return parenStart
+        if (idx < minStart) return parenStart
 
-        // 1. Scan backward over trailing okurigana (up to 3 non-particle kana, e.g. 友だち, 少し, 暖かく)
-        var trailingKanaCount = 0
-        while (idx >= 0 && isKana(text[idx]) && text[idx] !in particles) {
-            trailingKanaCount++
+        // 1. Scan backward over trailing okurigana (e.g. 友だち, 少し, 暖かく)
+        while (idx >= minStart && text[idx] !in punctuation && isKana(text[idx]) && text[idx] !in trailingBoundaryParticles) {
             idx--
-            if (trailingKanaCount >= 3) break
         }
 
         // 2. Scan backward over primary kanji stem
         var kanjiCount = 0
-        while (idx >= 0 && isHan(text[idx])) {
+        while (idx >= minStart && text[idx] !in punctuation && isHan(text[idx])) {
             kanjiCount++
             idx--
         }
 
         if (kanjiCount == 0) {
-            // No kanji found before paren
             return idx + 1
         }
 
-        // 3. Check for compound word stem: 1-2 internal non-particle kana preceded by kanji (e.g. 買い物, 昼ご飯)
+        // 3. Check for compound word stem: internal non-particle kana preceded by kanji (e.g. 買い物, 昼ご飯)
         var compIdx = idx
         var internalKanaCount = 0
-        while (compIdx >= 0 && isKana(text[compIdx]) && text[compIdx] !in particles) {
+        while (compIdx >= minStart && text[compIdx] !in punctuation && isKana(text[compIdx]) && text[compIdx] !in compoundBoundaryParticles) {
             internalKanaCount++
             compIdx--
-            if (internalKanaCount > 2) break
         }
 
-        if (internalKanaCount in 1..2 && compIdx >= 0 && isHan(text[compIdx])) {
-            while (compIdx >= 0 && isHan(text[compIdx])) {
+        if (internalKanaCount > 0 && compIdx >= minStart && isHan(text[compIdx])) {
+            while (compIdx >= minStart && text[compIdx] !in punctuation && isHan(text[compIdx])) {
                 compIdx--
             }
             return compIdx + 1
