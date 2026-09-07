@@ -101,6 +101,7 @@ data class ExerciseAttemptEntity(
     val exerciseElementId: String,
     val recognizedText: String,
     val correct: Boolean,
+    val matchedAcceptedAnswer: String? = null,
     val grammarScore: Float? = null,
     val meaningScore: Float? = null,
     val naturalnessScore: Float? = null,
@@ -270,7 +271,7 @@ interface GeneratedLessonDao {
         ReviewScheduleEntity::class,
         GeneratedLessonEntity::class,
     ],
-    version = 2,
+    version = 3,
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract fun lessonDao(): LessonDao

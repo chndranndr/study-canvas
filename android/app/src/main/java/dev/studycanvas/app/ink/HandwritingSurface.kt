@@ -278,6 +278,7 @@ fun HandwritingSurface(
                         exerciseElementId = exerciseElementId,
                         recognizedText = checkResult.matchedCandidate ?: recognized,
                         correct = checkResult.correct,
+                        matchedAcceptedAnswer = checkResult.matchedAcceptedAnswer,
                         grammarScore = grade.grammarScore,
                         meaningScore = grade.meaningScore,
                         naturalnessScore = grade.naturalnessScore,
