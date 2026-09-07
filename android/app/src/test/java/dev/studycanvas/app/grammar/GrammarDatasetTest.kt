@@ -274,5 +274,30 @@ class GrammarDatasetTest {
         assertEquals(FuriganaSegment("日本や"), countriesSegments[0])
         assertEquals(FuriganaSegment("韓国", "かんこく"), countriesSegments[1])
         assertEquals(FuriganaSegment("に行きます。"), countriesSegments[2])
+
+        // Regression: multi-kana particles 'から' and 'まで' must not be swallowed into base
+        val trip = "東京から京都(きょうと)まで新幹線(しんかんせん)で行きます。"
+        val tripSegments = FuriganaUtils.parseFurigana(trip)
+        assertEquals(FuriganaSegment("東京から"), tripSegments[0])
+        assertEquals(FuriganaSegment("京都", "きょうと"), tripSegments[1])
+        assertEquals(FuriganaSegment("まで"), tripSegments[2])
+        assertEquals(FuriganaSegment("新幹線", "しんかんせん"), tripSegments[3])
+        assertEquals(FuriganaSegment("で行きます。"), tripSegments[4])
+
+        // Regression: disjunctive particle 'か' must not be swallowed into base
+        val drinks = "コーヒーか紅茶(こうちゃ)を飲みます。"
+        val drinksSegments = FuriganaUtils.parseFurigana(drinks)
+        assertEquals(3, drinksSegments.size)
+        assertEquals(FuriganaSegment("コーヒーか"), drinksSegments[0])
+        assertEquals(FuriganaSegment("紅茶", "こうちゃ"), drinksSegments[1])
+        assertEquals(FuriganaSegment("を飲みます。"), drinksSegments[2])
+
+        // Regression: coordinating particle 'や' with katakana
+        val shops = "コンビニや銀行(ぎんこう)があります。"
+        val shopsSegments = FuriganaUtils.parseFurigana(shops)
+        assertEquals(3, shopsSegments.size)
+        assertEquals(FuriganaSegment("コンビニや"), shopsSegments[0])
+        assertEquals(FuriganaSegment("銀行", "ぎんこう"), shopsSegments[1])
+        assertEquals(FuriganaSegment("があります。"), shopsSegments[2])
     }
 }
