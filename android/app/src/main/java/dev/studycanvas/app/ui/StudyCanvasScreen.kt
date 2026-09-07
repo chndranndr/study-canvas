@@ -197,12 +197,6 @@ fun StudyCanvasScreen() {
             model = modelName.ifBlank { ApiKeyStorage.DEFAULT_MODEL },
         )
     }
-    val tutorClient = remember(apiKey, modelName) {
-        GeminiAiTutorClient(
-            apiKey = apiKey.ifBlank { null },
-            model = modelName.ifBlank { ApiKeyStorage.DEFAULT_MODEL },
-        )
-    }
     val density = LocalDensity.current.density
     val scope = rememberCoroutineScope()
 
@@ -302,7 +296,6 @@ fun StudyCanvasScreen() {
                             draggingElementId = null
                             persistElement(element.id)
                         },
-                        tutorClient = tutorClient,
                     )
                 }
         }
@@ -374,7 +367,6 @@ private fun CanvasElementView(
     onDragStarted: () -> Unit,
     onDrag: (Offset) -> Unit,
     onDragFinished: () -> Unit,
-    tutorClient: AiTutorClient,
 ) {
     val baseModifier = Modifier
         .offset(x = element.position.x.dp, y = element.position.y.dp)
@@ -415,7 +407,6 @@ private fun CanvasElementView(
             element = element,
             selected = selected,
             onSelect = onSelect,
-            tutorClient = tutorClient,
             modifier = baseModifier,
         )
     }
@@ -474,7 +465,6 @@ private fun ExerciseCard(
     element: CanvasElement,
     selected: Boolean,
     onSelect: () -> Unit,
-    tutorClient: AiTutorClient,
     modifier: Modifier = Modifier,
 ) {
     val content = element.content as CanvasElementContent.Exercise
@@ -508,7 +498,6 @@ private fun ExerciseCard(
                 lessonId = lessonId,
                 exerciseElementId = element.id,
                 exerciseContent = content,
-                tutorClient = tutorClient,
             )
         }
     }

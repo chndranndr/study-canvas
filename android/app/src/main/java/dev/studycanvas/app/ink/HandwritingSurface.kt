@@ -52,8 +52,6 @@ import dev.studycanvas.app.data.AppDatabase
 import dev.studycanvas.app.checker.AnswerChecker
 import dev.studycanvas.app.checker.DeterministicAnswerChecker
 import dev.studycanvas.app.data.ExerciseAttemptEntity
-import dev.studycanvas.app.tutor.AiTutorClient
-import dev.studycanvas.app.tutor.GeminiAiTutorClient
 import dev.studycanvas.app.tutor.GradeResult
 import java.util.UUID
 import kotlinx.coroutines.launch
@@ -69,7 +67,6 @@ fun HandwritingSurface(
     lessonId: String,
     exerciseElementId: String,
     exerciseContent: CanvasElementContent.Exercise,
-    tutorClient: AiTutorClient = remember { GeminiAiTutorClient() },
     modifier: Modifier = Modifier,
 ) {
     val density = LocalDensity.current.density

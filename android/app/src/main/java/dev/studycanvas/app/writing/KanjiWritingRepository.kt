@@ -1,39 +1,55 @@
 package dev.studycanvas.app.writing
 
+import android.content.Context
+import org.json.JSONObject
+
 interface KanjiContentRepository {
     fun getKanji(level: String = "N5"): List<KanjiEntry>
     fun getPracticePrompts(level: String = "N5"): List<WritingPracticePrompt>
 }
 
-class BundledKanjiWritingRepository : KanjiContentRepository {
+class KanjiJsonDataSource {
+    fun loadFromAssets(
+        context: Context,
+        assetPath: String = "content/kanji_n5.json",
+    ): List<KanjiEntry> {
+        val jsonString = context.assets.open(assetPath).bufferedReader().use { it.readText() }
+        return parse(jsonString)
+    }
 
-    private val n5Kanji = listOf(
-        KanjiEntry("kanji-1", "一", "イチ", "ひと", "one", strokeCount = 1),
-        KanjiEntry("kanji-2", "二", "ニ", "ふた", "two", strokeCount = 2),
-        KanjiEntry("kanji-3", "三", "サン", "み", "three", strokeCount = 3),
-        KanjiEntry("kanji-4", "四", "シ", "よん", "four", strokeCount = 4),
-        KanjiEntry("kanji-5", "五", "ゴ", "いつ", "five", strokeCount = 5),
-        KanjiEntry("kanji-6", "六", "ロク", "む", "six", strokeCount = 6),
-        KanjiEntry("kanji-7", "七", "シチ", "なな", "seven", strokeCount = 7),
-        KanjiEntry("kanji-8", "八", "ハチ", "や", "eight", strokeCount = 8),
-        KanjiEntry("kanji-9", "九", "キュウ", "ここの", "nine", strokeCount = 9),
-        KanjiEntry("kanji-10", "十", "ジュウ", "とお", "ten", strokeCount = 2),
-        KanjiEntry("kanji-11", "百", "ヒャク", "もも", "hundred", strokeCount = 6),
-        KanjiEntry("kanji-12", "千", "セン", "ち", "thousand", strokeCount = 3),
-        KanjiEntry("kanji-13", "日", "ニチ", "ひ", "sun / day", strokeCount = 4),
-        KanjiEntry("kanji-14", "月", "ゲツ", "つき", "moon / month", strokeCount = 4),
-        KanjiEntry("kanji-15", "火", "カ", "ひ", "fire", strokeCount = 4),
-        KanjiEntry("kanji-16", "水", "スイ", "みず", "water", strokeCount = 4),
-        KanjiEntry("kanji-17", "木", "ボク", "き", "tree", strokeCount = 4),
-        KanjiEntry("kanji-18", "金", "キン", "かね", "gold / money", strokeCount = 8),
-        KanjiEntry("kanji-19", "土", "ド", "つち", "earth / soil", strokeCount = 3),
-        KanjiEntry("kanji-20", "人", "ジン", "ひと", "person", strokeCount = 2),
-    )
+    fun parse(jsonString: String): List<KanjiEntry> {
+        val root = JSONObject(jsonString)
+        val defaultLevel = root.optString("level", "N5")
+        val kanjiArray = root.optJSONArray("kanji") ?: throw IllegalArgumentException("Missing 'kanji' array")
 
-    override fun getKanji(level: String): List<KanjiEntry> = n5Kanji
+        val list = mutableListOf<KanjiEntry>()
+        for (i in 0 until kanjiArray.length()) {
+            val obj = kanjiArray.getJSONObject(i)
+            list.add(
+                KanjiEntry(
+                    id = obj.getString("id"),
+                    kanji = obj.getString("kanji"),
+                    onyomi = obj.getString("onyomi"),
+                    kunyomi = obj.getString("kunyomi"),
+                    meaningEn = obj.getString("meaning_en"),
+                    strokeCount = obj.optInt("stroke_count", 0),
+                    level = obj.optString("level", defaultLevel),
+                ),
+            )
+        }
+        return list
+    }
+}
+
+class JsonKanjiWritingRepository(
+    private val kanjiList: List<KanjiEntry>,
+) : KanjiContentRepository {
+
+    override fun getKanji(level: String): List<KanjiEntry> =
+        kanjiList.filter { it.level == level }
 
     override fun getPracticePrompts(level: String): List<WritingPracticePrompt> {
-        return n5Kanji.map { entry ->
+        return getKanji(level).map { entry ->
             WritingPracticePrompt(
                 id = entry.id,
                 category = "Kanji",
@@ -43,4 +59,28 @@ class BundledKanjiWritingRepository : KanjiContentRepository {
             )
         }
     }
+
+    companion object {
+        fun fromAssets(
+            context: Context,
+            assetPath: String = "content/kanji_n5.json",
+            dataSource: KanjiJsonDataSource = KanjiJsonDataSource(),
+        ): JsonKanjiWritingRepository {
+            val list = dataSource.loadFromAssets(context, assetPath)
+            return JsonKanjiWritingRepository(list)
+        }
+
+        fun fromJson(
+            jsonString: String,
+            dataSource: KanjiJsonDataSource = KanjiJsonDataSource(),
+        ): JsonKanjiWritingRepository {
+            val list = dataSource.parse(jsonString)
+            return JsonKanjiWritingRepository(list)
+        }
+    }
 }
+
+/**
+ * Backward compatibility alias.
+ */
+typealias BundledKanjiWritingRepository = JsonKanjiWritingRepository

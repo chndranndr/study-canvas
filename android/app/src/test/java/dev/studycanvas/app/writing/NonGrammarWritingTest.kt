@@ -1,21 +1,59 @@
 package dev.studycanvas.app.writing
 
 import dev.studycanvas.app.checker.DeterministicAnswerChecker
+import java.io.File
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
+import org.junit.Before
 import org.junit.Test
 
 class NonGrammarWritingTest {
 
-    private val kanaRepo = BundledKanaWritingRepository()
-    private val vocabRepo = BundledVocabularyWritingRepository()
-    private val kanjiRepo = BundledKanjiWritingRepository()
+    private lateinit var kanaRepo: KanaContentRepository
+    private lateinit var vocabRepo: VocabularyContentRepository
+    private lateinit var kanjiRepo: KanjiContentRepository
     private val checker = DeterministicAnswerChecker()
 
+    @Before
+    fun setUp() {
+        val kanaCandidates = listOf(
+            File("src/main/assets/content/kana.json"),
+            File("../app/src/main/assets/content/kana.json"),
+            File("../../data/kana.json"),
+            File("../data/kana.json"),
+            File("data/kana.json"),
+        )
+        val kanaFile = kanaCandidates.firstOrNull { it.exists() }
+            ?: throw IllegalStateException("kana.json not found in $kanaCandidates")
+        kanaRepo = JsonKanaWritingRepository.fromJson(kanaFile.readText())
+
+        val vocabCandidates = listOf(
+            File("src/main/assets/content/vocabulary_n5.json"),
+            File("../app/src/main/assets/content/vocabulary_n5.json"),
+            File("../../data/vocabulary_n5.json"),
+            File("../data/vocabulary_n5.json"),
+            File("data/vocabulary_n5.json"),
+        )
+        val vocabFile = vocabCandidates.firstOrNull { it.exists() }
+            ?: throw IllegalStateException("vocabulary_n5.json not found in $vocabCandidates")
+        vocabRepo = JsonVocabularyWritingRepository.fromJson(vocabFile.readText())
+
+        val kanjiCandidates = listOf(
+            File("src/main/assets/content/kanji_n5.json"),
+            File("../app/src/main/assets/content/kanji_n5.json"),
+            File("../../data/kanji_n5.json"),
+            File("../data/kanji_n5.json"),
+            File("data/kanji_n5.json"),
+        )
+        val kanjiFile = kanjiCandidates.firstOrNull { it.exists() }
+            ?: throw IllegalStateException("kanji_n5.json not found in $kanjiCandidates")
+        kanjiRepo = JsonKanjiWritingRepository.fromJson(kanjiFile.readText())
+    }
+
     @Test
-    fun `hiragana repository exposes 46 characters and valid deterministic prompts`() {
+    fun `hiragana repository parses from JSON, exposes 46 characters and valid deterministic prompts`() {
         val hiragana = kanaRepo.getHiragana()
         assertEquals(46, hiragana.size)
 
@@ -35,7 +73,7 @@ class NonGrammarWritingTest {
     }
 
     @Test
-    fun `katakana repository exposes 46 characters and valid deterministic prompts`() {
+    fun `katakana repository parses from JSON, exposes 46 characters and valid deterministic prompts`() {
         val katakana = kanaRepo.getKatakana()
         assertEquals(46, katakana.size)
 
@@ -50,7 +88,7 @@ class NonGrammarWritingTest {
     }
 
     @Test
-    fun `vocabulary repository exposes curated N5 vocabulary with word and reading accepted answers`() {
+    fun `vocabulary repository parses from JSON, exposes curated N5 vocabulary with word and reading accepted answers`() {
         val vocabulary = vocabRepo.getVocabulary("N5")
         assertTrue(vocabulary.isNotEmpty())
 
@@ -73,7 +111,7 @@ class NonGrammarWritingTest {
     }
 
     @Test
-    fun `kanji repository exposes curated N5 kanji with kanji character accepted answers`() {
+    fun `kanji repository parses from JSON, exposes curated N5 kanji with kanji character accepted answers`() {
         val kanjiList = kanjiRepo.getKanji("N5")
         assertTrue(kanjiList.isNotEmpty())
 
