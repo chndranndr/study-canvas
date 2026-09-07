@@ -208,5 +208,54 @@ class GrammarDatasetTest {
 
         val mixed = "漢字(かんじ)が少し(すこし)読め(よめ)ます"
         assertEquals("漢字が少し読めます", FuriganaUtils.stripFurigana(mixed))
+
+        // Regression: prefix kanji and particle should not be swallowed into base
+        val unannotatedPrefix = "日本の天気(てんき)はいいです。"
+        val weatherSegments = FuriganaUtils.parseFurigana(unannotatedPrefix)
+        assertEquals(3, weatherSegments.size)
+        assertEquals(FuriganaSegment("日本の"), weatherSegments[0])
+        assertEquals(FuriganaSegment("天気", "てんき"), weatherSegments[1])
+        assertEquals(FuriganaSegment("はいいです。"), weatherSegments[2])
+
+        // Regression: leading honorific 'お' should not be swallowed into base
+        val tea = "お茶(ちゃ)を飲みます。"
+        val teaSegments = FuriganaUtils.parseFurigana(tea)
+        assertEquals(3, teaSegments.size)
+        assertEquals(FuriganaSegment("お"), teaSegments[0])
+        assertEquals(FuriganaSegment("茶", "ちゃ"), teaSegments[1])
+        assertEquals(FuriganaSegment("を飲みます。"), teaSegments[2])
+
+        // Regression: kana prefix should not be swallowed into base
+        val cheap = "このレストランは安(やす)いです。"
+        val cheapSegments = FuriganaUtils.parseFurigana(cheap)
+        assertEquals(3, cheapSegments.size)
+        assertEquals(FuriganaSegment("このレストランは"), cheapSegments[0])
+        assertEquals(FuriganaSegment("安", "やす"), cheapSegments[1])
+        assertEquals(FuriganaSegment("いです。"), cheapSegments[2])
+
+        // Regression: mixed kanji-okurigana compounds must capture full compound base
+        val shopping = "買い物(かいもの)に行きます。"
+        val shoppingSegments = FuriganaUtils.parseFurigana(shopping)
+        assertEquals(2, shoppingSegments.size)
+        assertEquals(FuriganaSegment("買い物", "かいもの"), shoppingSegments[0])
+        assertEquals(FuriganaSegment("に行きます。"), shoppingSegments[1])
+
+        val lunch = "昼ご飯(ひるごはん)を食べます。"
+        val lunchSegments = FuriganaUtils.parseFurigana(lunch)
+        assertEquals(2, lunchSegments.size)
+        assertEquals(FuriganaSegment("昼ご飯", "ひるごはん"), lunchSegments[0])
+        assertEquals(FuriganaSegment("を食べます。"), lunchSegments[1])
+
+        val drink = "冷たい飲み物(のみもの)が欲しいです。"
+        val drinkSegments = FuriganaUtils.parseFurigana(drink)
+        assertEquals(FuriganaSegment("冷たい"), drinkSegments[0])
+        assertEquals(FuriganaSegment("飲み物", "のみもの"), drinkSegments[1])
+        assertEquals(FuriganaSegment("が欲しいです。"), drinkSegments[2])
+
+        val food = "おいしい食べ物(たべもの)です。"
+        val foodSegments = FuriganaUtils.parseFurigana(food)
+        assertEquals(FuriganaSegment("おいしい"), foodSegments[0])
+        assertEquals(FuriganaSegment("食べ物", "たべもの"), foodSegments[1])
+        assertEquals(FuriganaSegment("です。"), foodSegments[2])
     }
 }

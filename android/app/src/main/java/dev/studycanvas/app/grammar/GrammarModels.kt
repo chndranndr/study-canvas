@@ -53,39 +53,86 @@ data class FuriganaSegment(
 )
 
 object FuriganaUtils {
-    private val furiganaRegex = Regex("([\\p{IsHan}々〆ヵヶ]+(?:[ぁ-んァ-ヶー]+[\\p{IsHan}々〆ヵヶ]+)*[ぁ-んァ-ヶー]*)\\(([ぁ-んァ-ヶー]+)\\)")
-    private val rubyOnlyRegex = Regex("\\(([ぁ-んァ-ヶー]+)\\)")
+    private val rubyPattern = Regex("\\(([ぁ-んァ-ヶー]+)\\)")
+    private val particles = setOf('の', 'は', 'が', 'を', 'に', 'で', 'へ', 'と', 'も')
 
-    /**
-     * Strips furigana annotations from Japanese text (e.g., "安(やす)い" -> "安い").
-     * Preserves fullwidth blank parentheses "（　）".
-     */
-    fun stripFurigana(text: String): String {
-        return rubyOnlyRegex.replace(text, "")
+    private fun isHan(c: Char): Boolean =
+        Character.UnicodeScript.of(c.code) == Character.UnicodeScript.HAN ||
+            c == '々' || c == '〆' || c == 'ヵ' || c == 'ヶ'
+
+    private fun isKana(c: Char): Boolean =
+        c in '\u3040'..'\u309F' || c in '\u30A0'..'\u30FF' || c == 'ー'
+
+    fun stripFurigana(text: String): String = rubyPattern.replace(text, "")
+
+    fun parseFurigana(text: String): List<FuriganaSegment> {
+        val matches = rubyPattern.findAll(text).toList()
+        if (matches.isEmpty()) return listOf(FuriganaSegment(text))
+
+        val segments = mutableListOf<FuriganaSegment>()
+        var cursor = 0
+
+        for (match in matches) {
+            val ruby = match.groupValues[1]
+            val parenStart = match.range.first
+            val baseStart = findBaseStart(text, parenStart)
+
+            if (baseStart > cursor) {
+                segments.add(FuriganaSegment(text = text.substring(cursor, baseStart)))
+            }
+
+            val baseText = text.substring(baseStart, parenStart)
+            segments.add(FuriganaSegment(text = baseText, ruby = ruby))
+            cursor = match.range.last + 1
+        }
+
+        if (cursor < text.length) {
+            segments.add(FuriganaSegment(text = text.substring(cursor)))
+        }
+
+        return segments
     }
 
-    /**
-     * Parses text containing inline furigana annotations into segments of base text and optional ruby reading.
-     */
-    fun parseFurigana(text: String): List<FuriganaSegment> {
-        val result = mutableListOf<FuriganaSegment>()
-        var lastIndex = 0
+    private fun findBaseStart(text: String, parenStart: Int): Int {
+        var idx = parenStart - 1
+        if (idx < 0) return parenStart
 
-        for (match in furiganaRegex.findAll(text)) {
-            val range = match.range
-            if (range.first > lastIndex) {
-                result.add(FuriganaSegment(text = text.substring(lastIndex, range.first)))
+        // 1. Scan backward over trailing okurigana (up to 3 non-particle kana, e.g. 友だち, 少し, 暖かく)
+        var trailingKanaCount = 0
+        while (idx >= 0 && isKana(text[idx]) && text[idx] !in particles) {
+            trailingKanaCount++
+            idx--
+            if (trailingKanaCount >= 3) break
+        }
+
+        // 2. Scan backward over primary kanji stem
+        var kanjiCount = 0
+        while (idx >= 0 && isHan(text[idx])) {
+            kanjiCount++
+            idx--
+        }
+
+        if (kanjiCount == 0) {
+            // No kanji found before paren
+            return idx + 1
+        }
+
+        // 3. Check for compound word stem: 1-2 internal non-particle kana preceded by kanji (e.g. 買い物, 昼ご飯)
+        var compIdx = idx
+        var internalKanaCount = 0
+        while (compIdx >= 0 && isKana(text[compIdx]) && text[compIdx] !in particles) {
+            internalKanaCount++
+            compIdx--
+            if (internalKanaCount > 2) break
+        }
+
+        if (internalKanaCount in 1..2 && compIdx >= 0 && isHan(text[compIdx])) {
+            while (compIdx >= 0 && isHan(text[compIdx])) {
+                compIdx--
             }
-            val base = match.groupValues[1]
-            val ruby = match.groupValues[2]
-            result.add(FuriganaSegment(text = base, ruby = ruby))
-            lastIndex = range.last + 1
+            return compIdx + 1
         }
 
-        if (lastIndex < text.length) {
-            result.add(FuriganaSegment(text = text.substring(lastIndex)))
-        }
-
-        return result
+        return idx + 1
     }
 }
