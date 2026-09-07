@@ -211,12 +211,18 @@ class DeterministicGrammarLessonGenerator : GrammarLessonGenerator {
             val item = if (i < grammar.examples.size) {
                 val ex = grammar.examples[i]
                 val segments = dev.studycanvas.app.grammar.FuriganaUtils.parseFurigana(ex.jp)
-                val kanjiPairs = segments.filter { it.ruby != null }.joinToString(", ") { seg ->
-                    val honorific = if (ex.jp.contains("お${seg.text}(") || ex.jp.contains("ご${seg.text}(")) {
-                        if (ex.jp.contains("お${seg.text}(")) "お" else "ご"
-                    } else ""
+                val kanjiPairs = segments.mapIndexedNotNull { segIdx, seg ->
+                    if (seg.ruby == null) return@mapIndexedNotNull null
+                    val prevSeg = if (segIdx > 0) segments[segIdx - 1] else null
+                    val honorific = when {
+                        prevSeg != null && prevSeg.ruby == null &&
+                            (prevSeg.text.endsWith("お") || prevSeg.text.endsWith("ご")) -> {
+                            if (prevSeg.text.endsWith("お")) "お" else "ご"
+                        }
+                        else -> ""
+                    }
                     "${honorific}${seg.text} (${seg.ruby})"
-                }
+                }.joinToString(", ")
                 val vocab = if (kanjiPairs.isNotBlank()) {
                     "kanji: $kanjiPairs"
                 } else {

@@ -55,7 +55,7 @@ data class FuriganaSegment(
 object FuriganaUtils {
     private val rubyPattern = Regex("\\(([ぁ-んァ-ヶー]+)\\)")
     private val trailingBoundaryParticles = setOf('の', 'は', 'が', 'を', 'に', 'で', 'へ', 'と', 'も')
-    private val compoundBoundaryParticles = setOf('の', 'は', 'が', 'を', 'に', 'で', 'へ', 'と', 'も', 'か', 'や', 'り', 'よ', 'ら', 'ま', 'な', 'ど')
+    private val compoundBoundaryParticles = setOf('の', 'は', 'が', 'を', 'に', 'で', 'へ', 'と', 'も', 'か', 'や', 'よ', 'ら')
     private val punctuation = setOf('。', '、', '！', '？', '!', '?', '（', '）', '(', ')', '\u3000', ' ', '\t', '\n')
 
     private fun isHan(c: Char): Boolean =

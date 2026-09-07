@@ -284,6 +284,14 @@ class GrammarDatasetTest {
         assertEquals(FuriganaSegment("新幹線", "しんかんせん"), tripSegments[3])
         assertEquals(FuriganaSegment("で行きます。"), tripSegments[4])
 
+        // Regression: particle 'まで' boundary before kanji
+        val studyUntil = "5時まで勉強(べんきょう)します。"
+        val studySegments = FuriganaUtils.parseFurigana(studyUntil)
+        assertEquals(3, studySegments.size)
+        assertEquals(FuriganaSegment("5時まで"), studySegments[0])
+        assertEquals(FuriganaSegment("勉強", "べんきょう"), studySegments[1])
+        assertEquals(FuriganaSegment("します。"), studySegments[2])
+
         // Regression: disjunctive particle 'か' must not be swallowed into base
         val drinks = "コーヒーか紅茶(こうちゃ)を飲みます。"
         val drinksSegments = FuriganaUtils.parseFurigana(drinks)

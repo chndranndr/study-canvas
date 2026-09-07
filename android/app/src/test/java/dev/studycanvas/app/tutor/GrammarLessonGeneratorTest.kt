@@ -105,6 +105,37 @@ class GrammarLessonGeneratorTest {
     }
 
     @Test
+    fun `deterministic generator preserves leading honorific in vocabulary hint from preceding segment`() = runBlocking {
+        val honorificGrammar = GrammarEntry(
+            id = "99",
+            title = "honorific example",
+            level = "N5",
+            category = "Nouns",
+            pattern = "o-N",
+            explanation = "Polite noun",
+            examples = listOf(
+                GrammarExample("お茶(ちゃ)を飲(の)みます。", "ocha o nomimasu.", "I drink green tea."),
+                GrammarExample("昼(ひる)ご飯(はん)を食(た)べます。", "hirugohan o tabemasu.", "I eat lunch."),
+                GrammarExample("おもしろい本(ほん)を読(よ)みます。", "omoshiroi hon o yomimasu.", "I read an interesting book."),
+                GrammarExample("水(みず)を飲(の)みます。", "mizu o nomimasu.", "I drink water."),
+            ),
+            quiz = emptyList(),
+        )
+
+        val result = generator.generate(honorificGrammar, 10).getOrThrow()
+
+        val ex1 = result.exercises[0]
+        assertTrue("Hint should contain お茶 (ちゃ)", ex1.hints.vocabulary.contains("お茶 (ちゃ)"))
+
+        val ex2 = result.exercises[1]
+        assertTrue("Hint should contain ご飯 (はん)", ex2.hints.vocabulary.contains("ご飯 (はん)"))
+
+        val ex3 = result.exercises[2]
+        assertTrue("Hint should contain 本 (ほん)", ex3.hints.vocabulary.contains("本 (ほん)"))
+        assertFalse("Hint should not falsely prepend お to 本", ex3.hints.vocabulary.contains("お本 (ほん)"))
+    }
+
+    @Test
     fun `validator rejects mismatched grammarId`() {
         val generated = GeneratedGrammarLesson(
             grammarId = "99",
