@@ -272,6 +272,7 @@ interface GeneratedLessonDao {
         GeneratedLessonEntity::class,
     ],
     version = 3,
+    exportSchema = false,
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract fun lessonDao(): LessonDao
