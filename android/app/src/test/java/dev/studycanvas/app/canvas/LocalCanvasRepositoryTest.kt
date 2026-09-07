@@ -12,7 +12,6 @@ import dev.studycanvas.app.grammar.GrammarEntry
 import dev.studycanvas.app.grammar.GrammarExample
 import dev.studycanvas.app.grammar.GrammarQuiz
 import dev.studycanvas.app.grammar.LocalGrammarContentRepository
-import dev.studycanvas.app.tutor.DeterministicAiTutorClient
 import dev.studycanvas.app.tutor.DeterministicGrammarLessonGenerator
 import dev.studycanvas.app.tutor.GeneratedGrammarLesson
 import dev.studycanvas.app.tutor.GrammarLessonGenerator
@@ -232,15 +231,4 @@ class LocalCanvasRepositoryTest {
         assertEquals(400f, updated?.y ?: 0f, 0.0001f)
     }
 
-    @Test
-    fun generateAndSaveLesson_cachesGeneratedElementsLocally() = runBlocking {
-        val dao = FakeLessonDao()
-        val repository = LocalCanvasRepository(dao)
-        val client = DeterministicAiTutorClient()
-
-        val result = repository.generateAndSaveLesson("tai-desu-demo", "tai-desu", client)
-        assertTrue(result.isSuccess)
-        val lesson = result.getOrThrow()
-        assertTrue(lesson.elements.any { it.kind == CanvasElementKind.EXERCISE })
-    }
 }

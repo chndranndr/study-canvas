@@ -72,9 +72,7 @@ import dev.studycanvas.app.data.AppDatabase
 import dev.studycanvas.app.canvas.ViewportState
 import dev.studycanvas.app.canvas.phaseOneFallbackLesson
 import dev.studycanvas.app.ink.HandwritingSurface
-import dev.studycanvas.app.tutor.AiTutorClient
 import dev.studycanvas.app.tutor.ApiKeyStorage
-import dev.studycanvas.app.tutor.GeminiAiTutorClient
 import kotlinx.coroutines.launch
 import kotlin.math.PI
 import kotlin.math.abs
