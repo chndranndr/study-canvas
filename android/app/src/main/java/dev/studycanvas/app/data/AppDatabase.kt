@@ -152,6 +152,18 @@ data class ReviewScheduleEntity(
     val createdAt: Long = System.currentTimeMillis(),
     val updatedAt: Long = System.currentTimeMillis(),
 )
+@Entity(tableName = "generated_lessons")
+data class GeneratedLessonEntity(
+    @PrimaryKey val grammarId: String,
+    val generatorVersion: String = "gemini-1.5-flash",
+    val summary: String = "",
+    val formation: String = "",
+    val commonMistakesJson: String = "[]",
+    val notesJson: String = "[]",
+    val exercisesJson: String = "[]",
+    val generatedAt: Long = System.currentTimeMillis(),
+)
+
 
 @Dao
 interface LessonDao {
@@ -233,6 +245,18 @@ interface ReviewDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun upsertReview(review: ReviewScheduleEntity)
 }
+@Dao
+interface GeneratedLessonDao {
+    @Query("SELECT * FROM generated_lessons WHERE grammarId = :grammarId")
+    suspend fun getGeneratedLesson(grammarId: String): GeneratedLessonEntity?
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertGeneratedLesson(lesson: GeneratedLessonEntity)
+
+    @Query("DELETE FROM generated_lessons WHERE grammarId = :grammarId")
+    suspend fun deleteGeneratedLesson(grammarId: String)
+}
+
 
 @Database(
     entities = [
@@ -244,9 +268,9 @@ interface ReviewDao {
         LearnerMasteryEntity::class,
         TutorMemoryEntity::class,
         ReviewScheduleEntity::class,
+        GeneratedLessonEntity::class,
     ],
-    version = 1,
-    exportSchema = false,
+    version = 2,
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract fun lessonDao(): LessonDao
@@ -255,6 +279,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun attemptDao(): AttemptDao
     abstract fun tutorMemoryDao(): TutorMemoryDao
     abstract fun reviewDao(): ReviewDao
+    abstract fun generatedLessonDao(): GeneratedLessonDao
 
     companion object {
         @Volatile

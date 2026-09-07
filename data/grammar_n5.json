@@ -1,0 +1,6556 @@
+{
+  "lessons": [
+    {
+      "id": "1",
+      "title": "i-adjectives (Affirmative)",
+      "level": "N5",
+      "category": "Adjectives",
+      "pattern": "~i desu",
+      "explanation": "Polite present affirmative for i-adjectives (ending in -い): [Adj-i] + です. Use it to describe a current state or a general fact. Plain form drops です: おもしろい。",
+      "examples": [
+        {
+          "jp": "おもしろいです。",
+          "romaji": "omoshiroi desu.",
+          "en": "Interesting."
+        },
+        {
+          "jp": "このレストランは安(やす)いです。",
+          "romaji": "kono resutoran wa yasui desu.",
+          "en": "This restaurant is cheap."
+        },
+        {
+          "jp": "今日(きょう)は暑(あつ)いです。",
+          "romaji": "kyou wa atsui desu.",
+          "en": "It's hot today."
+        },
+        {
+          "jp": "日本語(にほんご)はむずかしいですが、おもしろいです。",
+          "romaji": "nihongo wa muzukashii desu ga, omoshiroi desu.",
+          "en": "Japanese is difficult, but interesting."
+        }
+      ],
+      "quiz": [
+        {
+          "id": 1,
+          "type": "mc_conjugation_time",
+          "question_en": "Choose the correct polite sentence for today (今日).",
+          "hint_en": "Target: present aff",
+          "choices": [
+            "おもしろいです",
+            "おもしろくないです",
+            "おもしろかったです",
+            "おもしろくなかったです"
+          ],
+          "answer": "おもしろいです",
+          "choices_raw": [
+            "おもしろいです",
+            "おもしろくないです",
+            "おもしろかったです",
+            "おもしろくなかったです"
+          ],
+          "answer_raw": "おもしろいです"
+        },
+        {
+          "id": 2,
+          "type": "fill_conjugation_chunk",
+          "question_jp": "今日(きょう)はおもしろ（　）です。",
+          "question_en": "Fill the blank with the correct conjugation chunk.",
+          "choices": [
+            "い",
+            "くない",
+            "かった",
+            "くなかった"
+          ],
+          "answer": "い",
+          "choices_raw": [
+            "い",
+            "くない",
+            "かった",
+            "くなかった"
+          ],
+          "answer_raw": "い"
+        },
+        {
+          "id": 3,
+          "type": "mc_formality_variant",
+          "question_en": "Which option is the casual (plain) version of the target sentence?",
+          "target_jp": "おもしろいです",
+          "choices": [
+            "おもしろい",
+            "おもしろいです",
+            "おもしろかったです"
+          ],
+          "answer": "おもしろい",
+          "sentence_en": "Interesting.",
+          "choices_raw": [
+            "おもしろい",
+            "おもしろいです",
+            "おもしろかったです"
+          ],
+          "answer_raw": "おもしろい"
+        }
+      ]
+    },
+    {
+      "id": "2",
+      "title": "i-adjectives (Negative)",
+      "level": "N5",
+      "category": "Adjectives",
+      "pattern": "~ku arimasen / ~ku nai desu",
+      "explanation": "Polite present negative for i-adjectives: change -い → -くありません (more formal) or -くないです. Plain form is -くない.",
+      "examples": [
+        {
+          "jp": "おもしろくありません。",
+          "romaji": "omoshiroku arimasen.",
+          "en": "Not interesting."
+        },
+        {
+          "jp": "このコーヒーは熱(あつ)くありません。",
+          "romaji": "kono koohii wa atsuku arimasen.",
+          "en": "This coffee's not hot."
+        },
+        {
+          "jp": "今日(きょう)は忙(いそが)しくないです。",
+          "romaji": "kyou wa isogashiku nai desu.",
+          "en": "I'm not busy today."
+        },
+        {
+          "jp": "その映画(えいが)は長(なが)くないです。",
+          "romaji": "sono eiga wa nagaku nai desu.",
+          "en": "It's not long."
+        }
+      ],
+      "quiz": [
+        {
+          "id": 1,
+          "type": "mc_conjugation_time",
+          "question_en": "Choose the correct polite sentence for today (今日).",
+          "hint_en": "Target: present neg",
+          "choices": [
+            "おもしろいです",
+            "おもしろくありません",
+            "おもしろかったです",
+            "おもしろくありませんでした"
+          ],
+          "answer": "おもしろくありません",
+          "choices_raw": [
+            "おもしろいです",
+            "おもしろくありません",
+            "おもしろかったです",
+            "おもしろくありませんでした"
+          ],
+          "answer_raw": "おもしろくありません"
+        },
+        {
+          "id": 2,
+          "type": "fill_conjugation_chunk",
+          "question_jp": "今日(きょう)はおもしろ（　）。",
+          "question_en": "Fill the blank with the correct conjugation chunk.",
+          "choices": [
+            "くありません",
+            "い",
+            "くない",
+            "かった"
+          ],
+          "answer": "くありません",
+          "choices_raw": [
+            "くありません",
+            "い",
+            "くない",
+            "かった"
+          ],
+          "answer_raw": "くありません"
+        },
+        {
+          "id": 3,
+          "type": "mc_formality_variant",
+          "question_en": "Which option is the casual (plain) version of the target sentence?",
+          "target_jp": "おもしろくありません",
+          "choices": [
+            "おもしろくない",
+            "おもしろくありません",
+            "おもしろいです",
+            "おもしろかったです"
+          ],
+          "answer": "おもしろくない",
+          "sentence_en": "Not interesting.",
+          "choices_raw": [
+            "おもしろくない",
+            "おもしろくありません",
+            "おもしろいです",
+            "おもしろかったです"
+          ],
+          "answer_raw": "おもしろくない"
+        }
+      ]
+    },
+    {
+      "id": "3",
+      "title": "i-adjectives (Past)",
+      "level": "N5",
+      "category": "Adjectives",
+      "pattern": "~katta desu",
+      "explanation": "Polite past affirmative for i-adjectives: -い → -かったです. Use it for a past state (yesterday, last week, earlier, etc.).",
+      "examples": [
+        {
+          "jp": "おもしろかったです。",
+          "romaji": "omoshirokatta desu.",
+          "en": "It was interesting."
+        },
+        {
+          "jp": "試験(しけん)は難(むずか)しかったです。",
+          "romaji": "shiken wa muzukashikatta desu.",
+          "en": "The test was difficult."
+        },
+        {
+          "jp": "昨日(きのう)のパーティーは楽(たの)しかったです。",
+          "romaji": "kinou no paatii wa tanoshikatta desu.",
+          "en": "Yesterday's party was fun."
+        },
+        {
+          "jp": "そのかばんは高(たか)かったです。",
+          "romaji": "sono kaban wa takakatta desu.",
+          "en": "That bag was expensive."
+        }
+      ],
+      "quiz": [
+        {
+          "id": 1,
+          "type": "mc_conjugation_time",
+          "question_en": "Choose the correct polite sentence for yesterday (昨日).",
+          "hint_en": "Target: past aff",
+          "choices": [
+            "おもしろいです",
+            "おもしろくないです",
+            "おもしろかったです",
+            "おもしろくなかったです"
+          ],
+          "answer": "おもしろかったです",
+          "choices_raw": [
+            "おもしろいです",
+            "おもしろくないです",
+            "おもしろかったです",
+            "おもしろくなかったです"
+          ],
+          "answer_raw": "おもしろかったです"
+        },
+        {
+          "id": 2,
+          "type": "fill_conjugation_chunk",
+          "question_jp": "昨日(きのう)はおもしろ（　）です。",
+          "question_en": "Fill the blank with the correct conjugation chunk.",
+          "choices": [
+            "かった",
+            "い",
+            "くない",
+            "くなかった"
+          ],
+          "answer": "かった",
+          "choices_raw": [
+            "かった",
+            "い",
+            "くない",
+            "くなかった"
+          ],
+          "answer_raw": "かった"
+        },
+        {
+          "id": 3,
+          "type": "mc_formality_variant",
+          "question_en": "Which option is the casual (plain) version of the target sentence?",
+          "target_jp": "おもしろかったです",
+          "choices": [
+            "おもしろかった",
+            "おもしろかったです",
+            "おもしろいです"
+          ],
+          "answer": "おもしろかった",
+          "sentence_en": "It was interesting.",
+          "choices_raw": [
+            "おもしろかった",
+            "おもしろかったです",
+            "おもしろいです"
+          ],
+          "answer_raw": "おもしろかった"
+        }
+      ]
+    },
+    {
+      "id": "4",
+      "title": "i-adjectives (Past Negative)",
+      "level": "N5",
+      "category": "Adjectives",
+      "pattern": "~ku arimasen deshita / ~ku nakatta desu",
+      "explanation": "Polite past negative for i-adjectives: -い → -くありませんでした (formal) or -くなかったです. Plain form is -くなかった.",
+      "examples": [
+        {
+          "jp": "おもしろくなかったです。",
+          "romaji": "omoshiroku nakatta desu.",
+          "en": "It wasn't interesting."
+        },
+        {
+          "jp": "昨日(きのう)は寒(さむ)くなかったです。",
+          "romaji": "kinou wa samuku nakatta desu.",
+          "en": "It wasn't cold yesterday."
+        },
+        {
+          "jp": "そのテストはあまり難(むずか)しくありませんでした。",
+          "romaji": "sono tesuto wa amari muzukashiku arimasen deshita.",
+          "en": "The test wasn't that difficult."
+        },
+        {
+          "jp": "旅行(りょこう)は長(なが)くなかったです。",
+          "romaji": "ryokou wa nagaku nakatta desu.",
+          "en": "The trip wasn't long."
+        }
+      ],
+      "quiz": [
+        {
+          "id": 1,
+          "type": "mc_conjugation_time",
+          "question_en": "Choose the correct polite sentence for yesterday (昨日).",
+          "hint_en": "Target: past neg",
+          "choices": [
+            "おもしろいです",
+            "おもしろくありません",
+            "おもしろかったです",
+            "おもしろくありませんでした"
+          ],
+          "answer": "おもしろくありませんでした",
+          "choices_raw": [
+            "おもしろいです",
+            "おもしろくありません",
+            "おもしろかったです",
+            "おもしろくありませんでした"
+          ],
+          "answer_raw": "おもしろくありませんでした"
+        },
+        {
+          "id": 2,
+          "type": "fill_conjugation_chunk",
+          "question_jp": "昨日(きのう)はおもしろ（　）。",
+          "question_en": "Fill the blank with the correct conjugation chunk.",
+          "choices": [
+            "くありませんでした",
+            "い",
+            "くない",
+            "かった"
+          ],
+          "answer": "くありませんでした",
+          "choices_raw": [
+            "くありませんでした",
+            "い",
+            "くない",
+            "かった"
+          ],
+          "answer_raw": "くありませんでした"
+        },
+        {
+          "id": 3,
+          "type": "mc_formality_variant",
+          "question_en": "Which option is the casual (plain) version of the target sentence?",
+          "target_jp": "おもしろくありませんでした",
+          "choices": [
+            "おもしろくなかった",
+            "おもしろくありませんでした",
+            "おもしろいです",
+            "おもしろかったです"
+          ],
+          "answer": "おもしろくなかった",
+          "sentence_en": "It wasn't interesting.",
+          "choices_raw": [
+            "おもしろくなかった",
+            "おもしろくありませんでした",
+            "おもしろいです",
+            "おもしろかったです"
+          ],
+          "answer_raw": "おもしろくなかった"
+        }
+      ]
+    },
+    {
+      "id": "5",
+      "title": "Irregular i-adjective: いい",
+      "level": "N5",
+      "category": "Adjectives",
+      "pattern": "いいです / よくないです / よかったです / よくなかったです",
+      "explanation": "いい is irregular. The present affirmative is いい, but its negative and past forms use the stem よ-: よくない, よかった, and よくなかった. Polite forms include いいです, よくないです, よかったです, and よくなかったです.",
+      "examples": [
+        {
+          "jp": "昨日(きのう)の天気(てんき)はよくなかったです。",
+          "romaji": "kinou no tenki wa yoku nakatta desu.",
+          "en": "The weather was not good yesterday."
+        },
+        {
+          "jp": "この店(みせ)はサービスがいいです。",
+          "romaji": "kono mise wa saabisu ga ii desu.",
+          "en": "This shop has good service."
+        },
+        {
+          "jp": "今日(きょう)はあまりよくないです。",
+          "romaji": "kyou wa amari yoku nai desu.",
+          "en": "Today is not so good."
+        },
+        {
+          "jp": "昨日(きのう)は天気(てんき)がよかったです。",
+          "romaji": "kinou wa tenki ga yokatta desu.",
+          "en": "The weather was nice yesterday."
+        }
+      ],
+      "quiz": [
+        {
+          "id": 1,
+          "type": "mc_target_form",
+          "question_en": "Choose the correct past negative form of いいです.",
+          "hint_en": "いい changes to よく in negative forms.",
+          "choices": [
+            "よくなかったです",
+            "いいくなかったです",
+            "よくありません",
+            "よかったです"
+          ],
+          "answer": "よくなかったです",
+          "choices_raw": [
+            "よくなかったです",
+            "いいくなかったです",
+            "よくありません",
+            "よかったです"
+          ],
+          "answer_raw": "よくなかったです"
+        },
+        {
+          "id": 2,
+          "type": "fill_target_form",
+          "question_en": "Fill the blank with the correct form of いい.",
+          "question_jp": "今日(きょう)は天気(てんき)が（　）です。",
+          "choices": [
+            "よくない",
+            "いいくない",
+            "よいない",
+            "よかった"
+          ],
+          "answer": "よくない",
+          "choices_raw": [
+            "よくない",
+            "いいくない",
+            "よいない",
+            "よかった"
+          ],
+          "answer_raw": "よくない"
+        },
+        {
+          "id": 3,
+          "type": "mc_target_usage",
+          "question_en": "Choose the grammatically correct sentence.",
+          "choices": [
+            "この店(みせ)はサービスがいいです。",
+            "この店(みせ)はサービスがよくです。",
+            "この店(みせ)はサービスがいいくないです。",
+            "この店(みせ)はサービスがよかったないです。"
+          ],
+          "answer": "この店(みせ)はサービスがいいです。",
+          "choices_raw": [
+            "この店はサービスがいいです。",
+            "この店はサービスがよくです。",
+            "この店はサービスがいいくないです。",
+            "この店はサービスがよかったないです。"
+          ],
+          "answer_raw": "この店はサービスがいいです。"
+        }
+      ]
+    },
+    {
+      "id": "6",
+      "title": "na-adjectives (Affirmative)",
+      "level": "N5",
+      "category": "Adjectives",
+      "pattern": "~desu",
+      "explanation": "Polite present affirmative for na-adjectives: [Adj-na] + です. When directly modifying a noun, use [Adj-na] + な + N (e.g., きれいな部屋).",
+      "examples": [
+        {
+          "jp": "きれいです。",
+          "romaji": "kirei desu.",
+          "en": "It is beautiful or clean, depending on context."
+        },
+        {
+          "jp": "この部屋(へや)は静(しず)かです。",
+          "romaji": "kono heya wa shizuka desu.",
+          "en": "This room is quiet."
+        },
+        {
+          "jp": "山田(やまだ)さんは親切(しんせつ)です。",
+          "romaji": "yamada-san wa shinsetsu desu.",
+          "en": "Yamada-san is kind."
+        },
+        {
+          "jp": "ここは便利(べんり)です。",
+          "romaji": "koko wa benri desu.",
+          "en": "This place is convenient."
+        }
+      ],
+      "quiz": [
+        {
+          "id": 1,
+          "type": "mc_copula_time",
+          "question_en": "Choose the correct sentence for today (今日).",
+          "hint_en": "Target: present aff",
+          "choices": [
+            "きれいです",
+            "きれいではありません",
+            "きれいでした",
+            "きれいではありませんでした"
+          ],
+          "answer": "きれいです",
+          "choices_raw": [
+            "きれいです",
+            "きれいではありません",
+            "きれいでした",
+            "きれいではありませんでした"
+          ],
+          "answer_raw": "きれいです"
+        },
+        {
+          "id": 2,
+          "type": "mc_target_usage",
+          "question_en": "Choose the correct na-adjective + noun phrase.",
+          "choices": [
+            "きれいな部屋(へや)",
+            "きれいの部屋(へや)",
+            "きれい部屋(へや)",
+            "きれいに部屋(へや)"
+          ],
+          "answer": "きれいな部屋(へや)",
+          "choices_raw": [
+            "きれいな部屋",
+            "きれいの部屋",
+            "きれい部屋",
+            "きれいに部屋"
+          ],
+          "answer_raw": "きれいな部屋"
+        },
+        {
+          "id": 3,
+          "type": "fill_copula_ending",
+          "question_jp": "今日(きょう)はきれい（　）。",
+          "question_en": "Fill the blank with the correct ending.",
+          "choices": [
+            "です",
+            "でした",
+            "じゃないです",
+            "じゃなかったです"
+          ],
+          "answer": "です",
+          "choices_raw": [
+            "です",
+            "でした",
+            "じゃないです",
+            "じゃなかったです"
+          ],
+          "answer_raw": "です"
+        }
+      ]
+    },
+    {
+      "id": "7",
+      "title": "na-adjectives (Negative)",
+      "level": "N5",
+      "category": "Adjectives",
+      "pattern": "~dewa arimasen / ~ja nai desu",
+      "explanation": "Polite present negative for na-adjectives and nouns: ～ではありません (formal) / ～じゃないです. では is often shortened to じゃ in speech. Plain: ～じゃない.",
+      "examples": [
+        {
+          "jp": "きれいじゃないです。",
+          "romaji": "kirei ja nai desu.",
+          "en": "Not pretty."
+        },
+        {
+          "jp": "ここは静(しず)かじゃないです。",
+          "romaji": "koko wa shizuka ja nai desu.",
+          "en": "It's not quiet."
+        },
+        {
+          "jp": "田中(たなか)さんは先生(せんせい)ではありません。",
+          "romaji": "tanaka-san wa sensei de wa arimasen.",
+          "en": "Tanaka-san is not a teacher."
+        },
+        {
+          "jp": "この町(まち)は有名(ゆうめい)じゃないです。",
+          "romaji": "kono machi wa yuumei ja nai desu.",
+          "en": "This town is not famous."
+        }
+      ],
+      "quiz": [
+        {
+          "id": 1,
+          "type": "mc_copula_time",
+          "question_en": "Choose the correct sentence for today (今日).",
+          "hint_en": "Target: present neg",
+          "choices": [
+            "きれいです",
+            "きれいではありません",
+            "きれいでした",
+            "きれいではありませんでした"
+          ],
+          "answer": "きれいではありません",
+          "choices_raw": [
+            "きれいです",
+            "きれいではありません",
+            "きれいでした",
+            "きれいではありませんでした"
+          ],
+          "answer_raw": "きれいではありません"
+        },
+        {
+          "id": 2,
+          "type": "mc_variant_formal_vs_neutral",
+          "question_en": "Which option is the MORE FORMAL negative?",
+          "choices": [
+            "きれいではありません",
+            "きれいじゃないです",
+            "きれいです",
+            "きれいでした"
+          ],
+          "answer": "きれいではありません",
+          "choices_raw": [
+            "きれいではありません",
+            "きれいじゃないです",
+            "きれいです",
+            "きれいでした"
+          ],
+          "answer_raw": "きれいではありません"
+        },
+        {
+          "id": 3,
+          "type": "fill_copula_ending",
+          "question_jp": "今日(きょう)はきれい（　）。",
+          "question_en": "Fill the blank with the correct ending.",
+          "choices": [
+            "じゃないです",
+            "です",
+            "でした",
+            "じゃなかったです"
+          ],
+          "answer": "じゃないです",
+          "choices_raw": [
+            "じゃないです",
+            "です",
+            "でした",
+            "じゃなかったです"
+          ],
+          "answer_raw": "じゃないです"
+        }
+      ]
+    },
+    {
+      "id": "8",
+      "title": "na-adjectives (Past)",
+      "level": "N5",
+      "category": "Adjectives",
+      "pattern": "~deshita",
+      "explanation": "Polite past affirmative for na-adjectives and nouns: ～でした. Use it for past states/identities (e.g., 元気でした / 学生でした).",
+      "examples": [
+        {
+          "jp": "きれいでした。",
+          "romaji": "kirei deshita.",
+          "en": "It was pretty/clean."
+        },
+        {
+          "jp": "学生(がくせい)のとき、毎日(まいにち)元気(げんき)でした。",
+          "romaji": "gakusei no toki, mainichi genki deshita.",
+          "en": "When I was a student, I felt energetic every day."
+        },
+        {
+          "jp": "昨日(きのう)、その店(みせ)はにぎやかでした。",
+          "romaji": "kinou, sono mise wa nigiyaka deshita.",
+          "en": "That store was lively yesterday."
+        },
+        {
+          "jp": "子(こ)どものころ、この公園(こうえん)は有名(ゆうめい)でした。",
+          "romaji": "kodomo no koro, kono kouen wa yuumei deshita.",
+          "en": "As a kid, this park was famous."
+        }
+      ],
+      "quiz": [
+        {
+          "id": 1,
+          "type": "mc_copula_time",
+          "question_en": "Choose the correct sentence for yesterday (昨日).",
+          "hint_en": "Target: past aff",
+          "choices": [
+            "きれいです",
+            "きれいではありません",
+            "きれいでした",
+            "きれいではありませんでした"
+          ],
+          "answer": "きれいでした",
+          "choices_raw": [
+            "きれいです",
+            "きれいではありません",
+            "きれいでした",
+            "きれいではありませんでした"
+          ],
+          "answer_raw": "きれいでした"
+        },
+        {
+          "id": 2,
+          "type": "mc_target_form",
+          "question_en": "Choose the correct past form of 静かです.",
+          "choices": [
+            "静(しず)かでした",
+            "静(しず)かです",
+            "静(しず)かではありません",
+            "静(しず)かじゃないです"
+          ],
+          "answer": "静(しず)かでした",
+          "choices_raw": [
+            "静かでした",
+            "静かです",
+            "静かではありません",
+            "静かじゃないです"
+          ],
+          "answer_raw": "静かでした"
+        },
+        {
+          "id": 3,
+          "type": "fill_copula_ending",
+          "question_jp": "昨日(きのう)はきれい（　）。",
+          "question_en": "Fill the blank with the correct ending.",
+          "choices": [
+            "でした",
+            "です",
+            "じゃないです",
+            "じゃなかったです"
+          ],
+          "answer": "でした",
+          "choices_raw": [
+            "でした",
+            "です",
+            "じゃないです",
+            "じゃなかったです"
+          ],
+          "answer_raw": "でした"
+        }
+      ]
+    },
+    {
+      "id": "9",
+      "title": "na-adjectives (Past Negative)",
+      "level": "N5",
+      "category": "Adjectives",
+      "pattern": "~dewa arimasen deshita / ~ja nakatta desu",
+      "explanation": "Polite past negative for na-adjectives and nouns: ～ではありませんでした / ～じゃなかったです. Plain: ～じゃなかった.",
+      "examples": [
+        {
+          "jp": "きれいじゃなかったです。",
+          "romaji": "kirei ja nakatta desu.",
+          "en": "It wasn't pretty."
+        },
+        {
+          "jp": "昨日(きのう)は元気(げんき)じゃなかったです。",
+          "romaji": "kinou wa genki ja nakatta desu.",
+          "en": "I wasn't feeling well yesterday."
+        },
+        {
+          "jp": "あのレストランは静(しず)かではありませんでした。",
+          "romaji": "ano resutoran wa shizuka de wa arimasen deshita.",
+          "en": "That restaurant wasn't quiet."
+        },
+        {
+          "jp": "子(こ)どものころ、私(わたし)は有名(ゆうめい)じゃなかったです。",
+          "romaji": "kodomo no koro, watashi wa yuumei ja nakatta desu.",
+          "en": "When I was a kid, I wasn't famous."
+        }
+      ],
+      "quiz": [
+        {
+          "id": 1,
+          "type": "mc_copula_time",
+          "question_en": "Choose the correct sentence for yesterday (昨日).",
+          "hint_en": "Target: past neg",
+          "choices": [
+            "きれいです",
+            "きれいではありません",
+            "きれいでした",
+            "きれいではありませんでした"
+          ],
+          "answer": "きれいではありませんでした",
+          "choices_raw": [
+            "きれいです",
+            "きれいではありません",
+            "きれいでした",
+            "きれいではありませんでした"
+          ],
+          "answer_raw": "きれいではありませんでした"
+        },
+        {
+          "id": 2,
+          "type": "fill_target_form",
+          "question_en": "Complete the past negative na-adjective sentence.",
+          "question_jp": "昨日(きのう)、この町(まち)は静(しず)か（　）。",
+          "choices": [
+            "ではありませんでした",
+            "ではありません",
+            "でした",
+            "くありませんでした"
+          ],
+          "answer": "ではありませんでした",
+          "choices_raw": [
+            "ではありませんでした",
+            "ではありません",
+            "でした",
+            "くありませんでした"
+          ],
+          "answer_raw": "ではありませんでした"
+        },
+        {
+          "id": 3,
+          "type": "fill_copula_ending",
+          "question_jp": "昨日(きのう)はきれい（　）。",
+          "question_en": "Fill the blank with the correct ending.",
+          "choices": [
+            "じゃなかったです",
+            "です",
+            "でした",
+            "じゃないです"
+          ],
+          "answer": "じゃなかったです",
+          "choices_raw": [
+            "じゃなかったです",
+            "です",
+            "でした",
+            "じゃないです"
+          ],
+          "answer_raw": "じゃなかったです"
+        }
+      ]
+    },
+    {
+      "id": "10",
+      "title": "Modifying Nouns (i-adjectives)",
+      "level": "N5",
+      "category": "Nouns",
+      "pattern": "Adj-i + N",
+      "explanation": "To modify a noun with an i-adjective, put the adjective directly before the noun: [Adj-i] + N. No particle is used (e.g., 新しいかばん).",
+      "examples": [
+        {
+          "jp": "高(たか)い山(やま)。",
+          "romaji": "takai yama.",
+          "en": "A tall mountain."
+        },
+        {
+          "jp": "おいしい料理(りょうり)を食(た)べました。",
+          "romaji": "oishii ryouri o tabemashita.",
+          "en": "I ate delicious food."
+        },
+        {
+          "jp": "新(あたら)しいかばんを買(か)います。",
+          "romaji": "atarashii kaban o kaimasu.",
+          "en": "I'll buy a new bag."
+        },
+        {
+          "jp": "小(ちい)さい子(こ)どもがいます。",
+          "romaji": "chiisai kodomo ga imasu.",
+          "en": "There is a small child."
+        }
+      ],
+      "quiz": [
+        {
+          "id": 1,
+          "type": "mc_target_form",
+          "question_en": "Choose the correct i-adjective + noun phrase.",
+          "choices": [
+            "新(あたら)しい本(ほん)",
+            "新(あたら)しく本(ほん)",
+            "新(あたら)しいな本(ほん)",
+            "新(あたら)し本(ほん)"
+          ],
+          "answer": "新(あたら)しい本(ほん)",
+          "choices_raw": [
+            "新しい本",
+            "新しく本",
+            "新しいな本",
+            "新し本"
+          ],
+          "answer_raw": "新しい本"
+        },
+        {
+          "id": 2,
+          "type": "fill_target_form",
+          "question_en": "Choose the word that completes the noun phrase.",
+          "question_jp": "おいしい（　）を食(た)べました。",
+          "choices": [
+            "料理(りょうり)",
+            "です",
+            "に",
+            "な"
+          ],
+          "answer": "料理(りょうり)",
+          "choices_raw": [
+            "料理",
+            "です",
+            "に",
+            "な"
+          ],
+          "answer_raw": "料理"
+        },
+        {
+          "id": 3,
+          "type": "mc_target_usage",
+          "question_en": "Choose the sentence with a correctly modified noun.",
+          "choices": [
+            "小(ちい)さい犬(いぬ)がいます。",
+            "小(ちい)さく犬(いぬ)がいます。",
+            "小(ちい)さいな犬(いぬ)がいます。",
+            "小(ちい)さ犬(いぬ)がいます。"
+          ],
+          "answer": "小(ちい)さい犬(いぬ)がいます。",
+          "choices_raw": [
+            "小さい犬がいます。",
+            "小さく犬がいます。",
+            "小さいな犬がいます。",
+            "小さ犬がいます。"
+          ],
+          "answer_raw": "小さい犬がいます。"
+        }
+      ]
+    },
+    {
+      "id": "11",
+      "title": "Modifying Nouns (na-adjectives)",
+      "level": "N5",
+      "category": "Nouns",
+      "pattern": "Adj-na + na + N",
+      "explanation": "To modify a noun with a na-adjective, add な: [Adj-na] + な + N (e.g., 静かな部屋 / 有名な会社).",
+      "examples": [
+        {
+          "jp": "きれいな海(うみ)。",
+          "romaji": "kirei na umi.",
+          "en": "Beautiful sea."
+        },
+        {
+          "jp": "静(しず)かな部屋(へや)で勉強(べんきょう)します。",
+          "romaji": "shizuka na heya de benkyou shimasu.",
+          "en": "I study in a quiet room."
+        },
+        {
+          "jp": "有名(ゆうめい)な会社(かいしゃ)で働(はたら)きたいです。",
+          "romaji": "yuumei na kaisha de hatarakitai desu.",
+          "en": "I want to work for a famous company."
+        },
+        {
+          "jp": "親切(しんせつ)な人(ひと)に会(あ)いました。",
+          "romaji": "shinsetsu na hito ni aimashita.",
+          "en": "I met a kind person."
+        }
+      ],
+      "quiz": [
+        {
+          "id": 1,
+          "type": "mc_target_form",
+          "question_en": "Choose the correct na-adjective + noun phrase.",
+          "choices": [
+            "静(しず)かな部屋(へや)",
+            "静(しず)か部屋(へや)",
+            "静(しず)かに部屋(へや)",
+            "静(しず)かの部屋(へや)"
+          ],
+          "answer": "静(しず)かな部屋(へや)",
+          "choices_raw": [
+            "静かな部屋",
+            "静か部屋",
+            "静かに部屋",
+            "静かの部屋"
+          ],
+          "answer_raw": "静かな部屋"
+        },
+        {
+          "id": 2,
+          "type": "fill_target_form",
+          "question_en": "Fill the blank with the connector used before a noun.",
+          "question_jp": "親切(しんせつ)（　）人(ひと)です。",
+          "choices": [
+            "な",
+            "に",
+            "で",
+            "の"
+          ],
+          "answer": "な",
+          "choices_raw": [
+            "な",
+            "に",
+            "で",
+            "の"
+          ],
+          "answer_raw": "な"
+        },
+        {
+          "id": 3,
+          "type": "mc_target_usage",
+          "question_en": "Choose the grammatically correct sentence.",
+          "choices": [
+            "有名(ゆうめい)な会社(かいしゃ)で働(はたら)きます。",
+            "有名(ゆうめい)に会社(かいしゃ)で働(はたら)きます。",
+            "有名(ゆうめい)の会社(かいしゃ)で働(はたら)きます。",
+            "有名(ゆうめい)で会社(かいしゃ)で働(はたら)きます。"
+          ],
+          "answer": "有名(ゆうめい)な会社(かいしゃ)で働(はたら)きます。",
+          "choices_raw": [
+            "有名な会社で働きます。",
+            "有名に会社で働きます。",
+            "有名の会社で働きます。",
+            "有名で会社で働きます。"
+          ],
+          "answer_raw": "有名な会社で働きます。"
+        }
+      ]
+    },
+    {
+      "id": "12",
+      "title": "Modifying Nouns (Noun + の + Noun)",
+      "level": "N5",
+      "category": "Nouns",
+      "pattern": "N1 + no + N2",
+      "explanation": "N1のN2 links nouns to show relationships like possession/ownership, belonging, origin, type, or description. The meaning depends on context (e.g., 田中さんのかさ / 日本の車).",
+      "examples": [
+        {
+          "jp": "日本(にほん)の車(くるま)。",
+          "romaji": "nihon no kuruma.",
+          "en": "A Japanese car."
+        },
+        {
+          "jp": "これは山田(やまだ)さんの傘(かさ)です。",
+          "romaji": "kore wa yamada-san no kasa desu.",
+          "en": "This is Yamada-san's umbrella."
+        },
+        {
+          "jp": "東京(とうきょう)の大学(だいがく)に行(い)きました。",
+          "romaji": "toukyou no daigaku ni ikimashita.",
+          "en": "I went to a university in Tokyo."
+        },
+        {
+          "jp": "木(き)の机(つくえ)があります。",
+          "romaji": "ki no tsukue ga arimasu.",
+          "en": "There is a wooden desk."
+        }
+      ],
+      "quiz": [
+        {
+          "id": 1,
+          "type": "fill_blank",
+          "question_jp": "日本(にほん)（　）車(くるま)",
+          "choices": [
+            "の",
+            "は",
+            "が"
+          ],
+          "answer": "の",
+          "question_en": "Choose the correct option to complete the Japanese sentence.",
+          "sentence_en": "A Japanese car.",
+          "choices_raw": [
+            "の",
+            "は",
+            "が"
+          ],
+          "answer_raw": "の"
+        },
+        {
+          "id": 2,
+          "type": "fill_target_form",
+          "question_en": "Fill the blank with the noun-linking particle.",
+          "question_jp": "これは田中(たなか)さん（　）傘(かさ)です。",
+          "choices": [
+            "の",
+            "は",
+            "が",
+            "を"
+          ],
+          "answer": "の",
+          "choices_raw": [
+            "の",
+            "は",
+            "が",
+            "を"
+          ],
+          "answer_raw": "の"
+        },
+        {
+          "id": 3,
+          "type": "mc_target_usage",
+          "question_en": "Choose the phrase meaning “a Japanese car.”",
+          "choices": [
+            "日本(にほん)の車(くるま)",
+            "日本(にほん)が車(くるま)",
+            "日本(にほん)を車(くるま)",
+            "日本(にほん)で車(くるま)"
+          ],
+          "answer": "日本(にほん)の車(くるま)",
+          "choices_raw": [
+            "日本の車",
+            "日本が車",
+            "日本を車",
+            "日本で車"
+          ],
+          "answer_raw": "日本の車"
+        }
+      ]
+    },
+    {
+      "id": "13",
+      "title": "Particle の (Replacement)",
+      "level": "N5",
+      "category": "Particle",
+      "pattern": "~no (replaces a noun; “one” / “...’s”)",
+      "explanation": "～の can stand in for a noun that’s understood from context (like “one” in English). It avoids repetition: 田中さんの（かさ） / わたしの（かばん）.",
+      "examples": [
+        {
+          "jp": "A:これはだれのですか。B:田中(たなか)さんのです。",
+          "romaji": "a : kore wa dare no desu ka. b : tanaka-san no desu.",
+          "en": "A: Whose is this? B: It's Mr. Tanaka's."
+        },
+        {
+          "jp": "A:どれがあなたのかばんですか。B:これがわたしのです。",
+          "romaji": "a : dore ga anata no kaban desu ka. b : kore ga watashi no desu.",
+          "en": "A: Which one is your bag? B: This one is mine."
+        },
+        {
+          "jp": "A:このペンはだれの？B:兄(あに)のだよ。",
+          "romaji": "a : kono pen wa dare no? b : ani no da yo.",
+          "en": "A: Whose pen is this? B: It's my brother's."
+        },
+        {
+          "jp": "わたしのは青(あお)いです。",
+          "romaji": "watashi no wa aoi desu.",
+          "en": "Mine is blue."
+        }
+      ],
+      "quiz": [
+        {
+          "id": 1,
+          "type": "fill_target_form",
+          "question_en": "Use の to replace the understood noun.",
+          "question_jp": "A: これはだれの傘(かさ)ですか。 B: わたし（　）です。",
+          "choices": [
+            "の",
+            "もの",
+            "こと",
+            "が"
+          ],
+          "answer": "の",
+          "choices_raw": [
+            "の",
+            "もの",
+            "こと",
+            "が"
+          ],
+          "answer_raw": "の"
+        },
+        {
+          "id": 2,
+          "type": "mc_target_usage",
+          "question_en": "Choose the sentence where の means “one.”",
+          "choices": [
+            "赤(あか)いのをください。",
+            "赤(あか)いの本(ほん)をください。",
+            "赤(あか)いがをください。",
+            "赤(あか)いことをください。"
+          ],
+          "answer": "赤(あか)いのをください。",
+          "choices_raw": [
+            "赤いのをください。",
+            "赤いの本をください。",
+            "赤いがをください。",
+            "赤いことをください。"
+          ],
+          "answer_raw": "赤いのをください。"
+        },
+        {
+          "id": 3,
+          "type": "mc_meaning",
+          "question_en": "What does わたしのです mean here?",
+          "target_jp": "わたしのです。",
+          "choices": [
+            "It is mine.",
+            "It is me.",
+            "I am one.",
+            "It belongs to everyone."
+          ],
+          "answer": "It is mine.",
+          "choices_raw": [
+            "It is mine.",
+            "It is me.",
+            "I am one.",
+            "It belongs to everyone."
+          ],
+          "answer_raw": "It is mine."
+        }
+      ]
+    },
+    {
+      "id": "14",
+      "title": "Imasu",
+      "level": "N5",
+      "category": "Existence",
+      "pattern": "imasu (existence for living things)",
+      "explanation": "います expresses existence for living things (people/animals): [Place] に [Person/Animal] が います. It answers “Where is …?” / “Is there …?”",
+      "examples": [
+        {
+          "jp": "このクラスに中国人(ちゅうごくじん)が5人(にん)います。",
+          "romaji": "kono kurasu ni chuugokujin ga gonin imasu.",
+          "en": "There are five Chinese people in this class."
+        },
+        {
+          "jp": "公園(こうえん)に子(こ)どもがいます。",
+          "romaji": "kouen ni kodomo ga imasu.",
+          "en": "There is a child in the park."
+        },
+        {
+          "jp": "うちに犬(いぬ)が二(に)匹(ひき)います。",
+          "romaji": "uchi ni inu ga nihiki imasu.",
+          "en": "I have two dogs at home."
+        },
+        {
+          "jp": "この店(みせ)に日本人(にほんじん)がいますか。",
+          "romaji": "kono mise ni nihonjin ga imasu ka.",
+          "en": "Are there any Japanese people in this shop?"
+        }
+      ],
+      "quiz": [
+        {
+          "id": 1,
+          "type": "mc_masu_conjugation_time",
+          "question_en": "Choose the correct polite verb form for today (今日).",
+          "hint_en": "Target: present aff",
+          "choices": [
+            "人(ひと)がいます",
+            "人(ひと)がいません",
+            "人(ひと)がいました",
+            "人(ひと)がいませんでした"
+          ],
+          "answer": "人(ひと)がいます",
+          "choices_raw": [
+            "人がいます",
+            "人がいません",
+            "人がいました",
+            "人がいませんでした"
+          ],
+          "answer_raw": "人がいます"
+        },
+        {
+          "id": 2,
+          "type": "fill_target_form",
+          "question_en": "Choose the existence verb for a living thing.",
+          "question_jp": "公園(こうえん)に子(こ)どもが（　）。",
+          "choices": [
+            "います",
+            "あります",
+            "です",
+            "します"
+          ],
+          "answer": "います",
+          "choices_raw": [
+            "います",
+            "あります",
+            "です",
+            "します"
+          ],
+          "answer_raw": "います"
+        },
+        {
+          "id": 3,
+          "type": "mc_target_usage",
+          "question_en": "Choose the correct sentence for an animal.",
+          "choices": [
+            "庭(にわ)に猫(ねこ)がいます。",
+            "庭(にわ)に猫(ねこ)があります。",
+            "庭(にわ)で猫(ねこ)がいます。",
+            "庭(にわ)を猫(ねこ)がいます。"
+          ],
+          "answer": "庭(にわ)に猫(ねこ)がいます。",
+          "choices_raw": [
+            "庭に猫がいます。",
+            "庭に猫があります。",
+            "庭で猫がいます。",
+            "庭を猫がいます。"
+          ],
+          "answer_raw": "庭に猫がいます。"
+        }
+      ]
+    },
+    {
+      "id": "15",
+      "title": "Arimasu",
+      "level": "N5",
+      "category": "Existence",
+      "pattern": "arimasu (existence for non-living things)",
+      "explanation": "あります expresses existence for non-living things (objects) and plants: [Place] に [Thing] が あります. In some contexts it also means “to have” (e.g., 時間があります).",
+      "examples": [
+        {
+          "jp": "傘(かさ)がありますか。",
+          "romaji": "kasa ga arimasu ka.",
+          "en": "Do you have an umbrella? / Is there an umbrella?"
+        },
+        {
+          "jp": "かばんの中(なか)に財布(さいふ)があります。",
+          "romaji": "kaban no naka ni saifu ga arimasu.",
+          "en": "There's a wallet in the bag."
+        },
+        {
+          "jp": "庭(にわ)に木(き)があります。",
+          "romaji": "niwa ni ki ga arimasu.",
+          "en": "There's a tree in the yard."
+        },
+        {
+          "jp": "この近(ちか)くにコンビニがありますか。",
+          "romaji": "kono chikaku ni kombini ga arimasu ka.",
+          "en": "Is there a convenience store nearby?"
+        }
+      ],
+      "quiz": [
+        {
+          "id": 1,
+          "type": "fill_target_form",
+          "question_en": "Choose the existence verb for a non-living thing.",
+          "question_jp": "かばんの中(なか)に財布(さいふ)が（　）。",
+          "choices": [
+            "あります",
+            "います",
+            "します",
+            "なります"
+          ],
+          "answer": "あります",
+          "choices_raw": [
+            "あります",
+            "います",
+            "します",
+            "なります"
+          ],
+          "answer_raw": "あります"
+        },
+        {
+          "id": 2,
+          "type": "mc_target_usage",
+          "question_en": "Choose the correct sentence for a book.",
+          "choices": [
+            "机(つくえ)の上(うえ)に本(ほん)があります。",
+            "机(つくえ)の上(うえ)に本(ほん)がいます。",
+            "机(つくえ)の上(うえ)で本(ほん)があります。",
+            "机(つくえ)の上(うえ)を本(ほん)があります。"
+          ],
+          "answer": "机(つくえ)の上(うえ)に本(ほん)があります。",
+          "choices_raw": [
+            "机の上に本があります。",
+            "机の上に本がいます。",
+            "机の上で本があります。",
+            "机の上を本があります。"
+          ],
+          "answer_raw": "机の上に本があります。"
+        },
+        {
+          "id": 3,
+          "type": "mc_meaning",
+          "question_en": "Choose the best meaning.",
+          "target_jp": "時間(じかん)があります。",
+          "choices": [
+            "I have time.",
+            "Time is alive.",
+            "I go at a time.",
+            "I make time into something."
+          ],
+          "answer": "I have time.",
+          "choices_raw": [
+            "I have time.",
+            "Time is alive.",
+            "I go at a time.",
+            "I make time into something."
+          ],
+          "answer_raw": "I have time."
+        }
+      ]
+    },
+    {
+      "id": "16",
+      "title": "Existence location",
+      "level": "N5",
+      "category": "Existence",
+      "pattern": "[Place] ni [Subject] ga imasu/arimasu",
+      "explanation": "Existence pattern: [Place] に [Subject] が います/あります. に marks the location; が marks what exists. Meaning: “There is/are … (in/at …).”",
+      "examples": [
+        {
+          "jp": "冷蔵庫(れいぞうこ)の中(なか)にケーキがあります。",
+          "romaji": "reizouko no naka ni keeki ga arimasu.",
+          "en": "There's a cake in the fridge."
+        },
+        {
+          "jp": "駅(えき)の前(まえ)に銀行(ぎんこう)があります。",
+          "romaji": "eki no mae ni ginkou ga arimasu.",
+          "en": "In front of the station there's a bank."
+        },
+        {
+          "jp": "この部屋(へや)にだれもいません。",
+          "romaji": "kono heya ni dare mo imasen.",
+          "en": "There's no one in this room."
+        },
+        {
+          "jp": "テーブルの上(うえ)にりんごがあります。",
+          "romaji": "teeburu no ue ni ringo ga arimasu.",
+          "en": "There's an apple on the table."
+        }
+      ],
+      "quiz": [
+        {
+          "id": 1,
+          "type": "mc_masu_conjugation_time",
+          "question_en": "Choose the correct polite verb form for today (今日).",
+          "hint_en": "Target: present aff",
+          "choices": [
+            "冷蔵庫(れいぞうこ)の中(なか)にケーキがあります",
+            "冷蔵庫(れいぞうこ)の中(なか)にケーキがありません",
+            "冷蔵庫(れいぞうこ)の中(なか)にケーキがありました",
+            "冷蔵庫(れいぞうこ)の中(なか)にケーキがありませんでした"
+          ],
+          "answer": "冷蔵庫(れいぞうこ)の中(なか)にケーキがあります",
+          "choices_raw": [
+            "冷蔵庫の中にケーキがあります",
+            "冷蔵庫の中にケーキがありません",
+            "冷蔵庫の中にケーキがありました",
+            "冷蔵庫の中にケーキがありませんでした"
+          ],
+          "answer_raw": "冷蔵庫の中にケーキがあります"
+        },
+        {
+          "id": 2,
+          "type": "fill_target_form",
+          "question_en": "Choose the particle marking the location of existence.",
+          "question_jp": "冷蔵庫(れいぞうこ)の中(なか)（　）ケーキがあります。",
+          "choices": [
+            "に",
+            "で",
+            "を",
+            "へ"
+          ],
+          "answer": "に",
+          "choices_raw": [
+            "に",
+            "で",
+            "を",
+            "へ"
+          ],
+          "answer_raw": "に"
+        },
+        {
+          "id": 3,
+          "type": "fill_target_form",
+          "question_en": "Choose the particle marking what exists.",
+          "question_jp": "駅(えき)の前(まえ)に銀行(ぎんこう)（　）あります。",
+          "choices": [
+            "が",
+            "を",
+            "で",
+            "へ"
+          ],
+          "answer": "が",
+          "choices_raw": [
+            "が",
+            "を",
+            "で",
+            "へ"
+          ],
+          "answer_raw": "が"
+        }
+      ]
+    },
+    {
+      "id": "17",
+      "title": "Particle は (Topic)",
+      "level": "N5",
+      "category": "Particle",
+      "pattern": "~wa (topic marker)",
+      "explanation": "は (pronounced wa) marks the topic: “As for X…”. It sets the theme of the sentence and is not always the grammatical subject.",
+      "examples": [
+        {
+          "jp": "わたしはカナダから来(き)ました。",
+          "romaji": "watashi wa kanada kara kimashita.",
+          "en": "I came from Canada."
+        },
+        {
+          "jp": "わたしはインドネシア人(じん)です。",
+          "romaji": "watashi wa indoneshiajin desu.",
+          "en": "I'm Indonesian."
+        },
+        {
+          "jp": "今日(きょう)は日曜日(にちようび)です。",
+          "romaji": "kyou wa nichiyoubi desu.",
+          "en": "Today is Sunday."
+        },
+        {
+          "jp": "この本(ほん)はおもしろいです。",
+          "romaji": "kono hon wa omoshiroi desu.",
+          "en": "This book is interesting."
+        }
+      ],
+      "quiz": [
+        {
+          "id": 1,
+          "type": "fill_target_form",
+          "question_en": "Choose the topic marker.",
+          "question_jp": "わたし（　）インドネシア人(じん)です。",
+          "choices": [
+            "は",
+            "が",
+            "を",
+            "に"
+          ],
+          "answer": "は",
+          "choices_raw": [
+            "は",
+            "が",
+            "を",
+            "に"
+          ],
+          "answer_raw": "は"
+        },
+        {
+          "id": 2,
+          "type": "mc_target_usage",
+          "question_en": "Choose the sentence that marks 本 as the topic.",
+          "choices": [
+            "この本(ほん)はおもしろいです。",
+            "この本(ほん)がおもしろいですか。",
+            "この本(ほん)をおもしろいです。",
+            "この本(ほん)におもしろいです。"
+          ],
+          "answer": "この本(ほん)はおもしろいです。",
+          "choices_raw": [
+            "この本はおもしろいです。",
+            "この本がおもしろいですか。",
+            "この本をおもしろいです。",
+            "この本におもしろいです。"
+          ],
+          "answer_raw": "この本はおもしろいです。"
+        },
+        {
+          "id": 3,
+          "type": "mc_reading",
+          "question_en": "How is the particle は pronounced in this sentence?",
+          "target_jp": "わたしは学生(がくせい)です。",
+          "choices": [
+            "wa",
+            "ha",
+            "ba",
+            "pa"
+          ],
+          "answer": "wa",
+          "choices_raw": [
+            "wa",
+            "ha",
+            "ba",
+            "pa"
+          ],
+          "answer_raw": "wa"
+        }
+      ]
+    },
+    {
+      "id": "18",
+      "title": "Particle は (Contrast)",
+      "level": "N5",
+      "category": "Particle",
+      "pattern": "~wa ... ~wa (contrast)",
+      "explanation": "は can also show contrast: “X (but)…; whereas Y…”. It’s common to have two topics (Xは…, Yは…) or to contrast with が/けど.",
+      "examples": [
+        {
+          "jp": "ビールは飲(の)みますが、ワインは飲(の)みません。",
+          "romaji": "biiru wa nomimasu ga, wain wa nomimasen.",
+          "en": "I drink beer, but I don't drink wine."
+        },
+        {
+          "jp": "肉(にく)は食(た)べますが、魚(さかな)は食(た)べません。",
+          "romaji": "niku wa tabemasu ga, sakana wa tabemasen.",
+          "en": "I eat meat, but I don't eat fish."
+        },
+        {
+          "jp": "コーヒーは飲(の)みます。でも、お酒(さけ)は飲(の)みません。",
+          "romaji": "koohii wa nomimasu. demo, osake wa nomimasen.",
+          "en": "I drink coffee. But I don't drink alcohol."
+        },
+        {
+          "jp": "今日(きょう)はひまですが、明日(あす)は忙(いそが)しいです。",
+          "romaji": "kyou wa hima desu ga, asu wa isogashii desu.",
+          "en": "I'm free today, but I'll be busy tomorrow."
+        }
+      ],
+      "quiz": [
+        {
+          "id": 1,
+          "type": "mc_target_usage",
+          "question_en": "Choose the sentence showing contrast with two は topics.",
+          "choices": [
+            "肉(にく)は食(た)べますが、魚(さかな)は食(た)べません。",
+            "肉(にく)が食(た)べますが、魚(さかな)が食(た)べません。",
+            "肉(にく)を食(た)べますが、魚(さかな)を食(た)べません。",
+            "肉(にく)に食(た)べますが、魚(さかな)に食(た)べません。"
+          ],
+          "answer": "肉(にく)は食(た)べますが、魚(さかな)は食(た)べません。",
+          "choices_raw": [
+            "肉は食べますが、魚は食べません。",
+            "肉が食べますが、魚が食べません。",
+            "肉を食べますが、魚を食べません。",
+            "肉に食べますが、魚に食べません。"
+          ],
+          "answer_raw": "肉は食べますが、魚は食べません。"
+        },
+        {
+          "id": 2,
+          "type": "fill_target_form",
+          "question_en": "Fill the contrastive topic marker.",
+          "question_jp": "コーヒー（　）飲(の)みますが、お酒(さけ)は飲(の)みません。",
+          "choices": [
+            "は",
+            "を",
+            "に",
+            "で"
+          ],
+          "answer": "は",
+          "choices_raw": [
+            "は",
+            "を",
+            "に",
+            "で"
+          ],
+          "answer_raw": "は"
+        },
+        {
+          "id": 3,
+          "type": "mc_meaning",
+          "question_en": "Choose the best translation.",
+          "target_jp": "今日(きょう)はひまですが、明日(あした)は忙(いそが)しいです。",
+          "choices": [
+            "I am free today, but I will be busy tomorrow.",
+            "Today is free of charge, but tomorrow is expensive.",
+            "I am busy today and free tomorrow.",
+            "I was free yesterday."
+          ],
+          "answer": "I am free today, but I will be busy tomorrow.",
+          "choices_raw": [
+            "I am free today, but I will be busy tomorrow.",
+            "Today is free of charge, but tomorrow is expensive.",
+            "I am busy today and free tomorrow.",
+            "I was free yesterday."
+          ],
+          "answer_raw": "I am free today, but I will be busy tomorrow."
+        }
+      ]
+    },
+    {
+      "id": "19",
+      "title": "AはBが (attribute pattern)",
+      "level": "N5",
+      "category": "Particle",
+      "pattern": "A wa B ga ~",
+      "explanation": "AはBが… describes an attribute B of topic A: “As for A, B is …” (often body parts, ability, likes). Example: 田中さんは目が大きい.",
+      "examples": [
+        {
+          "jp": "象(ぞう)は鼻(はな)が長(なが)いです。",
+          "romaji": "zou wa hana ga nagai desu.",
+          "en": "Elephants have long trunks."
+        },
+        {
+          "jp": "田中(たなか)さんは目(め)が大(おお)きいです。",
+          "romaji": "tanaka-san wa me ga ookii desu.",
+          "en": "Tanaka-san has big eyes."
+        },
+        {
+          "jp": "このスマホはカメラがいいです。",
+          "romaji": "kono sumaho wa kamera ga ii desu.",
+          "en": "This smartphone has a good camera."
+        },
+        {
+          "jp": "わたしは日本語(にほんご)が好(す)きです。",
+          "romaji": "watashi wa nihongo ga suki desu.",
+          "en": "I like Japanese."
+        }
+      ],
+      "quiz": [
+        {
+          "id": 1,
+          "type": "fill_blank",
+          "question_jp": "兄(あに)（　）背(せ)が高(たか)いです。",
+          "choices": [
+            "は",
+            "が",
+            "を"
+          ],
+          "answer": "は",
+          "question_en": "Choose the correct option to complete the Japanese sentence.",
+          "sentence_en": "My older brother is tall.",
+          "choices_raw": [
+            "は",
+            "が",
+            "を"
+          ],
+          "answer_raw": "は"
+        },
+        {
+          "id": 2,
+          "type": "fill_blank",
+          "question_jp": "田中(たなか)さん（　）目(め)が大きい(おおきい)です。",
+          "choices": [
+            "は",
+            "が",
+            "を"
+          ],
+          "answer": "は",
+          "question_en": "Choose the correct option to complete the Japanese sentence.",
+          "sentence_en": "Tanaka-san has big eyes.",
+          "choices_raw": [
+            "は",
+            "が",
+            "を"
+          ],
+          "answer_raw": "は"
+        },
+        {
+          "id": 3,
+          "type": "fill_blank",
+          "question_jp": "このスマホ（　）カメラがいいです。",
+          "choices": [
+            "は",
+            "が",
+            "を"
+          ],
+          "answer": "は",
+          "question_en": "Choose the correct option to complete the Japanese sentence.",
+          "sentence_en": "This smartphone has a good camera.",
+          "choices_raw": [
+            "は",
+            "が",
+            "を"
+          ],
+          "answer_raw": "は"
+        }
+      ]
+    },
+    {
+      "id": "20",
+      "title": "Particle が (Question Words)",
+      "level": "N5",
+      "category": "Particle",
+      "pattern": "Question word + ga (subject marker)",
+      "explanation": "With question words as the subject (だれ/どれ/なに/どこ, etc.), が is typically used (not は) to keep the focus on the unknown: だれが来ますか。",
+      "examples": [
+        {
+          "jp": "どれが田中(たなか)さんのコップですか。",
+          "romaji": "dore ga tanaka-san no koppu desu ka.",
+          "en": "Which one is Tanaka-san's cup?"
+        },
+        {
+          "jp": "だれが教室(きょうしつ)にいますか。",
+          "romaji": "dare ga kyoushitsu ni imasu ka.",
+          "en": "Who's in class?"
+        },
+        {
+          "jp": "どれがあなたのスマホですか。",
+          "romaji": "dore ga anata no sumaho desu ka.",
+          "en": "Which one's your phone?"
+        },
+        {
+          "jp": "何(なに)がいちばん好(す)きですか。",
+          "romaji": "nani ga ichiban suki desu ka.",
+          "en": "What do you like most?"
+        }
+      ],
+      "quiz": [
+        {
+          "id": 1,
+          "type": "fill_target_form",
+          "question_en": "Choose the subject marker used after a question word.",
+          "question_jp": "だれ（　）来(き)ますか。",
+          "choices": [
+            "が",
+            "は",
+            "を",
+            "に"
+          ],
+          "answer": "が",
+          "choices_raw": [
+            "が",
+            "は",
+            "を",
+            "に"
+          ],
+          "answer_raw": "が"
+        },
+        {
+          "id": 2,
+          "type": "mc_target_usage",
+          "question_en": "Choose the natural question asking which one is yours.",
+          "choices": [
+            "どれがあなたのですか。",
+            "どれはあなたのですか。",
+            "どれをあなたのですか。",
+            "どれにあなたのですか。"
+          ],
+          "answer": "どれがあなたのですか。",
+          "choices_raw": [
+            "どれがあなたのですか。",
+            "どれはあなたのですか。",
+            "どれをあなたのですか。",
+            "どれにあなたのですか。"
+          ],
+          "answer_raw": "どれがあなたのですか。"
+        },
+        {
+          "id": 3,
+          "type": "fill_target_form",
+          "question_en": "Complete the question.",
+          "question_jp": "何(なに)（　）いちばん好(す)きですか。",
+          "choices": [
+            "が",
+            "は",
+            "で",
+            "へ"
+          ],
+          "answer": "が",
+          "choices_raw": [
+            "が",
+            "は",
+            "で",
+            "へ"
+          ],
+          "answer_raw": "が"
+        }
+      ]
+    },
+    {
+      "id": "21",
+      "title": "Particle を (Object)",
+      "level": "N5",
+      "category": "Particle",
+      "pattern": "~o (direct object marker)",
+      "explanation": "を marks the direct object of a transitive verb: NをV. It shows what the action is done to (e.g., 本を読む / ご飯を食べる).",
+      "examples": [
+        {
+          "jp": "辞書(じしょ)を借(か)ります。",
+          "romaji": "jisho o karimasu.",
+          "en": "I borrow a dictionary."
+        },
+        {
+          "jp": "パンを食(た)べます。",
+          "romaji": "pan o tabemasu.",
+          "en": "I eat bread."
+        },
+        {
+          "jp": "日本語(にほんご)を勉強(べんきょう)しています。",
+          "romaji": "nihongo o benkyou shite imasu.",
+          "en": "I'm learning Japanese."
+        },
+        {
+          "jp": "音楽(おんがく)を聞(き)きます。",
+          "romaji": "ongaku o kikimasu.",
+          "en": "I listen to music."
+        }
+      ],
+      "quiz": [
+        {
+          "id": 1,
+          "type": "fill_target_form",
+          "question_en": "Choose the direct-object particle.",
+          "question_jp": "パン（　）食(た)べます。",
+          "choices": [
+            "を",
+            "が",
+            "に",
+            "で"
+          ],
+          "answer": "を",
+          "choices_raw": [
+            "を",
+            "が",
+            "に",
+            "で"
+          ],
+          "answer_raw": "を"
+        },
+        {
+          "id": 2,
+          "type": "mc_target_usage",
+          "question_en": "Choose the sentence with a correctly marked direct object.",
+          "choices": [
+            "音楽(おんがく)を聞(き)きます。",
+            "音楽(おんがく)が聞(き)きます。",
+            "音楽(おんがく)に聞(き)きます。",
+            "音楽(おんがく)で聞(き)きます。"
+          ],
+          "answer": "音楽(おんがく)を聞(き)きます。",
+          "choices_raw": [
+            "音楽を聞きます。",
+            "音楽が聞きます。",
+            "音楽に聞きます。",
+            "音楽で聞きます。"
+          ],
+          "answer_raw": "音楽を聞きます。"
+        },
+        {
+          "id": 3,
+          "type": "mc_meaning",
+          "question_en": "What does を mark in this sentence?",
+          "target_jp": "日本語(にほんご)を勉強(べんきょう)します。",
+          "choices": [
+            "The thing being studied",
+            "The place of study",
+            "The person studying",
+            "The time of study"
+          ],
+          "answer": "The thing being studied",
+          "choices_raw": [
+            "The thing being studied",
+            "The place of study",
+            "The person studying",
+            "The time of study"
+          ],
+          "answer_raw": "The thing being studied"
+        }
+      ]
+    },
+    {
+      "id": "22",
+      "title": "Particle を (Path)",
+      "level": "N5",
+      "category": "Particle",
+      "pattern": "~o (path: through/across)",
+      "explanation": "を can also mark a path/area you pass through with movement verbs: 公園を歩く / 橋を渡る. Meaning: “through/along/across”.",
+      "examples": [
+        {
+          "jp": "公園(こうえん)を散歩(さんぽ)します。",
+          "romaji": "kouen o sampo shimasu.",
+          "en": "I take a walk in the park."
+        },
+        {
+          "jp": "橋(はし)を渡(わた)ります。",
+          "romaji": "hashi o watarimasu.",
+          "en": "I cross the bridge."
+        },
+        {
+          "jp": "この道(みち)をまっすぐ行(い)ってください。",
+          "romaji": "kono michi o massugu itte kudasai.",
+          "en": "Please go straight down this road."
+        },
+        {
+          "jp": "公園(こうえん)を走(はし)ります。",
+          "romaji": "kouen o hashirimasu.",
+          "en": "I run through the park."
+        }
+      ],
+      "quiz": [
+        {
+          "id": 1,
+          "type": "fill_target_form",
+          "question_en": "Choose the particle marking the route or path.",
+          "question_jp": "公園(こうえん)（　）歩(ある)きます。",
+          "choices": [
+            "を",
+            "に",
+            "で",
+            "へ"
+          ],
+          "answer": "を",
+          "choices_raw": [
+            "を",
+            "に",
+            "で",
+            "へ"
+          ],
+          "answer_raw": "を"
+        },
+        {
+          "id": 2,
+          "type": "mc_target_usage",
+          "question_en": "Choose the sentence meaning “I cross the bridge.”",
+          "choices": [
+            "橋(はし)を渡(わた)ります。",
+            "橋(はし)に渡(わた)ります。",
+            "橋(はし)で渡(わた)ります。",
+            "橋(はし)へ渡(わた)ります。"
+          ],
+          "answer": "橋(はし)を渡(わた)ります。",
+          "choices_raw": [
+            "橋を渡ります。",
+            "橋に渡ります。",
+            "橋で渡ります。",
+            "橋へ渡ります。"
+          ],
+          "answer_raw": "橋を渡ります。"
+        },
+        {
+          "id": 3,
+          "type": "mc_meaning",
+          "question_en": "Choose the best meaning.",
+          "target_jp": "この道(みち)をまっすぐ行(い)ってください。",
+          "choices": [
+            "Please go straight along this road.",
+            "Please stop on this road.",
+            "Please build this road.",
+            "Please come from this road."
+          ],
+          "answer": "Please go straight along this road.",
+          "choices_raw": [
+            "Please go straight along this road.",
+            "Please stop on this road.",
+            "Please build this road.",
+            "Please come from this road."
+          ],
+          "answer_raw": "Please go straight along this road."
+        }
+      ]
+    },
+    {
+      "id": "23",
+      "title": "Particle と",
+      "level": "N5",
+      "category": "Particle",
+      "pattern": "~to (and / with)",
+      "explanation": "と links nouns to mean “and” (AとB). It also marks companionship: Nと行きます = “go with N”.",
+      "examples": [
+        {
+          "jp": "母(はは)と買い物(かいもの)しました。",
+          "romaji": "haha to kaimono shimashita.",
+          "en": "I went shopping with my mom."
+        },
+        {
+          "jp": "友(とも)だちと映画(えいが)を見(み)ます。",
+          "romaji": "tomodachi to eiga o mimasu.",
+          "en": "I watch movies with friends."
+        },
+        {
+          "jp": "日本語(にほんご)と英語(えいご)を勉強(べんきょう)しています。",
+          "romaji": "nihongo to eigo o benkyou shite imasu.",
+          "en": "I'm studying Japanese and English."
+        },
+        {
+          "jp": "母(はは)と駅(えき)まで行(い)きました。",
+          "romaji": "haha to eki made ikimashita.",
+          "en": "I went to the station with my mom."
+        }
+      ],
+      "quiz": [
+        {
+          "id": 1,
+          "type": "fill_target_form",
+          "question_en": "Choose the particle meaning “with.”",
+          "question_jp": "友(とも)だち（　）映画(えいが)を見(み)ます。",
+          "choices": [
+            "と",
+            "を",
+            "に",
+            "で"
+          ],
+          "answer": "と",
+          "choices_raw": [
+            "と",
+            "を",
+            "に",
+            "で"
+          ],
+          "answer_raw": "と"
+        },
+        {
+          "id": 2,
+          "type": "mc_target_usage",
+          "question_en": "Choose the phrase meaning “Japanese and English.”",
+          "choices": [
+            "日本語(にほんご)と英語(えいご)",
+            "日本語(にほんご)や英語(えいご)だけ",
+            "日本語(にほんご)か英語(えいご)",
+            "日本語(にほんご)も英語(えいご)も"
+          ],
+          "answer": "日本語(にほんご)と英語(えいご)",
+          "choices_raw": [
+            "日本語と英語",
+            "日本語や英語だけ",
+            "日本語か英語",
+            "日本語も英語も"
+          ],
+          "answer_raw": "日本語と英語"
+        },
+        {
+          "id": 3,
+          "type": "mc_meaning",
+          "question_en": "Choose the best translation.",
+          "target_jp": "母(はは)と駅(えき)まで行(い)きました。",
+          "choices": [
+            "I went to the station with my mother.",
+            "I gave the station to my mother.",
+            "My mother came from the station.",
+            "I met my mother at the station."
+          ],
+          "answer": "I went to the station with my mother.",
+          "choices_raw": [
+            "I went to the station with my mother.",
+            "I gave the station to my mother.",
+            "My mother came from the station.",
+            "I met my mother at the station."
+          ],
+          "answer_raw": "I went to the station with my mother."
+        }
+      ]
+    },
+    {
+      "id": "24",
+      "title": "Particle に (Time)",
+      "level": "N5",
+      "category": "Particle",
+      "pattern": "~ni (specific time)",
+      "explanation": "に marks a specific time: 8時に / 日曜日に / 4月に. It’s usually omitted with non-specific time words like 毎日, いつも, よく.",
+      "examples": [
+        {
+          "jp": "8時(じ)に来(き)てください。",
+          "romaji": "hachiji ni kite kudasai.",
+          "en": "Please come at 8 o'clock."
+        },
+        {
+          "jp": "6時(じ)に起(お)きます。",
+          "romaji": "rokuji ni okimasu.",
+          "en": "I get up at 6."
+        },
+        {
+          "jp": "日曜日(にちようび)に友(とも)だちに会(あ)います。",
+          "romaji": "nichiyoubi ni tomodachi ni aimasu.",
+          "en": "I meet a friend on Sunday."
+        },
+        {
+          "jp": "4月(がつ)に日本(にほん)へ行(い)きます。",
+          "romaji": "shigatsu ni nihon e ikimasu.",
+          "en": "I'll go to Japan in April."
+        }
+      ],
+      "quiz": [
+        {
+          "id": 1,
+          "type": "mc_conjugation_time",
+          "question_en": "Choose the sentence that correctly uses に to mark a specific time.",
+          "hint_en": "Target: time particle に",
+          "choices": [
+            "8時(じ)に来(き)てください。",
+            "8時(じ)で来(き)てください。",
+            "8時(じ)を来(き)てください。",
+            "8時(じ)から来(き)てください。"
+          ],
+          "answer": "8時(じ)に来(き)てください。",
+          "choices_raw": [
+            "8時に来てください。",
+            "8時で来てください。",
+            "8時を来てください。",
+            "8時から来てください。"
+          ],
+          "answer_raw": "8時に来てください。"
+        },
+        {
+          "id": 2,
+          "type": "fill_conjugation_chunk",
+          "question_jp": "8時(じ)（　）来(き)てください。",
+          "question_en": "Fill the blank with the correct particle.",
+          "choices": [
+            "に",
+            "で",
+            "を",
+            "が"
+          ],
+          "answer": "に",
+          "choices_raw": [
+            "に",
+            "で",
+            "を",
+            "が"
+          ],
+          "answer_raw": "に"
+        },
+        {
+          "id": 3,
+          "type": "mc_formality_variant",
+          "question_en": "Which option is the more casual way to say the target sentence?",
+          "target_jp": "8時(じ)に来(き)てください。",
+          "choices": [
+            "8時(じ)に来(き)て。",
+            "8時(じ)に来(き)てください。",
+            "8時(じ)に来(き)ます。"
+          ],
+          "answer": "8時(じ)に来(き)て。",
+          "sentence_en": "Please come at 8 o'clock.",
+          "choices_raw": [
+            "8時に来て。",
+            "8時に来てください。",
+            "8時に来ます。"
+          ],
+          "answer_raw": "8時に来て。"
+        }
+      ]
+    },
+    {
+      "id": "25",
+      "title": "Particle に (Destination and Existence Location)",
+      "level": "N5",
+      "category": "Particle",
+      "pattern": "[Destination] に 行きます / [Place] に N が います・あります",
+      "explanation": "に marks a destination with movement verbs such as 行きます, 来ます, and 帰ります. It also marks the location where a person, animal, or thing exists with います/あります. With verbs such as 入ります, に marks the endpoint entered or joined.",
+      "examples": [
+        {
+          "jp": "教室(きょうしつ)に入(はい)ります。",
+          "romaji": "kyoushitsu ni hairimasu.",
+          "en": "I enter the classroom."
+        },
+        {
+          "jp": "家(いえ)に帰(かえ)ります。",
+          "romaji": "ie ni kaerimasu.",
+          "en": "I'm going home."
+        },
+        {
+          "jp": "図書館(としょかん)に本(ほん)があります。",
+          "romaji": "toshokan ni hon ga arimasu.",
+          "en": "There's a book in the library."
+        },
+        {
+          "jp": "東京(とうきょう)に行(い)きます。",
+          "romaji": "toukyou ni ikimasu.",
+          "en": "I will go to Tokyo."
+        }
+      ],
+      "quiz": [
+        {
+          "id": 1,
+          "type": "fill_target_form",
+          "question_en": "Choose the destination particle.",
+          "question_jp": "学校(がっこう)（　）行(い)きます。",
+          "choices": [
+            "に",
+            "で",
+            "を",
+            "から"
+          ],
+          "answer": "に",
+          "choices_raw": [
+            "に",
+            "で",
+            "を",
+            "から"
+          ],
+          "answer_raw": "に"
+        },
+        {
+          "id": 2,
+          "type": "mc_target_usage",
+          "question_en": "Choose the sentence where に marks existence location.",
+          "choices": [
+            "図書館(としょかん)に本(ほん)があります。",
+            "図書館(としょかん)で本(ほん)があります。",
+            "図書館(としょかん)を本(ほん)があります。",
+            "図書館(としょかん)へ本(ほん)があります。"
+          ],
+          "answer": "図書館(としょかん)に本(ほん)があります。",
+          "choices_raw": [
+            "図書館に本があります。",
+            "図書館で本があります。",
+            "図書館を本があります。",
+            "図書館へ本があります。"
+          ],
+          "answer_raw": "図書館に本があります。"
+        },
+        {
+          "id": 3,
+          "type": "mc_target_usage",
+          "question_en": "Choose the sentence meaning “I will join the company.”",
+          "choices": [
+            "会社(かいしゃ)に入(はい)ります。",
+            "会社(かいしゃ)で入(はい)ります。",
+            "会社(かいしゃ)を入(はい)ります。",
+            "会社(かいしゃ)から入(はい)ります。"
+          ],
+          "answer": "会社(かいしゃ)に入(はい)ります。",
+          "choices_raw": [
+            "会社に入ります。",
+            "会社で入ります。",
+            "会社を入ります。",
+            "会社から入ります。"
+          ],
+          "answer_raw": "会社に入ります。"
+        }
+      ]
+    },
+    {
+      "id": "26",
+      "title": "Particle で (Location of action)",
+      "level": "N5",
+      "category": "Particle",
+      "pattern": "~de (action location: at/in)",
+      "explanation": "で marks the place where an action happens: [Place] で [Verb]. It differs from に, which marks destination or existence.",
+      "examples": [
+        {
+          "jp": "日本(にほん)で働(はたら)いています。",
+          "romaji": "nihon de hataraite imasu.",
+          "en": "I'm working in Japan."
+        },
+        {
+          "jp": "うちで日本語(にほんご)を勉強(べんきょう)します。",
+          "romaji": "uchi de nihongo o benkyou shimasu.",
+          "en": "I study Japanese at home."
+        },
+        {
+          "jp": "駅(えき)で友(とも)だちと会(あ)います。",
+          "romaji": "eki de tomodachi to aimasu.",
+          "en": "I meet a friend at the station."
+        },
+        {
+          "jp": "スーパーで野菜(やさい)を買(か)いました。",
+          "romaji": "suupaa de yasai o kaimashita.",
+          "en": "I bought vegetables at the supermarket."
+        }
+      ],
+      "quiz": [
+        {
+          "id": 1,
+          "type": "fill_target_form",
+          "question_en": "Choose the particle marking where an action happens.",
+          "question_jp": "スーパー（　）野菜(やさい)を買(か)います。",
+          "choices": [
+            "で",
+            "に",
+            "を",
+            "へ"
+          ],
+          "answer": "で",
+          "choices_raw": [
+            "で",
+            "に",
+            "を",
+            "へ"
+          ],
+          "answer_raw": "で"
+        },
+        {
+          "id": 2,
+          "type": "mc_target_usage",
+          "question_en": "Choose the sentence meaning “I study at home.”",
+          "choices": [
+            "うちで勉強(べんきょう)します。",
+            "うちに勉強(べんきょう)します。",
+            "うちを勉強(べんきょう)します。",
+            "うちへ勉強(べんきょう)します。"
+          ],
+          "answer": "うちで勉強(べんきょう)します。",
+          "choices_raw": [
+            "うちで勉強します。",
+            "うちに勉強します。",
+            "うちを勉強します。",
+            "うちへ勉強します。"
+          ],
+          "answer_raw": "うちで勉強します。"
+        },
+        {
+          "id": 3,
+          "type": "mc_contrast",
+          "question_en": "Choose the correct contrast between action and existence locations.",
+          "choices": [
+            "学校(がっこう)で勉強(べんきょう)します。学校(がっこう)に先生(せんせい)がいます。",
+            "学校(がっこう)に勉強(べんきょう)します。学校(がっこう)で先生(せんせい)がいます。",
+            "学校(がっこう)を勉強(べんきょう)します。学校(がっこう)へ先生(せんせい)がいます。",
+            "学校(がっこう)へ勉強(べんきょう)します。学校(がっこう)を先生(せんせい)がいます。"
+          ],
+          "answer": "学校(がっこう)で勉強(べんきょう)します。学校(がっこう)に先生(せんせい)がいます。",
+          "choices_raw": [
+            "学校で勉強します。学校に先生がいます。",
+            "学校に勉強します。学校で先生がいます。",
+            "学校を勉強します。学校へ先生がいます。",
+            "学校へ勉強します。学校を先生がいます。"
+          ],
+          "answer_raw": "学校で勉強します。学校に先生がいます。"
+        }
+      ]
+    },
+    {
+      "id": "27",
+      "title": "Particle で (Means/Method)",
+      "level": "N5",
+      "category": "Particle",
+      "pattern": "~de (by/with; means/method)",
+      "explanation": "で can also mark means/method: 電車で行きます (by train), 箸(はし)で食べます (with chopsticks), 日本語で書きます (in Japanese).",
+      "examples": [
+        {
+          "jp": "電車(でんしゃ)で行(い)きます。",
+          "romaji": "densha de ikimasu.",
+          "en": "I go by train."
+        },
+        {
+          "jp": "バスで学校(がっこう)へ行(い)きます。",
+          "romaji": "basu de gakkou e ikimasu.",
+          "en": "I go to school by bus."
+        },
+        {
+          "jp": "スマホで写真(しゃしん)を撮(と)ります。",
+          "romaji": "sumaho de shashin o torimasu.",
+          "en": "I take photos with my phone."
+        },
+        {
+          "jp": "日本語(にほんご)でメールを書(か)きます。",
+          "romaji": "nihongo de meeru o kakimasu.",
+          "en": "I write emails in Japanese."
+        }
+      ],
+      "quiz": [
+        {
+          "id": 1,
+          "type": "fill_target_form",
+          "question_en": "Choose the particle marking means of transportation.",
+          "question_jp": "電車(でんしゃ)（　）行(い)きます。",
+          "choices": [
+            "で",
+            "に",
+            "を",
+            "へ"
+          ],
+          "answer": "で",
+          "choices_raw": [
+            "で",
+            "に",
+            "を",
+            "へ"
+          ],
+          "answer_raw": "で"
+        },
+        {
+          "id": 2,
+          "type": "mc_target_usage",
+          "question_en": "Choose the sentence meaning “I eat with chopsticks.”",
+          "choices": [
+            "箸(はし)で食(た)べます。",
+            "箸(はし)に食(た)べます。",
+            "箸(はし)を食(た)べます。",
+            "箸(はし)へ食(た)べます。"
+          ],
+          "answer": "箸(はし)で食(た)べます。",
+          "choices_raw": [
+            "箸で食べます。",
+            "箸に食べます。",
+            "箸を食べます。",
+            "箸へ食べます。"
+          ],
+          "answer_raw": "箸で食べます。"
+        },
+        {
+          "id": 3,
+          "type": "fill_target_form",
+          "question_en": "Choose the particle meaning “in Japanese.”",
+          "question_jp": "日本語(にほんご)（　）メールを書(か)きます。",
+          "choices": [
+            "で",
+            "を",
+            "が",
+            "から"
+          ],
+          "answer": "で",
+          "choices_raw": [
+            "で",
+            "を",
+            "が",
+            "から"
+          ],
+          "answer_raw": "で"
+        }
+      ]
+    },
+    {
+      "id": "28",
+      "title": "Particle も",
+      "level": "N5",
+      "category": "Particle",
+      "pattern": "~mo (also / too)",
+      "explanation": "も means “also/too” and replaces particles like は/が/を on the added item: わたしも行きます (I’m going too).",
+      "examples": [
+        {
+          "jp": "わたしもパーティーに行(い)きます。",
+          "romaji": "watashi mo paatii ni ikimasu.",
+          "en": "I'm going to the party too."
+        },
+        {
+          "jp": "田中(たなか)さんも来(き)ます。",
+          "romaji": "tanaka-san mo kimasu.",
+          "en": "Tanaka-san is coming too."
+        },
+        {
+          "jp": "コーヒーも紅茶(こうちゃ)も好(す)きです。",
+          "romaji": "koohii mo koucha mo suki desu.",
+          "en": "I like coffee as well as tea."
+        },
+        {
+          "jp": "昨日(きのう)も勉強(べんきょう)しました。",
+          "romaji": "kinou mo benkyou shimashita.",
+          "en": "Yesterday I also studied."
+        }
+      ],
+      "quiz": [
+        {
+          "id": 1,
+          "type": "fill_target_form",
+          "question_en": "Choose the particle meaning “also/too.”",
+          "question_jp": "田中(たなか)さん（　）来(き)ます。",
+          "choices": [
+            "も",
+            "は",
+            "を",
+            "だけ"
+          ],
+          "answer": "も",
+          "choices_raw": [
+            "も",
+            "は",
+            "を",
+            "だけ"
+          ],
+          "answer_raw": "も"
+        },
+        {
+          "id": 2,
+          "type": "mc_target_usage",
+          "question_en": "Choose the sentence meaning “I am going too.”",
+          "choices": [
+            "わたしも行(い)きます。",
+            "わたしは行(い)きますも。",
+            "わたしを行(い)きます。",
+            "わたしだけ行(い)きません。"
+          ],
+          "answer": "わたしも行(い)きます。",
+          "choices_raw": [
+            "わたしも行きます。",
+            "わたしは行きますも。",
+            "わたしを行きます。",
+            "わたしだけ行きません。"
+          ],
+          "answer_raw": "わたしも行きます。"
+        },
+        {
+          "id": 3,
+          "type": "mc_meaning",
+          "question_en": "Choose the best translation.",
+          "target_jp": "コーヒーも紅茶(こうちゃ)も好(す)きです。",
+          "choices": [
+            "I like both coffee and tea.",
+            "I like only coffee.",
+            "I do not like tea.",
+            "I drink coffee or tea."
+          ],
+          "answer": "I like both coffee and tea.",
+          "choices_raw": [
+            "I like both coffee and tea.",
+            "I like only coffee.",
+            "I do not like tea.",
+            "I drink coffee or tea."
+          ],
+          "answer_raw": "I like both coffee and tea."
+        }
+      ]
+    },
+    {
+      "id": "29",
+      "title": "Particle も (Negative)",
+      "level": "N5",
+      "category": "Particle",
+      "pattern": "~mo ... ~masen (not ... at all; not even one)",
+      "explanation": "In negative sentences, ～も emphasizes “not even one / not at all”: 何も食べません (I don’t eat anything), だれも来ません (No one comes).",
+      "examples": [
+        {
+          "jp": "何(なに)も食(た)べませんでした。",
+          "romaji": "nanimo tabemasen deshita.",
+          "en": "I didn't eat anything."
+        },
+        {
+          "jp": "今日(きょう)はどこへも行(い)きません。",
+          "romaji": "kyou wa doko e mo ikimasen.",
+          "en": "I'm not going anywhere today."
+        },
+        {
+          "jp": "だれも知(し)りません。",
+          "romaji": "dare mo shirimasen.",
+          "en": "No one knows."
+        },
+        {
+          "jp": "何(なに)も買(か)いませんでした。",
+          "romaji": "nanimo kaimasen deshita.",
+          "en": "I didn't buy anything."
+        }
+      ],
+      "quiz": [
+        {
+          "id": 1,
+          "type": "fill_target_form",
+          "question_en": "Complete the negative expression meaning “nothing.”",
+          "question_jp": "何(なに)（　）食(た)べません。",
+          "choices": [
+            "も",
+            "か",
+            "でも",
+            "だけ"
+          ],
+          "answer": "も",
+          "choices_raw": [
+            "も",
+            "か",
+            "でも",
+            "だけ"
+          ],
+          "answer_raw": "も"
+        },
+        {
+          "id": 2,
+          "type": "mc_target_usage",
+          "question_en": "Choose the sentence meaning “No one came.”",
+          "choices": [
+            "だれも来(き)ませんでした。",
+            "だれか来(き)ませんでした。",
+            "だれでも来(き)ませんでした。",
+            "だれは来(き)ませんでした。"
+          ],
+          "answer": "だれも来(き)ませんでした。",
+          "choices_raw": [
+            "だれも来ませんでした。",
+            "だれか来ませんでした。",
+            "だれでも来ませんでした。",
+            "だれは来ませんでした。"
+          ],
+          "answer_raw": "だれも来ませんでした。"
+        },
+        {
+          "id": 3,
+          "type": "mc_target_usage",
+          "question_en": "Choose the sentence meaning “I am not going anywhere today.”",
+          "choices": [
+            "今日(きょう)はどこへも行(い)きません。",
+            "今日(きょう)はどこかへ行(い)きません。",
+            "今日(きょう)はどこでも行(い)きません。",
+            "今日(きょう)はどこだけ行(い)きません。"
+          ],
+          "answer": "今日(きょう)はどこへも行(い)きません。",
+          "choices_raw": [
+            "今日はどこへも行きません。",
+            "今日はどこかへ行きません。",
+            "今日はどこでも行きません。",
+            "今日はどこだけ行きません。"
+          ],
+          "answer_raw": "今日はどこへも行きません。"
+        }
+      ]
+    },
+    {
+      "id": "30",
+      "title": "Particle か",
+      "level": "N5",
+      "category": "Particle",
+      "pattern": "~ka",
+      "explanation": "か between two nouns means “or”: AかB. It’s also used at sentence end to form a question.",
+      "examples": [
+        {
+          "jp": "コーヒーか紅茶(こうちゃ)。",
+          "romaji": "koohii ka koucha.",
+          "en": "Coffee or black tea."
+        },
+        {
+          "jp": "コーヒーかお茶(ちゃ)を飲(の)みます。",
+          "romaji": "koohii ka ocha o nomimasu.",
+          "en": "I drink coffee or tea."
+        },
+        {
+          "jp": "土曜日(どようび)か日曜日(にちようび)に行(い)きます。",
+          "romaji": "doyoubi ka nichiyoubi ni ikimasu.",
+          "en": "I'll go on Saturday or Sunday."
+        },
+        {
+          "jp": "バスか電車(でんしゃ)で行(い)きます。",
+          "romaji": "basu ka densha de ikimasu.",
+          "en": "I'll go by bus or train."
+        }
+      ],
+      "quiz": [
+        {
+          "id": 1,
+          "type": "fill_target_form",
+          "question_en": "Choose the particle meaning “or.”",
+          "question_jp": "コーヒー（　）紅茶(こうちゃ)を飲(の)みます。",
+          "choices": [
+            "か",
+            "と",
+            "や",
+            "も"
+          ],
+          "answer": "か",
+          "choices_raw": [
+            "か",
+            "と",
+            "や",
+            "も"
+          ],
+          "answer_raw": "か"
+        },
+        {
+          "id": 2,
+          "type": "mc_target_usage",
+          "question_en": "Choose the sentence meaning “I will go on Saturday or Sunday.”",
+          "choices": [
+            "土曜日(どようび)か日曜日(にちようび)に行(い)きます。",
+            "土曜日(どようび)と日曜日(にちようび)に行(い)きます。",
+            "土曜日(どようび)や日曜日(にちようび)だけ行(い)きます。",
+            "土曜日(どようび)も日曜日(にちようび)も行(い)きません。"
+          ],
+          "answer": "土曜日(どようび)か日曜日(にちようび)に行(い)きます。",
+          "choices_raw": [
+            "土曜日か日曜日に行きます。",
+            "土曜日と日曜日に行きます。",
+            "土曜日や日曜日だけ行きます。",
+            "土曜日も日曜日も行きません。"
+          ],
+          "answer_raw": "土曜日か日曜日に行きます。"
+        },
+        {
+          "id": 3,
+          "type": "mc_usage",
+          "question_en": "Which use of か forms a question?",
+          "choices": [
+            "学生(がくせい)ですか。",
+            "コーヒーか紅茶(こうちゃ)",
+            "土曜日(どようび)か日曜日(にちようび)",
+            "バスか電車(でんしゃ)"
+          ],
+          "answer": "学生(がくせい)ですか。",
+          "choices_raw": [
+            "学生ですか。",
+            "コーヒーか紅茶",
+            "土曜日か日曜日",
+            "バスか電車"
+          ],
+          "answer_raw": "学生ですか。"
+        }
+      ]
+    },
+    {
+      "id": "31",
+      "title": "Particle や",
+      "level": "N5",
+      "category": "Particle",
+      "pattern": "~ya",
+      "explanation": "や lists representative examples (non-exhaustive): AやB(など) meaning “A, B, and so on.”",
+      "examples": [
+        {
+          "jp": "コンビニや銀行(ぎんこう)などがあります。",
+          "romaji": "kombini ya ginkou nado ga arimasu.",
+          "en": "There are convenience stores, banks, and so on."
+        },
+        {
+          "jp": "週末(しゅうまつ)は勉強(べんきょう)や買い物(かいもの)をします。",
+          "romaji": "shuumatsu wa benkyou ya kaimono o shimasu.",
+          "en": "On weekends, I study, go shopping, and so on."
+        },
+        {
+          "jp": "机(つくえ)の上(うえ)に本(ほん)やペンがあります。",
+          "romaji": "tsukue no ue ni hon ya pen ga arimasu.",
+          "en": "There are books, pens, and so on on the desk."
+        },
+        {
+          "jp": "日本(にほん)や韓国(かんこく)などに行(い)きたいです。",
+          "romaji": "nihon ya kankoku nado ni ikitai desu.",
+          "en": "I want to go to places such as Japan and Korea."
+        }
+      ],
+      "quiz": [
+        {
+          "id": 1,
+          "type": "fill_target_form",
+          "question_en": "Choose the particle for a non-exhaustive list.",
+          "question_jp": "机(つくえ)の上(うえ)に本(ほん)（　）ペンがあります。",
+          "choices": [
+            "や",
+            "と",
+            "か",
+            "も"
+          ],
+          "answer": "や",
+          "choices_raw": [
+            "や",
+            "と",
+            "か",
+            "も"
+          ],
+          "answer_raw": "や"
+        },
+        {
+          "id": 2,
+          "type": "mc_target_usage",
+          "question_en": "Choose the phrase meaning “books, pens, and so on.”",
+          "choices": [
+            "本(ほん)やペンなど",
+            "本(ほん)とペンだけ",
+            "本(ほん)かペン",
+            "本(ほん)もペンもありません"
+          ],
+          "answer": "本(ほん)やペンなど",
+          "choices_raw": [
+            "本やペンなど",
+            "本とペンだけ",
+            "本かペン",
+            "本もペンもありません"
+          ],
+          "answer_raw": "本やペンなど"
+        },
+        {
+          "id": 3,
+          "type": "mc_meaning",
+          "question_en": "Choose the best translation.",
+          "target_jp": "日本(にほん)や韓国(かんこく)などに行(い)きたいです。",
+          "choices": [
+            "I want to visit places such as Japan and Korea.",
+            "I want to visit only Japan and Korea.",
+            "I must choose Japan or Korea.",
+            "I have visited every country."
+          ],
+          "answer": "I want to visit places such as Japan and Korea.",
+          "choices_raw": [
+            "I want to visit places such as Japan and Korea.",
+            "I want to visit only Japan and Korea.",
+            "I must choose Japan or Korea.",
+            "I have visited every country."
+          ],
+          "answer_raw": "I want to visit places such as Japan and Korea."
+        }
+      ]
+    },
+    {
+      "id": "32",
+      "title": "Particle から、まで",
+      "level": "N5",
+      "category": "Particle",
+      "pattern": "~kara / ~made (from / to)",
+      "explanation": "から marks the starting point and まで marks the end point (time or place). They can be used together or separately.",
+      "examples": [
+        {
+          "jp": "テストは15日(じゅうごにち)から18日(じゅうはちにち)までです。",
+          "romaji": "tesuto wa juugonichi kara juuhachinichi made desu.",
+          "en": "The exam is from the 15th to the 18th."
+        },
+        {
+          "jp": "授業(じゅぎょう)は９時(じ)から１２時(じ)までです。",
+          "romaji": "jugyou wa kuji kara juuniji made desu.",
+          "en": "Class is from 9:00 to 12:00."
+        },
+        {
+          "jp": "駅(えき)から学校(がっこう)までバスで行(い)きます。",
+          "romaji": "eki kara gakkou made basu de ikimasu.",
+          "en": "I go from the station to school by bus."
+        },
+        {
+          "jp": "夏休(なつやす)みは７月(がつ)からです。",
+          "romaji": "natsuyasumi wa shichigatsu kara desu.",
+          "en": "Summer vacation starts in July."
+        }
+      ],
+      "quiz": [
+        {
+          "id": 1,
+          "type": "fill_target_form",
+          "question_en": "Choose the starting-point particle.",
+          "question_jp": "授業(じゅぎょう)は9時(じ)（　）12時(じ)までです。",
+          "choices": [
+            "から",
+            "まで",
+            "に",
+            "で"
+          ],
+          "answer": "から",
+          "choices_raw": [
+            "から",
+            "まで",
+            "に",
+            "で"
+          ],
+          "answer_raw": "から"
+        },
+        {
+          "id": 2,
+          "type": "mc_target_usage",
+          "question_en": "Choose the sentence meaning “Class ends at 12:00.”",
+          "choices": [
+            "授業(じゅぎょう)は12時(じ)までです。",
+            "授業(じゅぎょう)は12時(じ)からです。",
+            "授業(じゅぎょう)は12時(じ)にです。",
+            "授業(じゅぎょう)は12時(じ)でです。"
+          ],
+          "answer": "授業(じゅぎょう)は12時(じ)までです。",
+          "choices_raw": [
+            "授業は12時までです。",
+            "授業は12時からです。",
+            "授業は12時にです。",
+            "授業は12時でです。"
+          ],
+          "answer_raw": "授業は12時までです。"
+        },
+        {
+          "id": 3,
+          "type": "fill_target_form",
+          "question_en": "Choose the ending-point particle.",
+          "question_jp": "駅(えき)から学校(がっこう)（　）バスで行(い)きます。",
+          "choices": [
+            "まで",
+            "から",
+            "で",
+            "を"
+          ],
+          "answer": "まで",
+          "choices_raw": [
+            "まで",
+            "から",
+            "で",
+            "を"
+          ],
+          "answer_raw": "まで"
+        }
+      ]
+    },
+    {
+      "id": "33",
+      "title": "Approximation and Limitation: ごろ・ぐらい・だけ",
+      "level": "N5",
+      "category": "Suffix",
+      "pattern": "[Time] ごろ / [Amount・Duration] ぐらい / N だけ",
+      "explanation": "ごろ means “around” with a point in time. ぐらい means “about” with an amount, number, or duration. だけ limits the meaning to “only.” These forms have different functions and should be distinguished in examples and quizzes.",
+      "examples": [
+        {
+          "jp": "この本(ほん)は1000円(えん)ぐらいです。",
+          "romaji": "kono hon wa sen-en gurai desu.",
+          "en": "This book is about 1,000 yen."
+        },
+        {
+          "jp": "９時(じ)ごろ電話(でんわ)します。",
+          "romaji": "kuji goro denwa shimasu.",
+          "en": "I'll call around 9:00."
+        },
+        {
+          "jp": "一(いち)週間(しゅうかん)ぐらい日本(にほん)にいました。",
+          "romaji": "isshuukan gurai nihon ni imashita.",
+          "en": "I was in Japan about a week."
+        },
+        {
+          "jp": "日曜日(にちようび)だけ休(やす)みです。",
+          "romaji": "nichiyoubi dake yasumi desu.",
+          "en": "I have only Sunday off."
+        }
+      ],
+      "quiz": [
+        {
+          "id": 1,
+          "type": "fill_target_form",
+          "question_en": "Choose the expression for an approximate clock time.",
+          "question_jp": "7時(じ)（　）起(お)きます。",
+          "choices": [
+            "ごろ",
+            "ぐらい",
+            "だけ",
+            "まで"
+          ],
+          "answer": "ごろ",
+          "choices_raw": [
+            "ごろ",
+            "ぐらい",
+            "だけ",
+            "まで"
+          ],
+          "answer_raw": "ごろ"
+        },
+        {
+          "id": 2,
+          "type": "fill_target_form",
+          "question_en": "Choose the expression for an approximate duration.",
+          "question_jp": "一週間(いっしゅうかん)（　）日本(にほん)にいました。",
+          "choices": [
+            "ぐらい",
+            "ごろ",
+            "だけ",
+            "から"
+          ],
+          "answer": "ぐらい",
+          "choices_raw": [
+            "ぐらい",
+            "ごろ",
+            "だけ",
+            "から"
+          ],
+          "answer_raw": "ぐらい"
+        },
+        {
+          "id": 3,
+          "type": "fill_target_form",
+          "question_en": "Choose the expression meaning “only.”",
+          "question_jp": "日曜日(にちようび)（　）休(やす)みです。",
+          "choices": [
+            "だけ",
+            "ごろ",
+            "ぐらい",
+            "まで"
+          ],
+          "answer": "だけ",
+          "choices_raw": [
+            "だけ",
+            "ごろ",
+            "ぐらい",
+            "まで"
+          ],
+          "answer_raw": "だけ"
+        }
+      ]
+    },
+    {
+      "id": "34",
+      "title": "Question words (basic list)",
+      "level": "N5",
+      "category": "Question Words",
+      "pattern": "dare/nani/doko/itsu/dou (who/what/where/when/how)",
+      "explanation": "Basic question words include だれ/どなた (who), なに・なん (what), どこ (where), いつ (when), and どう・どうやって (how). どちら is the polite form of どっち and can mean “which one” or “which direction/place,” depending on context.",
+      "examples": [
+        {
+          "jp": "国(くに)はどちらですか。",
+          "romaji": "kuni wa dochira desu ka.",
+          "en": "Where are you from?"
+        },
+        {
+          "jp": "いつ日本(にほん)へ行(い)きますか。",
+          "romaji": "itsu nihon e ikimasu ka.",
+          "en": "When are you going to Japan?"
+        },
+        {
+          "jp": "どこで昼ご飯(ひるごはん)を食(た)べますか。",
+          "romaji": "doko de hirugohan o tabemasu ka.",
+          "en": "Where do you eat lunch?"
+        },
+        {
+          "jp": "どうやって学校(がっこう)へ行(い)きますか。",
+          "romaji": "dou yatte gakkou e ikimasu ka.",
+          "en": "How do you get to school?"
+        }
+      ],
+      "quiz": [
+        {
+          "id": 1,
+          "type": "fill_blank",
+          "question_jp": "国(くに)（　）どちらですか",
+          "choices": [
+            "は",
+            "が",
+            "を"
+          ],
+          "answer": "は",
+          "question_en": "Choose the correct option to complete the Japanese sentence.",
+          "sentence_en": "Where are you from?",
+          "choices_raw": [
+            "は",
+            "が",
+            "を"
+          ],
+          "answer_raw": "は"
+        },
+        {
+          "id": 2,
+          "type": "mc_target_usage",
+          "question_en": "Which question word asks “when”?",
+          "choices": [
+            "いつ",
+            "どこ",
+            "だれ",
+            "どう"
+          ],
+          "answer": "いつ",
+          "choices_raw": [
+            "いつ",
+            "どこ",
+            "だれ",
+            "どう"
+          ],
+          "answer_raw": "いつ"
+        },
+        {
+          "id": 3,
+          "type": "fill_blank",
+          "question_jp": "どこで昼ご飯(ひるごはん)（　）食べ(たべ)ますか。",
+          "choices": [
+            "を",
+            "は",
+            "が"
+          ],
+          "answer": "を",
+          "question_en": "Choose the correct option to complete the Japanese sentence.",
+          "sentence_en": "Where do you eat lunch?",
+          "choices_raw": [
+            "を",
+            "は",
+            "が"
+          ],
+          "answer_raw": "を"
+        }
+      ]
+    },
+    {
+      "id": "35",
+      "title": "Question Words + ka",
+      "level": "N5",
+      "category": "Question Words",
+      "pattern": "~ka (indefinite “some-”)",
+      "explanation": "Question word + か makes an indefinite word: だれか (someone), 何か (something), どこか (somewhere), いつか (someday).",
+      "examples": [
+        {
+          "jp": "何(なに)か食(た)べましょう。",
+          "romaji": "nanika tabemashou.",
+          "en": "Let's eat something."
+        },
+        {
+          "jp": "何(なに)か食(た)べたいです。",
+          "romaji": "nanika tabetai desu.",
+          "en": "I want to eat something."
+        },
+        {
+          "jp": "だれか日本語(にほんご)を話(はな)せますか。",
+          "romaji": "dareka nihongo o hanasemasu ka.",
+          "en": "Is there anyone who speaks Japanese?"
+        },
+        {
+          "jp": "どこかへ行(い)きましょう。",
+          "romaji": "dokoka e ikimashou.",
+          "en": "Let's go somewhere."
+        }
+      ],
+      "quiz": [
+        {
+          "id": 1,
+          "type": "fill_target_form",
+          "question_en": "Complete the word meaning “someone.”",
+          "question_jp": "だれ（　）が来(き)ました。",
+          "choices": [
+            "か",
+            "も",
+            "でも",
+            "まで"
+          ],
+          "answer": "か",
+          "choices_raw": [
+            "か",
+            "も",
+            "でも",
+            "まで"
+          ],
+          "answer_raw": "か"
+        },
+        {
+          "id": 2,
+          "type": "mc_target_usage",
+          "question_en": "Choose the sentence meaning “I want to eat something.”",
+          "choices": [
+            "何(なに)か食(た)べたいです。",
+            "何(なに)も食(た)べたいです。",
+            "何(なに)でも食(た)べません。",
+            "何(なに)だけ食(た)べたいです。"
+          ],
+          "answer": "何(なに)か食(た)べたいです。",
+          "choices_raw": [
+            "何か食べたいです。",
+            "何も食べたいです。",
+            "何でも食べません。",
+            "何だけ食べたいです。"
+          ],
+          "answer_raw": "何か食べたいです。"
+        },
+        {
+          "id": 3,
+          "type": "mc_target_usage",
+          "question_en": "Choose the sentence meaning “Let’s go somewhere.”",
+          "choices": [
+            "どこかへ行(い)きましょう。",
+            "どこもへ行(い)きましょう。",
+            "どこでもへ行(い)きません。",
+            "どこだけへ行(い)きましょう。"
+          ],
+          "answer": "どこかへ行(い)きましょう。",
+          "choices_raw": [
+            "どこかへ行きましょう。",
+            "どこもへ行きましょう。",
+            "どこでもへ行きません。",
+            "どこだけへ行きましょう。"
+          ],
+          "answer_raw": "どこかへ行きましょう。"
+        }
+      ]
+    },
+    {
+      "id": "36",
+      "title": "Question Words + demo",
+      "level": "N5",
+      "category": "Question Words",
+      "pattern": "~demo (free choice “any-”)",
+      "explanation": "Question word + でも means “any-/whoever/whenever/wherever”. It expresses free choice: “it doesn’t matter which”.",
+      "examples": [
+        {
+          "jp": "いつでも来(き)てください。",
+          "romaji": "itsudemo kite kudasai.",
+          "en": "Please come any time."
+        },
+        {
+          "jp": "何(なん)でも食(た)べます。",
+          "romaji": "nan demo tabemasu.",
+          "en": "I eat anything."
+        },
+        {
+          "jp": "どれでもいいです。",
+          "romaji": "doredemo ii desu.",
+          "en": "Any one of them is fine."
+        },
+        {
+          "jp": "だれでもわかります。",
+          "romaji": "daredemo wakarimasu.",
+          "en": "Anyone can understand."
+        }
+      ],
+      "quiz": [
+        {
+          "id": 1,
+          "type": "mc_conjugation_time",
+          "question_en": "Choose the sentence that correctly uses でも to mean “any time”.",
+          "hint_en": "Target: いつでも",
+          "choices": [
+            "いつでも来(き)てください。",
+            "いつか来(き)てください。",
+            "いつも来(き)てください。",
+            "いつまで来(き)てください。"
+          ],
+          "answer": "いつでも来(き)てください。",
+          "choices_raw": [
+            "いつでも来てください。",
+            "いつか来てください。",
+            "いつも来てください。",
+            "いつまで来てください。"
+          ],
+          "answer_raw": "いつでも来てください。"
+        },
+        {
+          "id": 2,
+          "type": "fill_conjugation_chunk",
+          "question_jp": "いつ（　）来(き)てください。",
+          "question_en": "Fill the blank with the correct ending to mean “any time”.",
+          "choices": [
+            "でも",
+            "か",
+            "も",
+            "まで"
+          ],
+          "answer": "でも",
+          "choices_raw": [
+            "でも",
+            "か",
+            "も",
+            "まで"
+          ],
+          "answer_raw": "でも"
+        },
+        {
+          "id": 3,
+          "type": "mc_formality_variant",
+          "question_en": "Which option is the more casual way to say the target sentence?",
+          "target_jp": "いつでも来(き)てください。",
+          "choices": [
+            "いつでも来(き)て。",
+            "いつでも来(き)てください。",
+            "いつでも来(き)ます。"
+          ],
+          "answer": "いつでも来(き)て。",
+          "sentence_en": "Please come any time.",
+          "choices_raw": [
+            "いつでも来て。",
+            "いつでも来てください。",
+            "いつでも来ます。"
+          ],
+          "answer_raw": "いつでも来て。"
+        }
+      ]
+    },
+    {
+      "id": "37",
+      "title": "Connecting i-adjectives",
+      "level": "N5",
+      "category": "Connector",
+      "pattern": "~kute",
+      "explanation": "To connect i-adjectives, change -い to -くて: 安い→安くて. It links descriptions (“and…”) and can sometimes give a light reason.",
+      "examples": [
+        {
+          "jp": "安(やす)くて、おいしいです。",
+          "romaji": "yasukute, oishii desu.",
+          "en": "Cheap and tasty."
+        },
+        {
+          "jp": "この店(みせ)は安(やす)くておいしいです。",
+          "romaji": "kono mise wa yasukute oishii desu.",
+          "en": "This store is cheap and delicious."
+        },
+        {
+          "jp": "部屋(へや)は広(ひろ)くてきれいです。",
+          "romaji": "heya wa hirokute kirei desu.",
+          "en": "The room is spacious and clean."
+        },
+        {
+          "jp": "今日(きょう)は忙(いそが)しくて、休(やす)めません。",
+          "romaji": "kyou wa isogashikute, yasumemasen.",
+          "en": "I'm busy today, so I can't take a break."
+        }
+      ],
+      "quiz": [
+        {
+          "id": 1,
+          "type": "mc_conjugation_time",
+          "question_en": "Choose the correct sentence using ～くて to connect i-adjectives.",
+          "hint_en": "Target: ～くて",
+          "choices": [
+            "安(やす)くて、おいしいです。",
+            "安(やす)いで、おいしいです。",
+            "安(やす)くて、おいしいでした。",
+            "安(やす)いくて、おいしいです。"
+          ],
+          "answer": "安(やす)くて、おいしいです。",
+          "choices_raw": [
+            "安くて、おいしいです。",
+            "安いで、おいしいです。",
+            "安くて、おいしいでした。",
+            "安いくて、おいしいです。"
+          ],
+          "answer_raw": "安くて、おいしいです。"
+        },
+        {
+          "id": 2,
+          "type": "fill_conjugation_chunk",
+          "question_jp": "この店(みせ)は安(やす)（　）、おいしいです。",
+          "question_en": "Fill the blank with the correct connector.",
+          "choices": [
+            "くて",
+            "いで",
+            "かった",
+            "くないで"
+          ],
+          "answer": "くて",
+          "choices_raw": [
+            "くて",
+            "いで",
+            "かった",
+            "くないで"
+          ],
+          "answer_raw": "くて"
+        },
+        {
+          "id": 3,
+          "type": "mc_formality_variant",
+          "question_en": "Which option is the casual (plain) version of the target sentence?",
+          "target_jp": "安(やす)くて、おいしいです。",
+          "choices": [
+            "安(やす)くて、おいしい。",
+            "安(やす)くて、おいしいです。",
+            "安(やす)い、おいしいです。"
+          ],
+          "answer": "安(やす)くて、おいしい。",
+          "sentence_en": "Cheap and tasty.",
+          "choices_raw": [
+            "安くて、おいしい。",
+            "安くて、おいしいです。",
+            "安い、おいしいです。"
+          ],
+          "answer_raw": "安くて、おいしい。"
+        }
+      ]
+    },
+    {
+      "id": "38",
+      "title": "Connecting na-adjectives/nouns",
+      "level": "N5",
+      "category": "Connector",
+      "pattern": "~de",
+      "explanation": "To connect na-adjectives or nouns, use で: きれいで、親切です / 学生で、19歳です. It means “and / being …”.",
+      "examples": [
+        {
+          "jp": "きれいで、やさしいです。",
+          "romaji": "kirei de, yasashii desu.",
+          "en": "Beautiful and kind."
+        },
+        {
+          "jp": "山田(やまだ)さんは親切(しんせつ)で有名(ゆうめい)です。",
+          "romaji": "yamada-san wa shinsetsu de yuumei desu.",
+          "en": "Yamada-san is kind and famous."
+        },
+        {
+          "jp": "ここは便利(べんり)で静(しず)かです。",
+          "romaji": "koko wa benri de shizuka desu.",
+          "en": "This place is convenient and quiet."
+        },
+        {
+          "jp": "わたしは会社員(かいしゃいん)で、兄(あに)は学生(がくせい)です。",
+          "romaji": "watashi wa kaishain de, ani wa gakusei desu.",
+          "en": "I'm an employee, and my brother's a student."
+        }
+      ],
+      "quiz": [
+        {
+          "id": 1,
+          "type": "mc_conjugation_time",
+          "question_en": "Choose the correct sentence using で to connect na-adjectives/nouns.",
+          "hint_en": "Target: ～で",
+          "choices": [
+            "きれいで、やさしいです。",
+            "きれいくて、やさしいです。",
+            "きれいな、やさしいです。",
+            "きれいで、やさしかったです。"
+          ],
+          "answer": "きれいで、やさしいです。",
+          "choices_raw": [
+            "きれいで、やさしいです。",
+            "きれいくて、やさしいです。",
+            "きれいな、やさしいです。",
+            "きれいで、やさしかったです。"
+          ],
+          "answer_raw": "きれいで、やさしいです。"
+        },
+        {
+          "id": 2,
+          "type": "fill_conjugation_chunk",
+          "question_jp": "山田(やまだ)さんは親切(しんせつ)（　）有名(ゆうめい)です。",
+          "question_en": "Fill the blank with the correct connector.",
+          "choices": [
+            "で",
+            "に",
+            "を",
+            "な"
+          ],
+          "answer": "で",
+          "choices_raw": [
+            "で",
+            "に",
+            "を",
+            "な"
+          ],
+          "answer_raw": "で"
+        },
+        {
+          "id": 3,
+          "type": "mc_formality_variant",
+          "question_en": "Which option is the casual (plain) version of the target sentence?",
+          "target_jp": "きれいで、やさしいです。",
+          "choices": [
+            "きれいで、やさしい。",
+            "きれいで、やさしいです。",
+            "きれいな、やさしいです。"
+          ],
+          "answer": "きれいで、やさしい。",
+          "sentence_en": "Beautiful and kind.",
+          "choices_raw": [
+            "きれいで、やさしい。",
+            "きれいで、やさしいです。",
+            "きれいな、やさしいです。"
+          ],
+          "answer_raw": "きれいで、やさしい。"
+        }
+      ]
+    },
+    {
+      "id": "39",
+      "title": "Connecting verbs (sequence)",
+      "level": "N5",
+      "category": "Connector",
+      "pattern": "V-te (and then / and)",
+      "explanation": "The て-form links verbs to show sequence of actions (A and then B) or a chain of activities.",
+      "examples": [
+        {
+          "jp": "朝(あさ)起(お)きて、シャワーを浴(あ)びます。",
+          "romaji": "asa okite, shawaa o abimasu.",
+          "en": "I wake up in the morning and take a shower."
+        },
+        {
+          "jp": "朝(あさ)起(お)きて、顔(かお)を洗(あら)って、学校(がっこう)へ行(い)きます。",
+          "romaji": "asa okite, kao o aratte, gakkou e ikimasu.",
+          "en": "I wake up in the morning, wash my face, and then go to school."
+        },
+        {
+          "jp": "スーパーへ行(い)って、野菜(やさい)を買(か)いました。",
+          "romaji": "suupaa e itte, yasai o kaimashita.",
+          "en": "I went to the supermarket and bought vegetables."
+        },
+        {
+          "jp": "音楽(おんがく)を聞(き)いて、勉強(べんきょう)します。",
+          "romaji": "ongaku o kiite, benkyou shimasu.",
+          "en": "I listen to music and then I study."
+        }
+      ],
+      "quiz": [
+        {
+          "id": 1,
+          "type": "mc_target_form",
+          "question_en": "Choose the correct て-form sequence.",
+          "choices": [
+            "朝(あさ)起(お)きて、顔(かお)を洗(あら)います。",
+            "朝(あさ)起(お)きますて、顔(かお)を洗(あら)います。",
+            "朝(あさ)起(お)いた、顔(かお)を洗(あら)います。",
+            "朝(あさ)起(お)きるで、顔(かお)を洗(あら)います。"
+          ],
+          "answer": "朝(あさ)起(お)きて、顔(かお)を洗(あら)います。",
+          "choices_raw": [
+            "朝起きて、顔を洗います。",
+            "朝起きますて、顔を洗います。",
+            "朝起いた、顔を洗います。",
+            "朝起きるで、顔を洗います。"
+          ],
+          "answer_raw": "朝起きて、顔を洗います。"
+        },
+        {
+          "id": 2,
+          "type": "fill_target_form",
+          "question_en": "Choose the correct て-form.",
+          "question_jp": "スーパーへ（　）、野菜(やさい)を買(か)いました。",
+          "choices": [
+            "行(い)って",
+            "行(い)きて",
+            "行(い)いた",
+            "行(い)くて"
+          ],
+          "answer": "行(い)って",
+          "choices_raw": [
+            "行って",
+            "行きて",
+            "行いた",
+            "行くて"
+          ],
+          "answer_raw": "行って"
+        },
+        {
+          "id": 3,
+          "type": "mc_target_usage",
+          "question_en": "Choose the sentence showing two actions in sequence.",
+          "choices": [
+            "音楽(おんがく)を聞(き)いて、勉強(べんきょう)します。",
+            "音楽(おんがく)を聞(き)く、勉強(べんきょう)します。",
+            "音楽(おんがく)を聞(き)いたで、勉強(べんきょう)します。",
+            "音楽(おんがく)を聞(き)きますて、勉強(べんきょう)します。"
+          ],
+          "answer": "音楽(おんがく)を聞(き)いて、勉強(べんきょう)します。",
+          "choices_raw": [
+            "音楽を聞いて、勉強します。",
+            "音楽を聞く、勉強します。",
+            "音楽を聞いたで、勉強します。",
+            "音楽を聞きますて、勉強します。"
+          ],
+          "answer_raw": "音楽を聞いて、勉強します。"
+        }
+      ]
+    },
+    {
+      "id": "40",
+      "title": "V-te kara",
+      "level": "N5",
+      "category": "Verbs",
+      "pattern": "V-te kara (after doing V)",
+      "explanation": "V-てから means “after doing V, then …”. It emphasizes that the first action is completed before the next.",
+      "examples": [
+        {
+          "jp": "手(て)を洗(あら)ってから、ご飯(ごはん)を食(た)べましょう。",
+          "romaji": "te o aratte kara, gohan o tabemashou.",
+          "en": "After washing your hands, let's eat."
+        },
+        {
+          "jp": "宿題(しゅくだい)をしてからテレビを見(み)ます。",
+          "romaji": "shukudai o shite kara terebi o mimasu.",
+          "en": "After doing my homework, I'll watch TV."
+        },
+        {
+          "jp": "シャワーを浴(あ)びてから寝(ね)ます。",
+          "romaji": "shawaa o abite kara nemasu.",
+          "en": "After taking a shower, I'll go to bed."
+        },
+        {
+          "jp": "日本(にほん)へ行(い)ってから、日本語(にほんご)が上手(じょうず)になりました。",
+          "romaji": "nihon e itte kara, nihongo ga jouzu ni narimashita.",
+          "en": "After going to Japan, my Japanese became better."
+        }
+      ],
+      "quiz": [
+        {
+          "id": 1,
+          "type": "fill_target_form",
+          "question_en": "Choose the expression meaning “after doing.”",
+          "question_jp": "手(て)を洗(あら)っ（　）、ご飯(はん)を食(た)べます。",
+          "choices": [
+            "てから",
+            "る前(まえ)に",
+            "たり",
+            "ながら"
+          ],
+          "answer": "てから",
+          "choices_raw": [
+            "てから",
+            "る前に",
+            "たり",
+            "ながら"
+          ],
+          "answer_raw": "てから"
+        },
+        {
+          "id": 2,
+          "type": "mc_target_usage",
+          "question_en": "Choose the sentence meaning “After doing homework, I watch TV.”",
+          "choices": [
+            "宿題(しゅくだい)をしてからテレビを見(み)ます。",
+            "宿題(しゅくだい)をする前(まえ)にテレビを見(み)ます。",
+            "宿題(しゅくだい)をしたりテレビを見(み)ます。",
+            "宿題(しゅくだい)をしながらテレビを見(み)ません。"
+          ],
+          "answer": "宿題(しゅくだい)をしてからテレビを見(み)ます。",
+          "choices_raw": [
+            "宿題をしてからテレビを見ます。",
+            "宿題をする前にテレビを見ます。",
+            "宿題をしたりテレビを見ます。",
+            "宿題をしながらテレビを見ません。"
+          ],
+          "answer_raw": "宿題をしてからテレビを見ます。"
+        },
+        {
+          "id": 3,
+          "type": "mc_order",
+          "question_en": "Which action happens first?",
+          "target_jp": "シャワーを浴(あ)びてから寝(ね)ます。",
+          "choices": [
+            "Taking a shower",
+            "Going to bed",
+            "Both happen at the same time",
+            "The order is unknown"
+          ],
+          "answer": "Taking a shower",
+          "choices_raw": [
+            "Taking a shower",
+            "Going to bed",
+            "Both happen at the same time",
+            "The order is unknown"
+          ],
+          "answer_raw": "Taking a shower"
+        }
+      ]
+    },
+    {
+      "id": "41",
+      "title": "Want (a noun): ほしい",
+      "level": "N5",
+      "category": "Desire",
+      "pattern": "N + ga hoshii desu (want N)",
+      "explanation": "N がほしいです expresses wanting to have/obtain something (a noun). The wanter is often marked with は: わたしはNがほしいです.",
+      "examples": [
+        {
+          "jp": "わたしはねこがほしいです。",
+          "romaji": "watashi wa neko ga hoshii desu.",
+          "en": "I want a cat."
+        },
+        {
+          "jp": "わたしは新(あたら)しいスマホがほしいです。",
+          "romaji": "watashi wa atarashii sumaho ga hoshii desu.",
+          "en": "I want a new phone."
+        },
+        {
+          "jp": "誕生日(たんじょうび)に何(なに)がほしいですか。",
+          "romaji": "tanjoubi ni nani ga hoshii desu ka.",
+          "en": "What do you want for your birthday?"
+        },
+        {
+          "jp": "少(すこ)し休(やす)みがほしいです。",
+          "romaji": "sukoshi yasumi ga hoshii desu.",
+          "en": "I'd like a little break."
+        }
+      ],
+      "quiz": [
+        {
+          "id": 1,
+          "type": "mc_conjugation_time",
+          "question_en": "Choose the correct polite sentence for today (今日).",
+          "hint_en": "Target: present aff",
+          "choices": [
+            "わたしはねこがほしいです",
+            "わたしはねこがほしくないです",
+            "わたしはねこがほしかったです",
+            "わたしはねこがほしくなかったです"
+          ],
+          "answer": "わたしはねこがほしいです",
+          "choices_raw": [
+            "わたしはねこがほしいです",
+            "わたしはねこがほしくないです",
+            "わたしはねこがほしかったです",
+            "わたしはねこがほしくなかったです"
+          ],
+          "answer_raw": "わたしはねこがほしいです"
+        },
+        {
+          "id": 2,
+          "type": "fill_target_form",
+          "question_en": "Choose the particle used with ほしい.",
+          "question_jp": "新(あたら)しい車(くるま)（　）ほしいです。",
+          "choices": [
+            "が",
+            "を",
+            "に",
+            "で"
+          ],
+          "answer": "が",
+          "choices_raw": [
+            "が",
+            "を",
+            "に",
+            "で"
+          ],
+          "answer_raw": "が"
+        },
+        {
+          "id": 3,
+          "type": "mc_formality_variant",
+          "question_en": "Which option is the casual (plain) version of the target sentence?",
+          "target_jp": "わたしはねこがほしいです",
+          "choices": [
+            "わたしはねこがほしい",
+            "わたしはねこがほしいです",
+            "わたしはねこがほしかったです"
+          ],
+          "answer": "わたしはねこがほしい",
+          "sentence_en": "I want a cat.",
+          "choices_raw": [
+            "わたしはねこがほしい",
+            "わたしはねこがほしいです",
+            "わたしはねこがほしかったです"
+          ],
+          "answer_raw": "わたしはねこがほしい"
+        }
+      ]
+    },
+    {
+      "id": "42",
+      "title": "Want to do: たい",
+      "level": "N5",
+      "category": "Desire",
+      "pattern": "V-masu stem + たいです (want to do ...)",
+      "explanation": "Attach たいです to the ます-stem after removing ます: 食べます → 食べたいです. It expresses the speaker's desire; another person's desire normally requires a question or a reporting construction.",
+      "examples": [
+        {
+          "jp": "ステーキが食(た)べたいです。",
+          "romaji": "suteeki ga tabetai desu.",
+          "en": "I want to eat steak."
+        },
+        {
+          "jp": "日本(にほん)へ行(い)きたいです。",
+          "romaji": "nihon e ikitai desu.",
+          "en": "I want to go to Japan."
+        },
+        {
+          "jp": "何(なに)をしたいですか。",
+          "romaji": "nani o shitai desu ka.",
+          "en": "What do you want to do?"
+        },
+        {
+          "jp": "今日(きょう)は早(はや)く帰(かえ)りたいです。",
+          "romaji": "kyou wa hayaku kaeritai desu.",
+          "en": "Today I want to go home early."
+        }
+      ],
+      "quiz": [
+        {
+          "id": 1,
+          "type": "mc_target_form",
+          "question_en": "Choose the correct form meaning “want to eat.”",
+          "choices": [
+            "食(た)べたいです",
+            "食(た)べますたいです",
+            "食(た)べてほしいです",
+            "食(た)べたです"
+          ],
+          "answer": "食(た)べたいです",
+          "choices_raw": [
+            "食べたいです",
+            "食べますたいです",
+            "食べてほしいです",
+            "食べたです"
+          ],
+          "answer_raw": "食べたいです"
+        },
+        {
+          "id": 2,
+          "type": "fill_target_form",
+          "question_en": "Remove ます and add たいです.",
+          "question_jp": "日本(にほん)へ（　）。",
+          "choices": [
+            "行(い)きたいです",
+            "行(い)きますたいです",
+            "行(い)くたいです",
+            "行(い)ってたいです"
+          ],
+          "answer": "行(い)きたいです",
+          "choices_raw": [
+            "行きたいです",
+            "行きますたいです",
+            "行くたいです",
+            "行ってたいです"
+          ],
+          "answer_raw": "行きたいです"
+        },
+        {
+          "id": 3,
+          "type": "mc_target_usage",
+          "question_en": "Choose the sentence asking what the listener wants to do.",
+          "choices": [
+            "何(なに)をしたいですか。",
+            "何(なに)がほしいですか。",
+            "何(なに)をしてください。",
+            "何(なに)をしませんか。"
+          ],
+          "answer": "何(なに)をしたいですか。",
+          "choices_raw": [
+            "何をしたいですか。",
+            "何がほしいですか。",
+            "何をしてください。",
+            "何をしませんか。"
+          ],
+          "answer_raw": "何をしたいですか。"
+        }
+      ]
+    },
+    {
+      "id": "43",
+      "title": "Ongoing action / State",
+      "level": "N5",
+      "category": "Verbs",
+      "pattern": "V-te imasu (in progress / resulting state)",
+      "explanation": "V-ています can mean (1) an action in progress, or (2) a continuing state/result (live somewhere, be married, know). The meaning depends on the verb.",
+      "examples": [
+        {
+          "jp": "今(いま)ピアノをひいています。",
+          "romaji": "ima piano o hiite imasu.",
+          "en": "I'm playing the piano now."
+        },
+        {
+          "jp": "いま音楽(おんがく)を聞(き)いています。",
+          "romaji": "ima ongaku o kiite imasu.",
+          "en": "Now I'm listening to music."
+        },
+        {
+          "jp": "わたしはジャカルタに住(す)んでいます。",
+          "romaji": "watashi wa jakaruta ni sunde imasu.",
+          "en": "I live in Jakarta."
+        },
+        {
+          "jp": "田中(たなか)さんは結婚(けっこん)しています。",
+          "romaji": "tanaka-san wa kekkon shite imasu.",
+          "en": "Tanaka-san is married."
+        }
+      ],
+      "quiz": [
+        {
+          "id": 1,
+          "type": "mc_masu_conjugation_time",
+          "question_en": "Choose the correct polite verb form for today (今日).",
+          "hint_en": "Target: present aff",
+          "choices": [
+            "今(いま)ピアノをひいています",
+            "今(いま)ピアノをひいていません",
+            "今(いま)ピアノをひいていました",
+            "今(いま)ピアノをひいていませんでした"
+          ],
+          "answer": "今(いま)ピアノをひいています",
+          "choices_raw": [
+            "今ピアノをひいています",
+            "今ピアノをひいていません",
+            "今ピアノをひいていました",
+            "今ピアノをひいていませんでした"
+          ],
+          "answer_raw": "今ピアノをひいています"
+        },
+        {
+          "id": 2,
+          "type": "mc_target_usage",
+          "question_en": "Choose the sentence describing an action happening now.",
+          "choices": [
+            "今(いま)、音楽(おんがく)を聞(き)いています。",
+            "今(いま)、音楽(おんがく)を聞(き)きます。",
+            "昨日(きのう)、音楽(おんがく)を聞(き)きました。",
+            "音楽(おんがく)を聞(き)いてください。"
+          ],
+          "answer": "今(いま)、音楽(おんがく)を聞(き)いています。",
+          "choices_raw": [
+            "今、音楽を聞いています。",
+            "今、音楽を聞きます。",
+            "昨日、音楽を聞きました。",
+            "音楽を聞いてください。"
+          ],
+          "answer_raw": "今、音楽を聞いています。"
+        },
+        {
+          "id": 3,
+          "type": "mc_target_usage",
+          "question_en": "Choose the sentence where ～ています describes a continuing state.",
+          "choices": [
+            "田中(たなか)さんは結婚(けっこん)しています。",
+            "田中(たなか)さんは今(いま)走(はし)っています。",
+            "田中(たなか)さんは昨日(きのう)走(はし)りました。",
+            "田中(たなか)さんは走(はし)ってください。"
+          ],
+          "answer": "田中(たなか)さんは結婚(けっこん)しています。",
+          "choices_raw": [
+            "田中さんは結婚しています。",
+            "田中さんは今走っています。",
+            "田中さんは昨日走りました。",
+            "田中さんは走ってください。"
+          ],
+          "answer_raw": "田中さんは結婚しています。"
+        }
+      ]
+    },
+    {
+      "id": "44",
+      "title": "Request (ください)",
+      "level": "N5",
+      "category": "Verbs",
+      "pattern": "V-te kudasai",
+      "explanation": "V-てください is a polite request: “please do …”. It’s the て-form + ください.",
+      "examples": [
+        {
+          "jp": "ペンを貸(か)してください。",
+          "romaji": "pen o kashite kudasai.",
+          "en": "Please lend me a pen."
+        },
+        {
+          "jp": "もう一(いち)度(ど)言(い)ってください。",
+          "romaji": "mou ichido itte kudasai.",
+          "en": "Please say it again."
+        },
+        {
+          "jp": "ゆっくり話(はな)してください。",
+          "romaji": "yukkuri hanashite kudasai.",
+          "en": "Please speak slowly."
+        },
+        {
+          "jp": "この紙(かみ)に書(か)いてください。",
+          "romaji": "kono kami ni kaite kudasai.",
+          "en": "Please write it on this paper."
+        }
+      ],
+      "quiz": [
+        {
+          "id": 1,
+          "type": "mc_conjugation_time",
+          "question_en": "Choose the correct polite request sentence.",
+          "hint_en": "Target: V-てください",
+          "choices": [
+            "ペンを貸(か)してください。",
+            "ペンを貸(か)します。",
+            "ペンを貸(か)しません。",
+            "ペンを貸(か)しました。"
+          ],
+          "answer": "ペンを貸(か)してください。",
+          "choices_raw": [
+            "ペンを貸してください。",
+            "ペンを貸します。",
+            "ペンを貸しません。",
+            "ペンを貸しました。"
+          ],
+          "answer_raw": "ペンを貸してください。"
+        },
+        {
+          "id": 2,
+          "type": "fill_conjugation_chunk",
+          "question_jp": "ペンを貸(か)し（　）。",
+          "question_en": "Fill the blank to make a polite request.",
+          "choices": [
+            "てください",
+            "ます",
+            "ません",
+            "ました"
+          ],
+          "answer": "てください",
+          "choices_raw": [
+            "てください",
+            "ます",
+            "ません",
+            "ました"
+          ],
+          "answer_raw": "てください"
+        },
+        {
+          "id": 3,
+          "type": "mc_formality_variant",
+          "question_en": "Which option is the more casual request?",
+          "target_jp": "ペンを貸(か)してください。",
+          "choices": [
+            "ペンを貸(か)して。",
+            "ペンを貸(か)してください。",
+            "ペンを貸(か)します。"
+          ],
+          "answer": "ペンを貸(か)して。",
+          "sentence_en": "Please lend me a pen.",
+          "choices_raw": [
+            "ペンを貸して。",
+            "ペンを貸してください。",
+            "ペンを貸します。"
+          ],
+          "answer_raw": "ペンを貸して。"
+        }
+      ]
+    },
+    {
+      "id": "45",
+      "title": "Prohibition request (ないでください)",
+      "level": "N5",
+      "category": "Verbs",
+      "pattern": "V-naide kudasai",
+      "explanation": "V-ないでください is a polite prohibition request: “please don’t …”. It’s the negative (nai-form) + でください.",
+      "examples": [
+        {
+          "jp": "ここで写真(しゃしん)を撮(と)らないでください。",
+          "romaji": "koko de shashin o toranaide kudasai.",
+          "en": "Please don't take pictures here."
+        },
+        {
+          "jp": "この部屋(へや)に入(はい)らないでください。",
+          "romaji": "kono heya ni hairanaide kudasai.",
+          "en": "Please do not enter this room."
+        },
+        {
+          "jp": "遅(おく)れないでください。",
+          "romaji": "okurenaide kudasai.",
+          "en": "Please don't be late."
+        },
+        {
+          "jp": "あまり心配(しんぱい)しないでください。",
+          "romaji": "amari shinpai shinaide kudasai.",
+          "en": "Please don't worry too much."
+        }
+      ],
+      "quiz": [
+        {
+          "id": 1,
+          "type": "mc_conjugation_time",
+          "question_en": "Choose the correct polite sentence meaning “Please don't …”.",
+          "hint_en": "Target: V-ないでください",
+          "choices": [
+            "ここで写真(しゃしん)を撮(と)らないでください。",
+            "ここで写真(しゃしん)を撮(と)ってください。",
+            "ここで写真(しゃしん)を撮(と)ります。",
+            "ここで写真(しゃしん)を撮(と)りません。"
+          ],
+          "answer": "ここで写真(しゃしん)を撮(と)らないでください。",
+          "choices_raw": [
+            "ここで写真を撮らないでください。",
+            "ここで写真を撮ってください。",
+            "ここで写真を撮ります。",
+            "ここで写真を撮りません。"
+          ],
+          "answer_raw": "ここで写真を撮らないでください。"
+        },
+        {
+          "id": 2,
+          "type": "fill_conjugation_chunk",
+          "question_jp": "ここで写真(しゃしん)を撮(と)ら（　）。",
+          "question_en": "Fill the blank to make a polite prohibition request.",
+          "choices": [
+            "ないでください",
+            "てください",
+            "ます",
+            "ました"
+          ],
+          "answer": "ないでください",
+          "choices_raw": [
+            "ないでください",
+            "てください",
+            "ます",
+            "ました"
+          ],
+          "answer_raw": "ないでください"
+        },
+        {
+          "id": 3,
+          "type": "mc_formality_variant",
+          "question_en": "Which option is the more casual way to say the target sentence?",
+          "target_jp": "ここで写真(しゃしん)を撮(と)らないでください。",
+          "choices": [
+            "ここで写真(しゃしん)を撮(と)らないで。",
+            "ここで写真(しゃしん)を撮(と)らないでください。",
+            "ここで写真(しゃしん)を撮(と)りません。"
+          ],
+          "answer": "ここで写真(しゃしん)を撮(と)らないで。",
+          "sentence_en": "Please don't take pictures here.",
+          "choices_raw": [
+            "ここで写真を撮らないで。",
+            "ここで写真を撮らないでください。",
+            "ここで写真を撮りません。"
+          ],
+          "answer_raw": "ここで写真を撮らないで。"
+        }
+      ]
+    },
+    {
+      "id": "46",
+      "title": "Moraimasu",
+      "level": "N5",
+      "category": "Giving & Receiving",
+      "pattern": "(Giver) に/から (Thing) を もらいます",
+      "explanation": "もらいます means “receive”. Common pattern: (Giver) に/から (Thing) を もらいます. The receiver is the subject.",
+      "examples": [
+        {
+          "jp": "父(ちち)から時計(とけい)をもらいました。",
+          "romaji": "chichi kara tokei o moraimashita.",
+          "en": "I received a watch from my father."
+        },
+        {
+          "jp": "友(とも)だちからプレゼントをもらいました。",
+          "romaji": "tomodachi kara purezento o moraimashita.",
+          "en": "I received a gift from a friend."
+        },
+        {
+          "jp": "先生(せんせい)に本(ほん)をもらいました。",
+          "romaji": "sensei ni hon o moraimashita.",
+          "en": "I received a book from a teacher."
+        },
+        {
+          "jp": "母(はは)からお金(かね)をもらいます。",
+          "romaji": "haha kara okane o moraimasu.",
+          "en": "I get money from my mom."
+        }
+      ],
+      "quiz": [
+        {
+          "id": 1,
+          "type": "mc_masu_conjugation_time",
+          "question_en": "Choose the correct polite verb form for today (今日).",
+          "hint_en": "Target: present aff",
+          "choices": [
+            "父(ちち)から時計(とけい)をもらいます",
+            "父(ちち)から時計(とけい)をもらいません",
+            "父(ちち)から時計(とけい)をもらいました",
+            "父(ちち)から時計(とけい)をもらいませんでした"
+          ],
+          "answer": "父(ちち)から時計(とけい)をもらいます",
+          "choices_raw": [
+            "父から時計をもらいます",
+            "父から時計をもらいません",
+            "父から時計をもらいました",
+            "父から時計をもらいませんでした"
+          ],
+          "answer_raw": "父から時計をもらいます"
+        },
+        {
+          "id": 2,
+          "type": "fill_target_form",
+          "question_en": "Choose the particle marking the thing received.",
+          "question_jp": "友(とも)だちからプレゼント（　）もらいました。",
+          "choices": [
+            "を",
+            "が",
+            "に",
+            "で"
+          ],
+          "answer": "を",
+          "choices_raw": [
+            "を",
+            "が",
+            "に",
+            "で"
+          ],
+          "answer_raw": "を"
+        },
+        {
+          "id": 3,
+          "type": "mc_target_usage",
+          "question_en": "Choose the sentence meaning “I received a book from my teacher.”",
+          "choices": [
+            "先生(せんせい)に本(ほん)をもらいました。",
+            "先生(せんせい)が本(ほん)をあげました。",
+            "先生(せんせい)を本(ほん)にもらいました。",
+            "先生(せんせい)で本(ほん)をくれました。"
+          ],
+          "answer": "先生(せんせい)に本(ほん)をもらいました。",
+          "choices_raw": [
+            "先生に本をもらいました。",
+            "先生が本をあげました。",
+            "先生を本にもらいました。",
+            "先生で本をくれました。"
+          ],
+          "answer_raw": "先生に本をもらいました。"
+        }
+      ]
+    },
+    {
+      "id": "47",
+      "title": "Agemasu",
+      "level": "N5",
+      "category": "Giving & Receiving",
+      "pattern": "(Ni) agemasu (give to...)",
+      "explanation": "あげます means “give” from the giver’s viewpoint (the subject) to someone else (not the speaker as receiver). Pattern: (Receiver) に (Thing) を あげます.",
+      "examples": [
+        {
+          "jp": "友(とも)だちにチョコレートをあげます。",
+          "romaji": "tomodachi ni chokoreeto o agemasu.",
+          "en": "I give chocolate to a friend."
+        },
+        {
+          "jp": "妹(いもうと)におかしをあげました。",
+          "romaji": "imouto ni okashi o agemashita.",
+          "en": "I gave my little sister some candy."
+        },
+        {
+          "jp": "友(とも)だちに花(はな)をあげます。",
+          "romaji": "tomodachi ni hana o agemasu.",
+          "en": "I give flowers to a friend."
+        },
+        {
+          "jp": "田中(たなか)さんに花(はな)をあげました。",
+          "romaji": "tanaka-san ni hana o agemashita.",
+          "en": "I gave Tanaka-san flowers."
+        }
+      ],
+      "quiz": [
+        {
+          "id": 1,
+          "type": "mc_masu_conjugation_time",
+          "question_en": "Choose the correct polite verb form for today (今日).",
+          "hint_en": "Target: present aff",
+          "choices": [
+            "友だち(ともだち)にチョコレートをあげます",
+            "友だち(ともだち)にチョコレートをあげません",
+            "友だち(ともだち)にチョコレートをあげました",
+            "友だち(ともだち)にチョコレートをあげませんでした"
+          ],
+          "answer": "友だち(ともだち)にチョコレートをあげます",
+          "choices_raw": [
+            "友だちにチョコレートをあげます",
+            "友だちにチョコレートをあげません",
+            "友だちにチョコレートをあげました",
+            "友だちにチョコレートをあげませんでした"
+          ],
+          "answer_raw": "友だちにチョコレートをあげます"
+        },
+        {
+          "id": 2,
+          "type": "fill_target_form",
+          "question_en": "Choose the particle marking the receiver.",
+          "question_jp": "妹(いもうと)（　）おかしをあげました。",
+          "choices": [
+            "に",
+            "から",
+            "が",
+            "で"
+          ],
+          "answer": "に",
+          "choices_raw": [
+            "に",
+            "から",
+            "が",
+            "で"
+          ],
+          "answer_raw": "に"
+        },
+        {
+          "id": 3,
+          "type": "mc_target_usage",
+          "question_en": "Choose the sentence meaning “I gave flowers to Tanaka-san.”",
+          "choices": [
+            "田中(たなか)さんに花(はな)をあげました。",
+            "田中(たなか)さんが花(はな)をくれました。",
+            "田中(たなか)さんから花(はな)をもらいました。",
+            "田中(たなか)さんを花(はな)にあげました。"
+          ],
+          "answer": "田中(たなか)さんに花(はな)をあげました。",
+          "choices_raw": [
+            "田中さんに花をあげました。",
+            "田中さんが花をくれました。",
+            "田中さんから花をもらいました。",
+            "田中さんを花にあげました。"
+          ],
+          "answer_raw": "田中さんに花をあげました。"
+        }
+      ]
+    },
+    {
+      "id": "48",
+      "title": "Kuremasu",
+      "level": "N5",
+      "category": "Giving & Receiving",
+      "pattern": "(Ga) kuremasu (give to me/in-group)",
+      "explanation": "くれます means “give (to me / my in-group)” from the receiver’s (my) viewpoint. Pattern: (Giver) が (Thing) を くれます.",
+      "examples": [
+        {
+          "jp": "友(とも)だちがチョコレートをくれました。",
+          "romaji": "tomodachi ga chokoreeto o kuremashita.",
+          "en": "My friend gave me chocolate."
+        },
+        {
+          "jp": "母(はは)が本(ほん)をくれました。",
+          "romaji": "haha ga hon o kuremashita.",
+          "en": "My mother gave me a book."
+        },
+        {
+          "jp": "父(ちち)が新(あたら)しいかばんをくれました。",
+          "romaji": "chichi ga atarashii kaban o kuremashita.",
+          "en": "Dad gave me a new bag."
+        },
+        {
+          "jp": "先生(せんせい)がアドバイスをくれました。",
+          "romaji": "sensei ga adobaisu o kuremashita.",
+          "en": "My teacher gave me advice."
+        }
+      ],
+      "quiz": [
+        {
+          "id": 1,
+          "type": "mc_masu_conjugation_time",
+          "question_en": "Choose the correct polite verb form for today (今日).",
+          "hint_en": "Target: present aff",
+          "choices": [
+            "友だち(ともだち)がチョコレートをくれます",
+            "友だち(ともだち)がチョコレートをくれません",
+            "友だち(ともだち)がチョコレートをくれました",
+            "友だち(ともだち)がチョコレートをくれませんでした"
+          ],
+          "answer": "友だち(ともだち)がチョコレートをくれます",
+          "choices_raw": [
+            "友だちがチョコレートをくれます",
+            "友だちがチョコレートをくれません",
+            "友だちがチョコレートをくれました",
+            "友だちがチョコレートをくれませんでした"
+          ],
+          "answer_raw": "友だちがチョコレートをくれます"
+        },
+        {
+          "id": 2,
+          "type": "fill_target_form",
+          "question_en": "Choose the particle marking the giver in this くれます sentence.",
+          "question_jp": "父(ちち)（　）新(あたら)しいかばんをくれました。",
+          "choices": [
+            "が",
+            "に",
+            "を",
+            "で"
+          ],
+          "answer": "が",
+          "choices_raw": [
+            "が",
+            "に",
+            "を",
+            "で"
+          ],
+          "answer_raw": "が"
+        },
+        {
+          "id": 3,
+          "type": "mc_target_usage",
+          "question_en": "Choose the sentence meaning “My teacher gave me advice.”",
+          "choices": [
+            "先生(せんせい)がアドバイスをくれました。",
+            "先生(せんせい)にアドバイスをあげました。",
+            "先生(せんせい)からアドバイスをあげました。",
+            "先生(せんせい)をアドバイスにもらいました。"
+          ],
+          "answer": "先生(せんせい)がアドバイスをくれました。",
+          "choices_raw": [
+            "先生がアドバイスをくれました。",
+            "先生にアドバイスをあげました。",
+            "先生からアドバイスをあげました。",
+            "先生をアドバイスにもらいました。"
+          ],
+          "answer_raw": "先生がアドバイスをくれました。"
+        }
+      ]
+    },
+    {
+      "id": "49",
+      "title": "Mashou",
+      "level": "N5",
+      "category": "Suggestions",
+      "pattern": "~mashou",
+      "explanation": "～ましょう is an invitation: “Let’s …”. It’s the masu-stem + ましょう.",
+      "examples": [
+        {
+          "jp": "歩(ある)きましょう。",
+          "romaji": "arukimashou.",
+          "en": "Let's walk."
+        },
+        {
+          "jp": "一緒(いっしょ)に昼ご飯(ひるごはん)を食(た)べましょう。",
+          "romaji": "issho ni hirugohan o tabemashou.",
+          "en": "Let's have lunch together."
+        },
+        {
+          "jp": "図書館(としょかん)へ行(い)きましょう。",
+          "romaji": "toshokan e ikimashou.",
+          "en": "Let's go to the library."
+        },
+        {
+          "jp": "休(やす)みましょう。",
+          "romaji": "yasumimashou.",
+          "en": "Let's take a break."
+        }
+      ],
+      "quiz": [
+        {
+          "id": 1,
+          "type": "mc_target_form",
+          "question_en": "Choose the correct invitation meaning “Let’s walk.”",
+          "choices": [
+            "歩(ある)きましょう。",
+            "歩(ある)きますか。",
+            "歩(ある)きません。",
+            "歩(ある)いてください。"
+          ],
+          "answer": "歩(ある)きましょう。",
+          "choices_raw": [
+            "歩きましょう。",
+            "歩きますか。",
+            "歩きません。",
+            "歩いてください。"
+          ],
+          "answer_raw": "歩きましょう。"
+        },
+        {
+          "id": 2,
+          "type": "fill_target_form",
+          "question_en": "Complete the invitation.",
+          "question_jp": "一緒(いっしょ)に昼ご飯(ひるごはん)を食(た)べ（　）。",
+          "choices": [
+            "ましょう",
+            "ませんか",
+            "てください",
+            "たいです"
+          ],
+          "answer": "ましょう",
+          "choices_raw": [
+            "ましょう",
+            "ませんか",
+            "てください",
+            "たいです"
+          ],
+          "answer_raw": "ましょう"
+        },
+        {
+          "id": 3,
+          "type": "mc_target_usage",
+          "question_en": "Choose the sentence inviting the group to take a break.",
+          "choices": [
+            "休(やす)みましょう。",
+            "休(やす)みたいです。",
+            "休(やす)んでください。",
+            "休(やす)みません。"
+          ],
+          "answer": "休(やす)みましょう。",
+          "choices_raw": [
+            "休みましょう。",
+            "休みたいです。",
+            "休んでください。",
+            "休みません。"
+          ],
+          "answer_raw": "休みましょう。"
+        }
+      ]
+    },
+    {
+      "id": "50",
+      "title": "Mashou ka",
+      "level": "N5",
+      "category": "Suggestions",
+      "pattern": "~mashou ka",
+      "explanation": "～ましょうか is used to offer help (“Shall I …?”) or to suggest while checking (“Shall we …?”).",
+      "examples": [
+        {
+          "jp": "手伝(てつだ)いましょうか。",
+          "romaji": "tetsudaimashou ka.",
+          "en": "Can I help you?"
+        },
+        {
+          "jp": "荷物(にもつ)を持(も)ちましょうか。",
+          "romaji": "nimotsu o mochimashou ka.",
+          "en": "Shall I carry your bag?"
+        },
+        {
+          "jp": "窓(まど)を開(あ)けましょうか。",
+          "romaji": "mado o akemashou ka.",
+          "en": "Shall I open the window?"
+        },
+        {
+          "jp": "いっしょに行(い)きましょうか。",
+          "romaji": "issho ni ikimashou ka.",
+          "en": "Shall we go together?"
+        }
+      ],
+      "quiz": [
+        {
+          "id": 1,
+          "type": "mc_target_usage",
+          "question_en": "Choose the sentence offering to help.",
+          "choices": [
+            "手伝(てつだ)いましょうか。",
+            "手伝(てつだ)いませんか。",
+            "手伝(てつだ)ってください。",
+            "手伝(てつだ)いたいです。"
+          ],
+          "answer": "手伝(てつだ)いましょうか。",
+          "choices_raw": [
+            "手伝いましょうか。",
+            "手伝いませんか。",
+            "手伝ってください。",
+            "手伝いたいです。"
+          ],
+          "answer_raw": "手伝いましょうか。"
+        },
+        {
+          "id": 2,
+          "type": "fill_blank",
+          "question_jp": "荷物(にもつ)（　）持ち(もち)ましょうか。",
+          "choices": [
+            "を",
+            "は",
+            "が"
+          ],
+          "answer": "を",
+          "question_en": "Choose the correct option to complete the Japanese sentence.",
+          "sentence_en": "Shall I carry your luggage?",
+          "choices_raw": [
+            "を",
+            "は",
+            "が"
+          ],
+          "answer_raw": "を"
+        },
+        {
+          "id": 3,
+          "type": "fill_blank",
+          "question_jp": "窓(まど)（　）開け(あけ)ましょうか。",
+          "choices": [
+            "を",
+            "は",
+            "が"
+          ],
+          "answer": "を",
+          "question_en": "Choose the correct option to complete the Japanese sentence.",
+          "sentence_en": "Shall I open the window?",
+          "choices_raw": [
+            "を",
+            "は",
+            "が"
+          ],
+          "answer_raw": "を"
+        }
+      ]
+    },
+    {
+      "id": "51",
+      "title": "Masen ka",
+      "level": "N5",
+      "category": "Suggestions",
+      "pattern": "~masen ka",
+      "explanation": "～ませんか is a polite invitation using the negative: “Won’t you …?” It’s softer than ～ましょう.",
+      "examples": [
+        {
+          "jp": "行(い)きませんか。",
+          "romaji": "ikimasen ka.",
+          "en": "Would you like to go?"
+        },
+        {
+          "jp": "週末(しゅうまつ)、映画(えいが)を見(み)ませんか。",
+          "romaji": "shuumatsu, eiga o mimasen ka.",
+          "en": "Would you like to watch a movie this weekend?"
+        },
+        {
+          "jp": "いっしょに日本語(にほんご)を勉強(べんきょう)しませんか。",
+          "romaji": "issho ni nihongo o benkyou shimasen ka.",
+          "en": "Would you like to study Japanese together?"
+        },
+        {
+          "jp": "ちょっと休(やす)みませんか。",
+          "romaji": "chotto yasumimasen ka.",
+          "en": "Would you like to take a short break?"
+        }
+      ],
+      "quiz": [
+        {
+          "id": 1,
+          "type": "fill_blank",
+          "question_jp": "行き(いき)（　）か",
+          "choices": [
+            "ません",
+            "ます",
+            "ました"
+          ],
+          "answer": "ません",
+          "question_en": "Choose the correct option to complete the Japanese sentence.",
+          "sentence_en": "Would you like to go?",
+          "choices_raw": [
+            "ません",
+            "ます",
+            "ました"
+          ],
+          "answer_raw": "ません"
+        },
+        {
+          "id": 2,
+          "type": "mc_target_usage",
+          "question_en": "Choose the polite invitation to watch a movie.",
+          "choices": [
+            "映画(えいが)を見(み)ませんか。",
+            "映画(えいが)を見(み)ません。",
+            "映画(えいが)を見(み)ましょうか。",
+            "映画(えいが)を見(み)てください。"
+          ],
+          "answer": "映画(えいが)を見(み)ませんか。",
+          "choices_raw": [
+            "映画を見ませんか。",
+            "映画を見ません。",
+            "映画を見ましょうか。",
+            "映画を見てください。"
+          ],
+          "answer_raw": "映画を見ませんか。"
+        },
+        {
+          "id": 3,
+          "type": "mc_meaning",
+          "question_en": "Choose the best meaning.",
+          "target_jp": "いっしょに日本語(にほんご)を勉強(べんきょう)しませんか。",
+          "choices": [
+            "Would you like to study Japanese together?",
+            "You must not study Japanese.",
+            "Shall I teach Japanese?",
+            "I do not study Japanese."
+          ],
+          "answer": "Would you like to study Japanese together?",
+          "choices_raw": [
+            "Would you like to study Japanese together?",
+            "You must not study Japanese.",
+            "Shall I teach Japanese?",
+            "I do not study Japanese."
+          ],
+          "answer_raw": "Would you like to study Japanese together?"
+        }
+      ]
+    },
+    {
+      "id": "52",
+      "title": "Relative clause (plain form + noun)",
+      "level": "N5",
+      "category": "Subordinate Clause",
+      "pattern": "Plain-form clause + N",
+      "explanation": "A plain-form clause can directly modify a noun: [Clause] + [N]. This works like a relative clause (“the N that …”).",
+      "examples": [
+        {
+          "jp": "父(ちち)が働(はたら)いている会社(かいしゃ)。",
+          "romaji": "chichi ga hataraite iru kaisha.",
+          "en": "The company my father works for."
+        },
+        {
+          "jp": "わたしが作(つく)った料理(りょうり)です。",
+          "romaji": "watashi ga tsukutta ryouri desu.",
+          "en": "This is a dish I made."
+        },
+        {
+          "jp": "昨日(きのう)見(み)た映画(えいが)はおもしろかったです。",
+          "romaji": "kinou mita eiga wa omoshirokatta desu.",
+          "en": "The movie I saw yesterday was interesting."
+        },
+        {
+          "jp": "ここで売(う)っているパンはおいしいです。",
+          "romaji": "koko de utte iru pan wa oishii desu.",
+          "en": "The bread sold here is delicious."
+        }
+      ],
+      "quiz": [
+        {
+          "id": 1,
+          "type": "fill_blank",
+          "question_jp": "父(ちち)（　）働い(はたらい)ている会社(かいしゃ)",
+          "choices": [
+            "が",
+            "は",
+            "を"
+          ],
+          "answer": "が",
+          "question_en": "Choose the correct option to complete the Japanese sentence.",
+          "sentence_en": "The company my father works for.",
+          "choices_raw": [
+            "が",
+            "は",
+            "を"
+          ],
+          "answer_raw": "が"
+        },
+        {
+          "id": 2,
+          "type": "fill_blank",
+          "question_jp": "わたし（　）作っ(つくっ)た料理(りょうり)です。",
+          "choices": [
+            "が",
+            "は",
+            "を"
+          ],
+          "answer": "が",
+          "question_en": "Choose the correct option to complete the Japanese sentence.",
+          "sentence_en": "This is a dish I made.",
+          "choices_raw": [
+            "が",
+            "は",
+            "を"
+          ],
+          "answer_raw": "が"
+        },
+        {
+          "id": 3,
+          "type": "fill_blank",
+          "question_jp": "昨日(きのう)見(み)た映画(えいが)（　）おもしろかったです。",
+          "choices": [
+            "は",
+            "が",
+            "を"
+          ],
+          "answer": "は",
+          "question_en": "Choose the correct option to complete the Japanese sentence.",
+          "sentence_en": "The movie I saw yesterday was interesting.",
+          "choices_raw": [
+            "は",
+            "が",
+            "を"
+          ],
+          "answer_raw": "は"
+        }
+      ]
+    },
+    {
+      "id": "53",
+      "title": "Reason / cause (because)",
+      "level": "N5",
+      "category": "Sentence Connector",
+      "pattern": "~kara / ~node",
+      "explanation": "～から / ～ので mean “because …”. Put the reason first, then the result. ～ので tends to sound softer/more polite than ～から.",
+      "examples": [
+        {
+          "jp": "暑(あつ)いから、窓(まど)を開(あ)けましょう。",
+          "romaji": "atsui kara, mado o akemashou.",
+          "en": "It is hot, so let's open the window."
+        },
+        {
+          "jp": "雨(あめ)ですから、行(い)きません。",
+          "romaji": "ame desu kara, ikimasen.",
+          "en": "Because of the rain, I'm not leaving."
+        },
+        {
+          "jp": "時間(じかん)がないので、急(いそ)ぎます。",
+          "romaji": "jikan ga nai no de, isogimasu.",
+          "en": "Since there's no time, I'm in a hurry."
+        },
+        {
+          "jp": "雨(あめ)なので、出(で)かけません。",
+          "romaji": "ame na node, dekakemasen.",
+          "en": "Because it is raining, I will not go out."
+        }
+      ],
+      "quiz": [
+        {
+          "id": 1,
+          "type": "fill_target_form",
+          "question_en": "Choose the connector meaning “because.”",
+          "question_jp": "暑(あつ)い（　）、窓(まど)を開(あ)けましょう。",
+          "choices": [
+            "から",
+            "けど",
+            "まで",
+            "より"
+          ],
+          "answer": "から",
+          "choices_raw": [
+            "から",
+            "けど",
+            "まで",
+            "より"
+          ],
+          "answer_raw": "から"
+        },
+        {
+          "id": 2,
+          "type": "mc_target_usage",
+          "question_en": "Choose the grammatically correct noun + から sentence.",
+          "choices": [
+            "雨(あめ)ですから、行(い)きません。",
+            "雨(あめ)でですから、行(い)きません。",
+            "雨(あめ)だからです、行(い)きません。",
+            "雨(あめ)をから、行(い)きません。"
+          ],
+          "answer": "雨(あめ)ですから、行(い)きません。",
+          "choices_raw": [
+            "雨ですから、行きません。",
+            "雨でですから、行きません。",
+            "雨だからです、行きません。",
+            "雨をから、行きません。"
+          ],
+          "answer_raw": "雨ですから、行きません。"
+        },
+        {
+          "id": 3,
+          "type": "fill_target_form",
+          "question_en": "Choose the softer reason connector.",
+          "question_jp": "時間(じかん)がない（　）、急(いそ)ぎます。",
+          "choices": [
+            "ので",
+            "のに",
+            "けど",
+            "まで"
+          ],
+          "answer": "ので",
+          "choices_raw": [
+            "ので",
+            "のに",
+            "けど",
+            "まで"
+          ],
+          "answer_raw": "ので"
+        }
+      ]
+    },
+    {
+      "id": "54",
+      "title": "But / contrast connector",
+      "level": "N5",
+      "category": "Sentence Connector",
+      "pattern": "~ga / ~kedo (but)",
+      "explanation": "～が / ～けど connect contrasting sentences: “but…”. けど is more casual; が is neutral/polite.",
+      "examples": [
+        {
+          "jp": "難(むずか)しいですが、おもしろいです。",
+          "romaji": "muzukashii desu ga, omoshiroi desu.",
+          "en": "It's hard, but interesting."
+        },
+        {
+          "jp": "行(い)きたいですが、時間(じかん)がありません。",
+          "romaji": "ikitai desu ga, jikan ga arimasen.",
+          "en": "I want to go, but there's no time."
+        },
+        {
+          "jp": "この本(ほん)はむずかしいけど、おもしろいです。",
+          "romaji": "kono hon wa muzukashii kedo, omoshiroi desu.",
+          "en": "This book is hard, but interesting."
+        },
+        {
+          "jp": "すみませんが、もう一(いち)度(ど)言(い)ってください。",
+          "romaji": "sumimasen ga, mou ichido itte kudasai.",
+          "en": "I'm sorry, but please say that again."
+        }
+      ],
+      "quiz": [
+        {
+          "id": 1,
+          "type": "fill_target_form",
+          "question_en": "Choose the connector meaning “but.”",
+          "question_jp": "難(むずか)しいです（　）、おもしろいです。",
+          "choices": [
+            "が",
+            "から",
+            "ので",
+            "まで"
+          ],
+          "answer": "が",
+          "choices_raw": [
+            "が",
+            "から",
+            "ので",
+            "まで"
+          ],
+          "answer_raw": "が"
+        },
+        {
+          "id": 2,
+          "type": "mc_target_usage",
+          "question_en": "Choose the casual contrast sentence.",
+          "choices": [
+            "この本(ほん)は難(むずか)しいけど、おもしろいです。",
+            "この本(ほん)は難(むずか)しいから、おもしろいです。",
+            "この本(ほん)は難(むずか)しいので、おもしろいです。",
+            "この本(ほん)は難(むずか)しいまで、おもしろいです。"
+          ],
+          "answer": "この本(ほん)は難(むずか)しいけど、おもしろいです。",
+          "choices_raw": [
+            "この本は難しいけど、おもしろいです。",
+            "この本は難しいから、おもしろいです。",
+            "この本は難しいので、おもしろいです。",
+            "この本は難しいまで、おもしろいです。"
+          ],
+          "answer_raw": "この本は難しいけど、おもしろいです。"
+        },
+        {
+          "id": 3,
+          "type": "mc_meaning",
+          "question_en": "Choose the best translation.",
+          "target_jp": "行(い)きたいですが、時間(じかん)がありません。",
+          "choices": [
+            "I want to go, but I do not have time.",
+            "I want to go because I have time.",
+            "I do not want to go and I have time.",
+            "I went although there was time."
+          ],
+          "answer": "I want to go, but I do not have time.",
+          "choices_raw": [
+            "I want to go, but I do not have time.",
+            "I want to go because I have time.",
+            "I do not want to go and I have time.",
+            "I went although there was time."
+          ],
+          "answer_raw": "I want to go, but I do not have time."
+        }
+      ]
+    },
+    {
+      "id": "55",
+      "title": "Degree (intensity) adverbs",
+      "level": "N5",
+      "category": "Adverbs",
+      "pattern": "Totemo / Amari / Zenzen",
+      "explanation": "Degree adverbs: とても (very), あまり (not very), ぜんぜん (not at all). あまり and ぜんぜん typically go with negative forms.",
+      "examples": [
+        {
+          "jp": "日本語(にほんご)がとても上手(じょうず)ですね。",
+          "romaji": "nihongo ga totemo jouzu desu ne.",
+          "en": "Your Japanese is very good."
+        },
+        {
+          "jp": "このラーメンはとてもおいしいです。",
+          "romaji": "kono raamen wa totemo oishii desu.",
+          "en": "This ramen is very tasty."
+        },
+        {
+          "jp": "日本語(にほんご)はあまりむずかしくないです。",
+          "romaji": "nihongo wa amari muzukashiku nai desu.",
+          "en": "Japanese isn't that difficult."
+        },
+        {
+          "jp": "その話(はなし)はぜんぜんわかりません。",
+          "romaji": "sono hanashi wa zenzen wakarimasen.",
+          "en": "I don't understand that story at all."
+        }
+      ],
+      "quiz": [
+        {
+          "id": 1,
+          "type": "fill_blank",
+          "question_jp": "日本語(にほんご)（　）とても上手(じょうず)ですね",
+          "choices": [
+            "が",
+            "は",
+            "を"
+          ],
+          "answer": "が",
+          "question_en": "Choose the correct option to complete the Japanese sentence.",
+          "sentence_en": "Your Japanese is very good.",
+          "choices_raw": [
+            "が",
+            "は",
+            "を"
+          ],
+          "answer_raw": "が"
+        },
+        {
+          "id": 2,
+          "type": "fill_target_form",
+          "question_en": "Choose the adverb meaning “not very” with a negative form.",
+          "question_jp": "日本語(にほんご)は（　）難(むずか)しくないです。",
+          "choices": [
+            "あまり",
+            "とても",
+            "いつも",
+            "もう"
+          ],
+          "answer": "あまり",
+          "choices_raw": [
+            "あまり",
+            "とても",
+            "いつも",
+            "もう"
+          ],
+          "answer_raw": "あまり"
+        },
+        {
+          "id": 3,
+          "type": "fill_target_form",
+          "question_en": "Choose the adverb meaning “not at all.”",
+          "question_jp": "その話(はなし)は（　）わかりません。",
+          "choices": [
+            "ぜんぜん",
+            "とても",
+            "よく",
+            "まだ"
+          ],
+          "answer": "ぜんぜん",
+          "choices_raw": [
+            "ぜんぜん",
+            "とても",
+            "よく",
+            "まだ"
+          ],
+          "answer_raw": "ぜんぜん"
+        }
+      ]
+    },
+    {
+      "id": "56",
+      "title": "Frequency adverbs",
+      "level": "N5",
+      "category": "Adverbs",
+      "pattern": "Itsumo / Tokidoki / Yoku",
+      "explanation": "Frequency adverbs: いつも (always), ときどき (sometimes), よく (often). They usually come before the verb.",
+      "examples": [
+        {
+          "jp": "この店(みせ)はいつもこんでいます。",
+          "romaji": "kono mise wa itsumo konde imasu.",
+          "en": "This store is always crowded."
+        },
+        {
+          "jp": "わたしはいつも７時(じ)に起(お)きます。",
+          "romaji": "watashi wa itsumo shichiji ni okimasu.",
+          "en": "I always get up at 7."
+        },
+        {
+          "jp": "ときどきカフェへ行(い)きます。",
+          "romaji": "tokidoki kafe e ikimasu.",
+          "en": "Sometimes I go to a cafe."
+        },
+        {
+          "jp": "よく日本(にほん)の音楽(おんがく)を聞(き)きます。",
+          "romaji": "yoku nihon no ongaku o kikimasu.",
+          "en": "I often listen to Japanese music."
+        }
+      ],
+      "quiz": [
+        {
+          "id": 1,
+          "type": "fill_target_form",
+          "question_en": "Choose the frequency adverb meaning “always.”",
+          "question_jp": "わたしは（　）7時(じ)に起(お)きます。",
+          "choices": [
+            "いつも",
+            "ときどき",
+            "もう",
+            "まだ"
+          ],
+          "answer": "いつも",
+          "choices_raw": [
+            "いつも",
+            "ときどき",
+            "もう",
+            "まだ"
+          ],
+          "answer_raw": "いつも"
+        },
+        {
+          "id": 2,
+          "type": "fill_target_form",
+          "question_en": "Choose the frequency adverb meaning “sometimes.”",
+          "question_jp": "（　）カフェへ行(い)きます。",
+          "choices": [
+            "ときどき",
+            "いつも",
+            "ぜんぜん",
+            "だけ"
+          ],
+          "answer": "ときどき",
+          "choices_raw": [
+            "ときどき",
+            "いつも",
+            "ぜんぜん",
+            "だけ"
+          ],
+          "answer_raw": "ときどき"
+        },
+        {
+          "id": 3,
+          "type": "fill_target_form",
+          "question_en": "Choose the frequency adverb meaning “often.”",
+          "question_jp": "（　）日本(にほん)の音楽(おんがく)を聞(き)きます。",
+          "choices": [
+            "よく",
+            "まだ",
+            "もう",
+            "ごろ"
+          ],
+          "answer": "よく",
+          "choices_raw": [
+            "よく",
+            "まだ",
+            "もう",
+            "ごろ"
+          ],
+          "answer_raw": "よく"
+        }
+      ]
+    },
+    {
+      "id": "57",
+      "title": "Time adverbs: もう / まだ",
+      "level": "N5",
+      "category": "Adverbs",
+      "pattern": "Mou / Mada",
+      "explanation": "もう means “already”. まだ means “not yet” (or “still” depending on context).",
+      "examples": [
+        {
+          "jp": "もう食(た)べましたか。",
+          "romaji": "mou tabemashita ka.",
+          "en": "Have you eaten already?"
+        },
+        {
+          "jp": "もう宿題(しゅくだい)をしました。",
+          "romaji": "mou shukudai o shimashita.",
+          "en": "I've already done my homework."
+        },
+        {
+          "jp": "まだ昼ご飯(ひるごはん)を食(た)べていません。",
+          "romaji": "mada hirugohan o tabete imasen.",
+          "en": "I haven't eaten lunch yet."
+        },
+        {
+          "jp": "A:もう帰(かえ)りますか。B:いいえ、まだです。",
+          "romaji": "a : mou kaerimasu ka. b : iie, mada desu.",
+          "en": "A: Are you going home already? B: No, not yet."
+        }
+      ],
+      "quiz": [
+        {
+          "id": 1,
+          "type": "fill_target_form",
+          "question_en": "Choose the adverb meaning “already.”",
+          "question_jp": "（　）宿題(しゅくだい)をしました。",
+          "choices": [
+            "もう",
+            "まだ",
+            "いつも",
+            "だけ"
+          ],
+          "answer": "もう",
+          "choices_raw": [
+            "もう",
+            "まだ",
+            "いつも",
+            "だけ"
+          ],
+          "answer_raw": "もう"
+        },
+        {
+          "id": 2,
+          "type": "fill_target_form",
+          "question_en": "Choose the expression meaning “not yet.”",
+          "question_jp": "A: もう帰(かえ)りますか。 B: いいえ、（　）です。",
+          "choices": [
+            "まだ",
+            "もう",
+            "よく",
+            "とても"
+          ],
+          "answer": "まだ",
+          "choices_raw": [
+            "まだ",
+            "もう",
+            "よく",
+            "とても"
+          ],
+          "answer_raw": "まだ"
+        },
+        {
+          "id": 3,
+          "type": "mc_target_usage",
+          "question_en": "Choose the sentence meaning “I have not eaten lunch yet.”",
+          "choices": [
+            "まだ昼ご飯(ひるごはん)を食(た)べていません。",
+            "もう昼ご飯(ひるごはん)を食(た)べました。",
+            "いつも昼ご飯(ひるごはん)を食(た)べます。",
+            "昼ご飯(ひるごはん)だけ食(た)べません。"
+          ],
+          "answer": "まだ昼ご飯(ひるごはん)を食(た)べていません。",
+          "choices_raw": [
+            "まだ昼ご飯を食べていません。",
+            "もう昼ご飯を食べました。",
+            "いつも昼ご飯を食べます。",
+            "昼ご飯だけ食べません。"
+          ],
+          "answer_raw": "まだ昼ご飯を食べていません。"
+        }
+      ]
+    },
+    {
+      "id": "58",
+      "title": "Adverbs (from adjectives)",
+      "level": "N5",
+      "category": "Adverbs",
+      "pattern": "Adj-i→~ku / Adj-na→~ni + V (adverb form)",
+      "explanation": "Turn adjectives into adverbs to describe how an action is performed: i-adjectives change ～い to ～く (早い → 早く), and na-adjectives take ～に (静か → 静かに). Lexical adverbs such as ゆっくり are not examples of this derivation rule.",
+      "examples": [
+        {
+          "jp": "野菜(やさい)を小(ちい)さく切(き)ってください。",
+          "romaji": "yasai o chiisaku kitte kudasai.",
+          "en": "Please cut the vegetables into small pieces."
+        },
+        {
+          "jp": "静(しず)かに歩(ある)いてください。",
+          "romaji": "shizuka ni aruite kudasai.",
+          "en": "Please walk quietly."
+        },
+        {
+          "jp": "字(じ)を大(おお)きく書(か)いてください。",
+          "romaji": "ji o ookiku kaite kudasai.",
+          "en": "Please write the characters in large print."
+        },
+        {
+          "jp": "上手(じょうず)に日本語(にほんご)を話(はな)したいです。",
+          "romaji": "jouzu ni nihongo o hanashitai desu.",
+          "en": "I want to speak Japanese well."
+        }
+      ],
+      "quiz": [
+        {
+          "id": 1,
+          "type": "mc_conjugation_time",
+          "question_en": "Choose the correct sentence using an adverb form (～く / ～に).",
+          "hint_en": "Target: 小さく / 上手に",
+          "choices": [
+            "野菜(やさい)を小(ちい)さく切(き)ってください。",
+            "野菜(やさい)を小(ちい)さい切(き)ってください。",
+            "野菜(やさい)を小(ちい)さな切(き)ってください。",
+            "野菜(やさい)を小(ちい)さに切(き)ってください。"
+          ],
+          "answer": "野菜(やさい)を小(ちい)さく切(き)ってください。",
+          "choices_raw": [
+            "野菜を小さく切ってください。",
+            "野菜を小さい切ってください。",
+            "野菜を小さな切ってください。",
+            "野菜を小さに切ってください。"
+          ],
+          "answer_raw": "野菜を小さく切ってください。"
+        },
+        {
+          "id": 2,
+          "type": "fill_conjugation_chunk",
+          "question_jp": "野菜(やさい)を小(ちい)さ（　）切(き)ってください。",
+          "question_en": "Fill the blank with the correct ending to make an adverb (how to cut).",
+          "choices": [
+            "く",
+            "い",
+            "に",
+            "な"
+          ],
+          "answer": "く",
+          "choices_raw": [
+            "く",
+            "い",
+            "に",
+            "な"
+          ],
+          "answer_raw": "く"
+        },
+        {
+          "id": 3,
+          "type": "mc_formality_variant",
+          "question_en": "Which option is the casual (plain) version of the target sentence?",
+          "target_jp": "上手(じょうず)に日本語(にほんご)を話(はな)したいです。",
+          "choices": [
+            "上手(じょうず)に日本語(にほんご)を話(はな)したい。",
+            "上手(じょうず)に日本語(にほんご)を話(はな)したいです。",
+            "上手(じょうず)な日本語(にほんご)を話(はな)したいです。"
+          ],
+          "answer": "上手(じょうず)に日本語(にほんご)を話(はな)したい。",
+          "sentence_en": "I want to speak Japanese well.",
+          "choices_raw": [
+            "上手に日本語を話したい。",
+            "上手に日本語を話したいです。",
+            "上手な日本語を話したいです。"
+          ],
+          "answer_raw": "上手に日本語を話したい。"
+        }
+      ]
+    },
+    {
+      "id": "59",
+      "title": "Become (～なります)",
+      "level": "N5",
+      "category": "Change",
+      "pattern": "~ku / ~ni narimasu",
+      "explanation": "～く/～に なります means “to become …” (a change that happens). i-adj → くなります, na-adj/noun → になります.",
+      "examples": [
+        {
+          "jp": "天気(てんき)がよくなりました。",
+          "romaji": "tenki ga yoku narimashita.",
+          "en": "The weather got better."
+        },
+        {
+          "jp": "春(はる)になると、暖(あたた)かくなります。",
+          "romaji": "haru ni naru to, atatakaku narimasu.",
+          "en": "When spring comes, it gets warm."
+        },
+        {
+          "jp": "病気(びょうき)がよくなりました。",
+          "romaji": "byouki ga yoku narimashita.",
+          "en": "I'm feeling better."
+        },
+        {
+          "jp": "日本語(にほんご)が好(す)きになりました。",
+          "romaji": "nihongo ga suki ni narimashita.",
+          "en": "I've come to like Japanese."
+        }
+      ],
+      "quiz": [
+        {
+          "id": 1,
+          "type": "fill_blank",
+          "question_jp": "天気(てんき)（　）よくなりました",
+          "choices": [
+            "が",
+            "は",
+            "を"
+          ],
+          "answer": "が",
+          "question_en": "Choose the correct option to complete the Japanese sentence.",
+          "sentence_en": "The weather got better.",
+          "choices_raw": [
+            "が",
+            "は",
+            "を"
+          ],
+          "answer_raw": "が"
+        },
+        {
+          "id": 2,
+          "type": "fill_blank",
+          "question_jp": "春(はる)になると、暖かく(あたたかく)なり（　）。",
+          "choices": [
+            "ます",
+            "ました",
+            "ません"
+          ],
+          "answer": "ます",
+          "question_en": "Choose the correct option to complete the Japanese sentence.",
+          "sentence_en": "When spring comes, it gets warm.",
+          "choices_raw": [
+            "ます",
+            "ました",
+            "ません"
+          ],
+          "answer_raw": "ます"
+        },
+        {
+          "id": 3,
+          "type": "mc_target_form",
+          "question_en": "Choose the correct form meaning “became quiet.”",
+          "choices": [
+            "静(しず)かになりました",
+            "静(しず)かくなりました",
+            "静(しず)かなりました",
+            "静(しず)かをなりました"
+          ],
+          "answer": "静(しず)かになりました",
+          "choices_raw": [
+            "静かになりました",
+            "静かくなりました",
+            "静かなりました",
+            "静かをなりました"
+          ],
+          "answer_raw": "静かになりました"
+        }
+      ]
+    },
+    {
+      "id": "60",
+      "title": "Choose / decide (～にします)",
+      "level": "N5",
+      "category": "Decision",
+      "pattern": "~ku / ~ni shimasu",
+      "explanation": "～く/～に します means “to make (something) …” or “to choose/decide on …”. i-adj → くします, na-adj/noun → にします.",
+      "examples": [
+        {
+          "jp": "ラーメンにします。",
+          "romaji": "raamen ni shimasu.",
+          "en": "I'll have ramen."
+        },
+        {
+          "jp": "飲み物(のみもの)はお茶(ちゃ)にします。",
+          "romaji": "nomimono wa ocha ni shimasu.",
+          "en": "For a drink, I'll choose tea."
+        },
+        {
+          "jp": "髪(かみ)を短(みじか)くしました。",
+          "romaji": "kami o mijikaku shimashita.",
+          "en": "I cut my hair short."
+        },
+        {
+          "jp": "部屋(へや)を静(しず)かにしてください。",
+          "romaji": "heya o shizuka ni shite kudasai.",
+          "en": "Please make the room quiet."
+        }
+      ],
+      "quiz": [
+        {
+          "id": 1,
+          "type": "fill_blank",
+          "question_jp": "ラーメンにし（　）",
+          "choices": [
+            "ます",
+            "ました",
+            "ません"
+          ],
+          "answer": "ます",
+          "question_en": "Choose the correct option to complete the Japanese sentence.",
+          "sentence_en": "I'll have ramen.",
+          "choices_raw": [
+            "ます",
+            "ました",
+            "ません"
+          ],
+          "answer_raw": "ます"
+        },
+        {
+          "id": 2,
+          "type": "mc_target_usage",
+          "question_en": "Choose the sentence meaning “I will have tea.”",
+          "choices": [
+            "お茶(ちゃ)にします。",
+            "お茶(ちゃ)になります。",
+            "お茶(ちゃ)がします。",
+            "お茶(ちゃ)をなります。"
+          ],
+          "answer": "お茶(ちゃ)にします。",
+          "choices_raw": [
+            "お茶にします。",
+            "お茶になります。",
+            "お茶がします。",
+            "お茶をなります。"
+          ],
+          "answer_raw": "お茶にします。"
+        },
+        {
+          "id": 3,
+          "type": "fill_target_form",
+          "question_en": "Choose the correct adverbial form before します.",
+          "question_jp": "髪(かみ)を（　）しました。",
+          "choices": [
+            "短(みじか)く",
+            "短(みじか)い",
+            "短(みじか)な",
+            "短(みじか)に"
+          ],
+          "answer": "短(みじか)く",
+          "choices_raw": [
+            "短く",
+            "短い",
+            "短な",
+            "短に"
+          ],
+          "answer_raw": "短く"
+        }
+      ]
+    },
+    {
+      "id": "61",
+      "title": "Toki (when)",
+      "level": "N5",
+      "category": "Sentence Pattern",
+      "pattern": "~toki (when)",
+      "explanation": "～とき means “when” or “at the time of.” Use a form that matches the state of the subordinate action relative to the main action. The dictionary form often describes an action that is habitual, simultaneous, or not yet completed; the past form describes an action or state viewed as completed. Context determines the exact timing.",
+      "examples": [
+        {
+          "jp": "本(ほん)を読(よ)むとき、メガネをかけます。",
+          "romaji": "hon o yomu toki, megane o kakemasu.",
+          "en": "When I read a book, I wear glasses."
+        },
+        {
+          "jp": "出(で)かけるとき、かさを持(も)って行(い)きます。",
+          "romaji": "dekakeru toki, kasa o motte ikimasu.",
+          "en": "When I go out, I take an umbrella."
+        },
+        {
+          "jp": "日本(にほん)へ行(い)ったとき、富士山(ふじさん)を見(み)ました。",
+          "romaji": "nihon e itta toki, fujisan o mimashita.",
+          "en": "When I went to Japan, I saw Mount Fuji."
+        },
+        {
+          "jp": "困(こま)ったとき、先生(せんせい)に聞(き)きます。",
+          "romaji": "komatta toki, sensei ni kikimasu.",
+          "en": "When I'm in trouble, I ask the teacher."
+        }
+      ],
+      "quiz": [
+        {
+          "id": 1,
+          "type": "fill_target_form",
+          "question_en": "Choose the form used for a habitual/simultaneous situation.",
+          "question_jp": "本(ほん)を（　）、メガネをかけます。",
+          "choices": [
+            "読(よ)むとき",
+            "読(よ)んだとき",
+            "読(よ)みますとき",
+            "読(よ)んでとき"
+          ],
+          "answer": "読(よ)むとき",
+          "choices_raw": [
+            "読むとき",
+            "読んだとき",
+            "読みますとき",
+            "読んでとき"
+          ],
+          "answer_raw": "読むとき"
+        },
+        {
+          "id": 2,
+          "type": "mc_target_usage",
+          "question_en": "Choose the sentence meaning “When I went to Japan, I saw Mount Fuji.”",
+          "choices": [
+            "日本(にほん)へ行(い)ったとき、富士山(ふじさん)を見(み)ました。",
+            "日本(にほん)へ行(い)くとき、富士山(ふじさん)を見(み)ました。",
+            "日本(にほん)へ行(い)ってとき、富士山(ふじさん)を見(み)ました。",
+            "日本(にほん)へ行(い)きますとき、富士山(ふじさん)を見(み)ました。"
+          ],
+          "answer": "日本(にほん)へ行(い)ったとき、富士山(ふじさん)を見(み)ました。",
+          "choices_raw": [
+            "日本へ行ったとき、富士山を見ました。",
+            "日本へ行くとき、富士山を見ました。",
+            "日本へ行ってとき、富士山を見ました。",
+            "日本へ行きますとき、富士山を見ました。"
+          ],
+          "answer_raw": "日本へ行ったとき、富士山を見ました。"
+        },
+        {
+          "id": 3,
+          "type": "mc_target_usage",
+          "question_en": "Choose the natural sentence for asking a teacher when you are in trouble.",
+          "choices": [
+            "困(こま)ったとき、先生(せんせい)に聞(き)きます。",
+            "困(こま)るとき、先生(せんせい)を聞(き)きます。",
+            "困(こま)ってとき、先生(せんせい)で聞(き)きます。",
+            "困(こま)りましたとき、先生(せんせい)が聞(き)きます。"
+          ],
+          "answer": "困(こま)ったとき、先生(せんせい)に聞(き)きます。",
+          "choices_raw": [
+            "困ったとき、先生に聞きます。",
+            "困るとき、先生を聞きます。",
+            "困ってとき、先生で聞きます。",
+            "困りましたとき、先生が聞きます。"
+          ],
+          "answer_raw": "困ったとき、先生に聞きます。"
+        }
+      ]
+    },
+    {
+      "id": "62",
+      "title": "Mae ni (before)",
+      "level": "N5",
+      "category": "Sentence Pattern",
+      "pattern": "V-dictionary / N-no + mae ni",
+      "explanation": "Vる / Nの + 前に means “before …”. It shows order: do A before B (e.g., 寝る前に / 出かける前に).",
+      "examples": [
+        {
+          "jp": "寝(ね)る前(まえ)に、歯(は)を磨(みが)きます。",
+          "romaji": "neru mae ni, ha o migakimasu.",
+          "en": "Before going to bed, I brush my teeth."
+        },
+        {
+          "jp": "日本(にほん)へ行(い)く前(まえ)に日本語(にほんご)を勉強(べんきょう)しました。",
+          "romaji": "nihon e iku mae ni nihongo o benkyou shimashita.",
+          "en": "Before going to Japan, I studied Japanese."
+        },
+        {
+          "jp": "出(で)かける前(まえ)に電話(でんわ)します。",
+          "romaji": "dekakeru mae ni denwa shimasu.",
+          "en": "Before going out, I call."
+        },
+        {
+          "jp": "試験(しけん)の前(まえ)にたくさん勉強(べんきょう)します。",
+          "romaji": "shiken no mae ni takusan benkyou shimasu.",
+          "en": "Before the exam, I study a lot."
+        }
+      ],
+      "quiz": [
+        {
+          "id": 1,
+          "type": "fill_target_form",
+          "question_en": "Choose the dictionary-form construction meaning “before sleeping.”",
+          "question_jp": "（　）、歯(は)を磨(みが)きます。",
+          "choices": [
+            "寝(ね)る前(まえ)に",
+            "寝(ね)た前(まえ)に",
+            "寝(ね)て前(まえ)に",
+            "寝(ね)ます前(まえ)に"
+          ],
+          "answer": "寝(ね)る前(まえ)に",
+          "choices_raw": [
+            "寝る前に",
+            "寝た前に",
+            "寝て前に",
+            "寝ます前に"
+          ],
+          "answer_raw": "寝る前に"
+        },
+        {
+          "id": 2,
+          "type": "mc_target_usage",
+          "question_en": "Choose the sentence meaning “Before going out, I call.”",
+          "choices": [
+            "出(で)かける前(まえ)に電話(でんわ)します。",
+            "出(で)かけた前(まえ)に電話(でんわ)します。",
+            "出(で)かけて前(まえ)に電話(でんわ)します。",
+            "出(で)かける後(あと)で電話(でんわ)します。"
+          ],
+          "answer": "出(で)かける前(まえ)に電話(でんわ)します。",
+          "choices_raw": [
+            "出かける前に電話します。",
+            "出かけた前に電話します。",
+            "出かけて前に電話します。",
+            "出かける後で電話します。"
+          ],
+          "answer_raw": "出かける前に電話します。"
+        },
+        {
+          "id": 3,
+          "type": "fill_target_form",
+          "question_en": "Choose the particle required after a noun before 前に.",
+          "question_jp": "試験(しけん)（　）前(まえ)に勉強(べんきょう)します。",
+          "choices": [
+            "の",
+            "が",
+            "を",
+            "で"
+          ],
+          "answer": "の",
+          "choices_raw": [
+            "の",
+            "が",
+            "を",
+            "で"
+          ],
+          "answer_raw": "の"
+        }
+      ]
+    },
+    {
+      "id": "63",
+      "title": "Ato de (after)",
+      "level": "N5",
+      "category": "Sentence Pattern",
+      "pattern": "V-ta / N-no + ato de",
+      "explanation": "Vた / Nの + あとで means “after …”. It emphasizes that the first action finishes before the next one.",
+      "examples": [
+        {
+          "jp": "勉強(べんきょう)のあとで、ゲームをします。",
+          "romaji": "benkyou no ato de, geemu o shimasu.",
+          "en": "After studying, I play games."
+        },
+        {
+          "jp": "勉強(べんきょう)したあとで、テレビを見(み)ます。",
+          "romaji": "benkyou shita ato de, terebi o mimasu.",
+          "en": "After studying, I watch TV."
+        },
+        {
+          "jp": "会議(かいぎ)のあとで、昼ご飯(ひるごはん)を食(た)べます。",
+          "romaji": "kaigi no ato de, hirugohan o tabemasu.",
+          "en": "After the meeting, I eat lunch."
+        },
+        {
+          "jp": "シャワーを浴(あ)びたあとで寝(ね)ます。",
+          "romaji": "shawaa o abita ato de nemasu.",
+          "en": "After taking a shower, I go to bed."
+        }
+      ],
+      "quiz": [
+        {
+          "id": 1,
+          "type": "fill_target_form",
+          "question_en": "Choose the past-form construction meaning “after eating.”",
+          "question_jp": "ご飯(はん)を（　）、勉強(べんきょう)します。",
+          "choices": [
+            "食(た)べたあとで",
+            "食(た)べるあとで",
+            "食(た)べてあとで",
+            "食(た)べますあとで"
+          ],
+          "answer": "食(た)べたあとで",
+          "choices_raw": [
+            "食べたあとで",
+            "食べるあとで",
+            "食べてあとで",
+            "食べますあとで"
+          ],
+          "answer_raw": "食べたあとで"
+        },
+        {
+          "id": 2,
+          "type": "mc_target_usage",
+          "question_en": "Choose the sentence meaning “After the class, I go home.”",
+          "choices": [
+            "授業(じゅぎょう)のあとで、家(いえ)に帰(かえ)ります。",
+            "授業(じゅぎょう)があとで、家(いえ)に帰(かえ)ります。",
+            "授業(じゅぎょう)をあとで、家(いえ)に帰(かえ)ります。",
+            "授業(じゅぎょう)にあとで、家(いえ)に帰(かえ)ります。"
+          ],
+          "answer": "授業(じゅぎょう)のあとで、家(いえ)に帰(かえ)ります。",
+          "choices_raw": [
+            "授業のあとで、家に帰ります。",
+            "授業があとで、家に帰ります。",
+            "授業をあとで、家に帰ります。",
+            "授業にあとで、家に帰ります。"
+          ],
+          "answer_raw": "授業のあとで、家に帰ります。"
+        },
+        {
+          "id": 3,
+          "type": "mc_order",
+          "question_en": "Which action happens first?",
+          "target_jp": "映画(えいが)を見(み)たあとで、コーヒーを飲(の)みます。",
+          "choices": [
+            "Finishing the movie",
+            "Drinking coffee",
+            "Both happen at the same time",
+            "The order is unknown"
+          ],
+          "answer": "Finishing the movie",
+          "choices_raw": [
+            "Finishing the movie",
+            "Drinking coffee",
+            "Both happen at the same time",
+            "The order is unknown"
+          ],
+          "answer_raw": "Finishing the movie"
+        }
+      ]
+    },
+    {
+      "id": "64",
+      "title": "Purpose: go/come/return to do",
+      "level": "N5",
+      "category": "Purpose",
+      "pattern": "Masu-stem + ni ikimasu (go to do...)",
+      "explanation": "Masu-stem + に行きます/来ます/帰ります expresses purpose: “go/come/return in order to do …”. The masu-stem is the verb without ます (買いに行きます).",
+      "examples": [
+        {
+          "jp": "映画(えいが)を見(み)に行(い)きます。",
+          "romaji": "eiga o mi ni ikimasu.",
+          "en": "I'm going to see a movie."
+        },
+        {
+          "jp": "図書館(としょかん)へ勉強(べんきょう)しに行(い)きます。",
+          "romaji": "toshokan e benkyou shi ni ikimasu.",
+          "en": "I go to the library to study."
+        },
+        {
+          "jp": "駅(えき)へ友(とも)だちを迎(むか)えに行(い)きます。",
+          "romaji": "eki e tomodachi o mukae ni ikimasu.",
+          "en": "I go to the station to pick up a friend."
+        },
+        {
+          "jp": "コンビニへ飲み物(のみもの)を買(か)いに行(い)きます。",
+          "romaji": "kombini e nomimono o kai ni ikimasu.",
+          "en": "I go to the convenience store to buy a drink."
+        }
+      ],
+      "quiz": [
+        {
+          "id": 1,
+          "type": "mc_masu_conjugation_time",
+          "question_en": "Choose the correct polite verb form for today (今日).",
+          "hint_en": "Target: present aff",
+          "choices": [
+            "映画(えいが)を見(み)に行き(いき)ます",
+            "映画(えいが)を見(み)に行き(いき)ません",
+            "映画(えいが)を見(み)に行き(いき)ました",
+            "映画(えいが)を見(み)に行き(いき)ませんでした"
+          ],
+          "answer": "映画(えいが)を見(み)に行き(いき)ます",
+          "choices_raw": [
+            "映画を見に行きます",
+            "映画を見に行きません",
+            "映画を見に行きました",
+            "映画を見に行きませんでした"
+          ],
+          "answer_raw": "映画を見に行きます"
+        },
+        {
+          "id": 2,
+          "type": "fill_target_form",
+          "question_en": "Choose the particle marking purpose after the ます-stem.",
+          "question_jp": "本(ほん)を買(か)い（　）行(い)きます。",
+          "choices": [
+            "に",
+            "で",
+            "を",
+            "が"
+          ],
+          "answer": "に",
+          "choices_raw": [
+            "に",
+            "で",
+            "を",
+            "が"
+          ],
+          "answer_raw": "に"
+        },
+        {
+          "id": 3,
+          "type": "mc_polarity_variant",
+          "question_en": "Pick the negative form (polite).",
+          "choices": [
+            "映画(えいが)を見(み)に行き(いき)ません",
+            "映画(えいが)を見(み)に行き(いき)ます",
+            "映画(えいが)を見(み)に行き(いき)ました",
+            "映画(えいが)を見(み)に行き(いき)ませんでした"
+          ],
+          "answer": "映画(えいが)を見(み)に行き(いき)ません",
+          "sentence_en": "I do not go to see a movie.",
+          "choices_raw": [
+            "映画を見に行きません",
+            "映画を見に行きます",
+            "映画を見に行きました",
+            "映画を見に行きませんでした"
+          ],
+          "answer_raw": "映画を見に行きません"
+        }
+      ]
+    },
+    {
+      "id": "65",
+      "title": "Comparative: より",
+      "level": "N5",
+      "category": "Comparison",
+      "pattern": "A wa B yori ~ desu",
+      "explanation": "AはBより～です means “A is more … than B.” B is the comparison target, and A is the topic.",
+      "examples": [
+        {
+          "jp": "父(ちち)は母(はは)より料理(りょうり)が上手(じょうず)です。",
+          "romaji": "chichi wa haha yori ryouri ga jouzu desu.",
+          "en": "My father is better at cooking than my mother."
+        },
+        {
+          "jp": "電車(でんしゃ)はバスより速(はや)いです。",
+          "romaji": "densha wa basu yori hayai desu.",
+          "en": "The train is faster than the bus."
+        },
+        {
+          "jp": "犬(いぬ)は猫(ねこ)より大(おお)きいです。",
+          "romaji": "inu wa neko yori ookii desu.",
+          "en": "Dogs are bigger than cats."
+        },
+        {
+          "jp": "日本語(にほんご)は英語(えいご)よりむずかしいです。",
+          "romaji": "nihongo wa eigo yori muzukashii desu.",
+          "en": "Japanese is harder than English."
+        }
+      ],
+      "quiz": [
+        {
+          "id": 1,
+          "type": "mc_copula_time",
+          "question_en": "Choose the correct sentence for today (今日).",
+          "hint_en": "Target: present aff",
+          "choices": [
+            "父(ちち)は母(はは)より料理(りょうり)が上手(じょうず)です",
+            "父(ちち)は母(はは)より料理(りょうり)が上手(じょうず)ではありません",
+            "父(ちち)は母(はは)より料理(りょうり)が上手(じょうず)でした",
+            "父(ちち)は母(はは)より料理(りょうり)が上手(じょうず)ではありませんでした"
+          ],
+          "answer": "父(ちち)は母(はは)より料理(りょうり)が上手(じょうず)です",
+          "choices_raw": [
+            "父は母より料理が上手です",
+            "父は母より料理が上手ではありません",
+            "父は母より料理が上手でした",
+            "父は母より料理が上手ではありませんでした"
+          ],
+          "answer_raw": "父は母より料理が上手です"
+        },
+        {
+          "id": 2,
+          "type": "fill_target_form",
+          "question_en": "Choose the comparative particle.",
+          "question_jp": "電車(でんしゃ)はバス（　）速(はや)いです。",
+          "choices": [
+            "より",
+            "まで",
+            "ぐらい",
+            "だけ"
+          ],
+          "answer": "より",
+          "choices_raw": [
+            "より",
+            "まで",
+            "ぐらい",
+            "だけ"
+          ],
+          "answer_raw": "より"
+        },
+        {
+          "id": 3,
+          "type": "mc_target_usage",
+          "question_en": "Choose the sentence meaning “This book is more interesting than that book.”",
+          "choices": [
+            "この本(ほん)はあの本(ほん)よりおもしろいです。",
+            "この本(ほん)よりあの本(ほん)はおもしろいです。",
+            "この本(ほん)はあの本(ほん)がよりおもしろいです。",
+            "この本(ほん)はあの本(ほん)までおもしろいです。"
+          ],
+          "answer": "この本(ほん)はあの本(ほん)よりおもしろいです。",
+          "choices_raw": [
+            "この本はあの本よりおもしろいです。",
+            "この本よりあの本はおもしろいです。",
+            "この本はあの本がよりおもしろいです。",
+            "この本はあの本までおもしろいです。"
+          ],
+          "answer_raw": "この本はあの本よりおもしろいです。"
+        }
+      ]
+    },
+    {
+      "id": "66",
+      "title": "Which one (comparison question)",
+      "level": "N5",
+      "category": "Comparison",
+      "pattern": "A to B to dochira ga ~ desu ka",
+      "explanation": "AとBとどちらが～ですか asks “Between A and B, which is more …?”. Answers often use: Aのほうが～です / Bのほうが～です.",
+      "examples": [
+        {
+          "jp": "犬(いぬ)と猫(ねこ)とどちらが好(す)きですか。",
+          "romaji": "inu to neko to dochira ga suki desu ka.",
+          "en": "Between dogs and cats, which would you prefer?"
+        },
+        {
+          "jp": "犬(いぬ)のほうが好(す)きです。",
+          "romaji": "inu no hou ga suki desu.",
+          "en": "I like dogs better."
+        },
+        {
+          "jp": "電車(でんしゃ)とバスとどちらが便利(べんり)ですか。",
+          "romaji": "densha to basu to dochira ga benri desu ka.",
+          "en": "Between the train and the bus, which is more convenient?"
+        },
+        {
+          "jp": "夏(なつ)と冬(ふゆ)とどちらがいいですか。",
+          "romaji": "natsu to fuyu to dochira ga ii desu ka.",
+          "en": "Between summer and winter, which is better?"
+        }
+      ],
+      "quiz": [
+        {
+          "id": 1,
+          "type": "fill_target_form",
+          "question_en": "Choose the question word for comparing two items.",
+          "question_jp": "犬(いぬ)と猫(ねこ)と（　）が好(す)きですか。",
+          "choices": [
+            "どちら",
+            "どこ",
+            "だれ",
+            "いつ"
+          ],
+          "answer": "どちら",
+          "choices_raw": [
+            "どちら",
+            "どこ",
+            "だれ",
+            "いつ"
+          ],
+          "answer_raw": "どちら"
+        },
+        {
+          "id": 2,
+          "type": "mc_target_usage",
+          "question_en": "Choose the natural answer meaning “I like dogs better.”",
+          "choices": [
+            "犬(いぬ)のほうが好(す)きです。",
+            "犬(いぬ)とほうが好(す)きです。",
+            "犬(いぬ)より猫(ねこ)が好(す)きです。",
+            "犬(いぬ)がどちらです。"
+          ],
+          "answer": "犬(いぬ)のほうが好(す)きです。",
+          "choices_raw": [
+            "犬のほうが好きです。",
+            "犬とほうが好きです。",
+            "犬より猫が好きです。",
+            "犬がどちらです。"
+          ],
+          "answer_raw": "犬のほうが好きです。"
+        },
+        {
+          "id": 3,
+          "type": "mc_target_usage",
+          "question_en": "Choose the correct comparison question.",
+          "choices": [
+            "電車(でんしゃ)とバスとどちらが便利(べんり)ですか。",
+            "電車(でんしゃ)よりバスとどこが便利(べんり)ですか。",
+            "電車(でんしゃ)がバスがどちら便利(べんり)ですか。",
+            "電車(でんしゃ)とバスにどちらを便利(べんり)ですか。"
+          ],
+          "answer": "電車(でんしゃ)とバスとどちらが便利(べんり)ですか。",
+          "choices_raw": [
+            "電車とバスとどちらが便利ですか。",
+            "電車よりバスとどこが便利ですか。",
+            "電車がバスがどちら便利ですか。",
+            "電車とバスにどちらを便利ですか。"
+          ],
+          "answer_raw": "電車とバスとどちらが便利ですか。"
+        }
+      ]
+    },
+    {
+      "id": "67",
+      "title": "Superlative: いちばん",
+      "level": "N5",
+      "category": "Comparison",
+      "pattern": "~ ga ichiban ~ desu",
+      "explanation": "～がいちばん～です expresses the superlative: “the most …”. Often add a scope: 日本で / クラスで / 3つの中で.",
+      "examples": [
+        {
+          "jp": "富士山(ふじさん)が日本(にほん)で一番(いちばん)高(たか)い山(やま)です。",
+          "romaji": "fujisan ga nihon de ichiban takai yama desu.",
+          "en": "Mount Fuji is the highest mountain in Japan."
+        },
+        {
+          "jp": "このクラスでだれがいちばん背(せ)が高(たか)いですか。",
+          "romaji": "kono kurasu de dare ga ichiban se ga takai desu ka.",
+          "en": "Who is the tallest in this class?"
+        },
+        {
+          "jp": "日本(にほん)の食べ物(たべもの)の中(なか)で、すしがいちばん好(す)きです。",
+          "romaji": "nihon no tabemono no naka de, sushi ga ichiban suki desu.",
+          "en": "Of Japanese foods, I like sushi best."
+        },
+        {
+          "jp": "３つの中(なか)でこれがいちばん安(やす)いです。",
+          "romaji": "mittsu no naka de kore ga ichiban yasui desu.",
+          "en": "Of these three, this is the cheapest."
+        }
+      ],
+      "quiz": [
+        {
+          "id": 1,
+          "type": "fill_target_form",
+          "question_en": "Choose the superlative expression meaning “the most.”",
+          "question_jp": "富士山(ふじさん)が（　）高(たか)いです。",
+          "choices": [
+            "いちばん",
+            "より",
+            "どちら",
+            "ぐらい"
+          ],
+          "answer": "いちばん",
+          "choices_raw": [
+            "いちばん",
+            "より",
+            "どちら",
+            "ぐらい"
+          ],
+          "answer_raw": "いちばん"
+        },
+        {
+          "id": 2,
+          "type": "fill_target_form",
+          "question_en": "Choose the particle marking the comparison scope.",
+          "question_jp": "日本(にほん)（　）富士山(ふじさん)がいちばん高(たか)いです。",
+          "choices": [
+            "で",
+            "より",
+            "を",
+            "へ"
+          ],
+          "answer": "で",
+          "choices_raw": [
+            "で",
+            "より",
+            "を",
+            "へ"
+          ],
+          "answer_raw": "で"
+        },
+        {
+          "id": 3,
+          "type": "mc_target_usage",
+          "question_en": "Choose the sentence meaning “Tanaka-san is the tallest in the class.”",
+          "choices": [
+            "クラスで田中(たなか)さんがいちばん背(せ)が高(たか)いです。",
+            "田中(たなか)さんはクラスより背(せ)が高(たか)いです。",
+            "クラスと田中(たなか)さんとどちらが高(たか)いですか。",
+            "田中(たなか)さんがクラスぐらい高(たか)いです。"
+          ],
+          "answer": "クラスで田中(たなか)さんがいちばん背(せ)が高(たか)いです。",
+          "choices_raw": [
+            "クラスで田中さんがいちばん背が高いです。",
+            "田中さんはクラスより背が高いです。",
+            "クラスと田中さんとどちらが高いですか。",
+            "田中さんがクラスぐらい高いです。"
+          ],
+          "answer_raw": "クラスで田中さんがいちばん背が高いです。"
+        }
+      ]
+    },
+    {
+      "id": "68",
+      "title": "Tari-tari (examples)",
+      "level": "N5",
+      "category": "Sentence Pattern",
+      "pattern": "~tari ~tari shimasu",
+      "explanation": "～たり～たりします lists a few activities as examples (“do A and B, etc.”). It uses the past form Vた + り.",
+      "examples": [
+        {
+          "jp": "本(ほん)を読(よ)んだり、テレビを見(み)たりします。",
+          "romaji": "hon o yondari, terebi o mitari shimasu.",
+          "en": "I do things like read books and watch TV."
+        },
+        {
+          "jp": "休(やす)みの日(ひ)は本(ほん)を読(よ)んだり、映画(えいが)を見(み)たりします。",
+          "romaji": "yasumi no hi wa hon o yondari, eiga o mitari shimasu.",
+          "en": "On my days off, I read books and watch movies, etc."
+        },
+        {
+          "jp": "うちで音楽(おんがく)を聞(き)いたり、ゲームをしたりします。",
+          "romaji": "uchi de ongaku o kiitari, geemu o shitari shimasu.",
+          "en": "At home I listen to music, play games, et cetera."
+        },
+        {
+          "jp": "友(とも)だちと話(はな)したり、買い物(かいもの)したりしました。",
+          "romaji": "tomodachi to hanashitari, kaimono shitari shimashita.",
+          "en": "I talked with friends and went shopping, etc."
+        }
+      ],
+      "quiz": [
+        {
+          "id": 1,
+          "type": "mc_masu_conjugation_time",
+          "question_en": "Choose the correct polite verb form for today (今日).",
+          "hint_en": "Target: present aff",
+          "choices": [
+            "休み(やすみ)の日(ひ)は本(ほん)を読(よ)んだり、テレビを見(み)たりします",
+            "休み(やすみ)の日(ひ)は本(ほん)を読(よ)んだり、テレビを見(み)たりしません",
+            "休み(やすみ)の日(ひ)は本(ほん)を読(よ)んだり、テレビを見(み)たりしました",
+            "休み(やすみ)の日(ひ)は本(ほん)を読(よ)んだり、テレビを見(み)たりしませんでした"
+          ],
+          "answer": "休み(やすみ)の日(ひ)は本(ほん)を読(よ)んだり、テレビを見(み)たりします",
+          "choices_raw": [
+            "休みの日は本を読んだり、テレビを見たりします",
+            "休みの日は本を読んだり、テレビを見たりしません",
+            "休みの日は本を読んだり、テレビを見たりしました",
+            "休みの日は本を読んだり、テレビを見たりしませんでした"
+          ],
+          "answer_raw": "休みの日は本を読んだり、テレビを見たりします"
+        },
+        {
+          "id": 2,
+          "type": "fill_target_form",
+          "question_en": "Choose the form used before り.",
+          "question_jp": "週末(しゅうまつ)は映画(えいが)を（　）、買(か)い物(もの)をしたりします。",
+          "choices": [
+            "見(み)たり",
+            "見(み)てり",
+            "見(み)るり",
+            "見(み)ますり"
+          ],
+          "answer": "見(み)たり",
+          "choices_raw": [
+            "見たり",
+            "見てり",
+            "見るり",
+            "見ますり"
+          ],
+          "answer_raw": "見たり"
+        },
+        {
+          "id": 3,
+          "type": "mc_target_usage",
+          "question_en": "Choose the sentence listing example activities.",
+          "choices": [
+            "日曜日(にちようび)は本(ほん)を読(よ)んだり、音楽(おんがく)を聞(き)いたりします。",
+            "日曜日(にちようび)は本(ほん)を読(よ)んで、音楽(おんがく)を聞(き)きますだけ。",
+            "日曜日(にちようび)は本(ほん)を読(よ)むたり、音楽(おんがく)を聞(き)くたりします。",
+            "日曜日(にちようび)は本(ほん)を読(よ)みたり、音楽(おんがく)を聞(き)きたりです。"
+          ],
+          "answer": "日曜日(にちようび)は本(ほん)を読(よ)んだり、音楽(おんがく)を聞(き)いたりします。",
+          "choices_raw": [
+            "日曜日は本を読んだり、音楽を聞いたりします。",
+            "日曜日は本を読んで、音楽を聞きますだけ。",
+            "日曜日は本を読むたり、音楽を聞くたりします。",
+            "日曜日は本を読みたり、音楽を聞きたりです。"
+          ],
+          "answer_raw": "日曜日は本を読んだり、音楽を聞いたりします。"
+        }
+      ]
+    },
+    {
+      "id": "69",
+      "title": "Nominalizing verbs (こと / の)",
+      "level": "N5",
+      "category": "Nominalization",
+      "pattern": "V-dictionary + koto / no (nominalization)",
+      "explanation": "V-dictionary + こと/の nominalizes a verb into a noun: “the act/thing of doing …”. こと is more general/neutral; の can feel more concrete (nuance).",
+      "examples": [
+        {
+          "jp": "私(わたし)の趣味(しゅみ)は映画(えいが)を見(み)ることです。",
+          "romaji": "watashi no shumi wa eiga o miru koto desu.",
+          "en": "My hobby is watching movies."
+        },
+        {
+          "jp": "日本語(にほんご)を勉強(べんきょう)することは楽(たの)しいです。",
+          "romaji": "nihongo o benkyou suru koto wa tanoshii desu.",
+          "en": "Learning Japanese is fun."
+        },
+        {
+          "jp": "料理(りょうり)を作(つく)るのが好(す)きです。",
+          "romaji": "ryouri o tsukuru no ga suki desu.",
+          "en": "I love cooking."
+        },
+        {
+          "jp": "早(はや)く寝(ね)ることが大切(たいせつ)です。",
+          "romaji": "hayaku neru koto ga taisetsu desu.",
+          "en": "Sleeping early is important."
+        }
+      ],
+      "quiz": [
+        {
+          "id": 1,
+          "type": "fill_target_form",
+          "question_en": "Choose the nominalizer.",
+          "question_jp": "日本語(にほんご)を話(はな)す（　）が好(す)きです。",
+          "choices": [
+            "こと",
+            "から",
+            "まで",
+            "より"
+          ],
+          "answer": "こと",
+          "choices_raw": [
+            "こと",
+            "から",
+            "まで",
+            "より"
+          ],
+          "answer_raw": "こと"
+        },
+        {
+          "id": 2,
+          "type": "fill_target_form",
+          "question_en": "Choose the natural nominalizer for a liked activity.",
+          "question_jp": "料理(りょうり)を作(つく)る（　）が好(す)きです。",
+          "choices": [
+            "の",
+            "から",
+            "まで",
+            "より"
+          ],
+          "answer": "の",
+          "choices_raw": [
+            "の",
+            "から",
+            "まで",
+            "より"
+          ],
+          "answer_raw": "の"
+        },
+        {
+          "id": 3,
+          "type": "mc_target_usage",
+          "question_en": "Choose the sentence meaning “Swimming is fun.”",
+          "choices": [
+            "泳(およ)ぐのは楽(たの)しいです。",
+            "泳(およ)ぐから楽(たの)しいです。",
+            "泳(およ)いで楽(たの)しいです。",
+            "泳(およ)ぐまで楽(たの)しいです。"
+          ],
+          "answer": "泳(およ)ぐのは楽(たの)しいです。",
+          "choices_raw": [
+            "泳ぐのは楽しいです。",
+            "泳ぐから楽しいです。",
+            "泳いで楽しいです。",
+            "泳ぐまで楽しいです。"
+          ],
+          "answer_raw": "泳ぐのは楽しいです。"
+        }
+      ]
+    },
+    {
+      "id": "70",
+      "title": "Can / possible (できます)",
+      "level": "N5",
+      "category": "Potential Form",
+      "pattern": "N + ga dekimasu",
+      "explanation": "Nができます means “can do N” (when N is an activity noun/skill) or “it is possible/available”.",
+      "examples": [
+        {
+          "jp": "スキーができます。",
+          "romaji": "sukii ga dekimasu.",
+          "en": "I can ski."
+        },
+        {
+          "jp": "わたしは料理(りょうり)ができます。",
+          "romaji": "watashi wa ryouri ga dekimasu.",
+          "en": "I can cook."
+        },
+        {
+          "jp": "ここでコピーができます。",
+          "romaji": "koko de kopii ga dekimasu.",
+          "en": "You can make copies here."
+        },
+        {
+          "jp": "この店(みせ)では予約(よやく)ができます。",
+          "romaji": "kono mise de wa yoyaku ga dekimasu.",
+          "en": "You can make a reservation at this shop."
+        }
+      ],
+      "quiz": [
+        {
+          "id": 1,
+          "type": "mc_masu_conjugation_time",
+          "question_en": "Choose the correct polite verb form for today (今日).",
+          "hint_en": "Target: present aff",
+          "choices": [
+            "スキーができます",
+            "スキーができません",
+            "スキーができました",
+            "スキーができませんでした"
+          ],
+          "answer": "スキーができます",
+          "choices_raw": [
+            "スキーができます",
+            "スキーができません",
+            "スキーができました",
+            "スキーができませんでした"
+          ],
+          "answer_raw": "スキーができます"
+        },
+        {
+          "id": 2,
+          "type": "fill_target_form",
+          "question_en": "Choose the particle used with an activity noun and できます.",
+          "question_jp": "わたしは料理(りょうり)（　）できます。",
+          "choices": [
+            "が",
+            "を",
+            "に",
+            "で"
+          ],
+          "answer": "が",
+          "choices_raw": [
+            "が",
+            "を",
+            "に",
+            "で"
+          ],
+          "answer_raw": "が"
+        },
+        {
+          "id": 3,
+          "type": "mc_target_usage",
+          "question_en": "Choose the sentence that matches Nができます.",
+          "choices": [
+            "ここでコピーができます。",
+            "ここでカードが使(つか)えます。",
+            "ここでコピーをしますたいです。",
+            "ここでコピーにできます。"
+          ],
+          "answer": "ここでコピーができます。",
+          "choices_raw": [
+            "ここでコピーができます。",
+            "ここでカードが使えます。",
+            "ここでコピーをしますたいです。",
+            "ここでコピーにできます。"
+          ],
+          "answer_raw": "ここでコピーができます。"
+        }
+      ]
+    },
+    {
+      "id": "71",
+      "title": "Can do: V-ことができます",
+      "level": "N5",
+      "category": "Potential Form",
+      "pattern": "V-dictionary + ことができます",
+      "explanation": "V-dictionary + ことができます means “can do …” (ability/possibility). It’s a polite, general way to express capability.",
+      "examples": [
+        {
+          "jp": "漢字(かんじ)を読(よ)むことができます。",
+          "romaji": "kanji o yomu koto ga dekimasu.",
+          "en": "I can read kanji."
+        },
+        {
+          "jp": "日本語(にほんご)を話(はな)すことができます。",
+          "romaji": "nihongo o hanasu koto ga dekimasu.",
+          "en": "I can speak Japanese."
+        },
+        {
+          "jp": "ここでたばこを吸(す)うことができません。",
+          "romaji": "koko de tabako o suu koto ga dekimasen.",
+          "en": "You can't smoke here."
+        },
+        {
+          "jp": "土曜日(どようび)に会(あ)うことができます。",
+          "romaji": "doyoubi ni au koto ga dekimasu.",
+          "en": "I can meet you on Saturday."
+        }
+      ],
+      "quiz": [
+        {
+          "id": 1,
+          "type": "mc_masu_conjugation_time",
+          "question_en": "Choose the correct polite verb form for today (今日).",
+          "hint_en": "Target: present aff",
+          "choices": [
+            "漢字(かんじ)を読む(よむ)ことができます",
+            "漢字(かんじ)を読む(よむ)ことができません",
+            "漢字(かんじ)を読む(よむ)ことができました",
+            "漢字(かんじ)を読む(よむ)ことができませんでした"
+          ],
+          "answer": "漢字(かんじ)を読む(よむ)ことができます",
+          "choices_raw": [
+            "漢字を読むことができます",
+            "漢字を読むことができません",
+            "漢字を読むことができました",
+            "漢字を読むことができませんでした"
+          ],
+          "answer_raw": "漢字を読むことができます"
+        },
+        {
+          "id": 2,
+          "type": "fill_target_form",
+          "question_en": "Choose the nominalizer used before できます.",
+          "question_jp": "漢字(かんじ)を読(よ)む（　）ができます。",
+          "choices": [
+            "こと",
+            "のに",
+            "から",
+            "まで"
+          ],
+          "answer": "こと",
+          "choices_raw": [
+            "こと",
+            "のに",
+            "から",
+            "まで"
+          ],
+          "answer_raw": "こと"
+        },
+        {
+          "id": 3,
+          "type": "mc_target_usage",
+          "question_en": "Choose the sentence meaning “I can swim.”",
+          "choices": [
+            "泳(およ)ぐことができます。",
+            "泳(およ)ぎことができます。",
+            "泳(およ)いでことができます。",
+            "泳(およ)ぐことをできます。"
+          ],
+          "answer": "泳(およ)ぐことができます。",
+          "choices_raw": [
+            "泳ぐことができます。",
+            "泳ぎことができます。",
+            "泳いでことができます。",
+            "泳ぐことをできます。"
+          ],
+          "answer_raw": "泳ぐことができます。"
+        }
+      ]
+    },
+    {
+      "id": "72",
+      "title": "Verb Potential Form",
+      "level": "N5",
+      "category": "Potential Form",
+      "pattern": "Potential form: u-verbs → e-row + る; ru-verbs → られる",
+      "explanation": "The potential form expresses ability or possibility. For u-verbs, change the final u-row sound to the corresponding e-row sound and add る (書く → 書ける). For ru-verbs, replace る with られる (食べる → 食べられる). Irregular forms are する → できる and 来る → 来(こ)られる. In potential sentences, the object is commonly marked by が, though を is also used in modern Japanese.",
+      "examples": [
+        {
+          "jp": "漢字(かんじ)が少(すこ)し読(よ)めます。",
+          "romaji": "kanji ga sukoshi yomemasu.",
+          "en": "I can read a little kanji."
+        },
+        {
+          "jp": "ひらがなが読(よ)めます。",
+          "romaji": "hiragana ga yomemasu.",
+          "en": "I can read hiragana."
+        },
+        {
+          "jp": "この漢字(かんじ)は書(か)けません。",
+          "romaji": "kono kanji wa kakemasen.",
+          "en": "I can't write this kanji."
+        },
+        {
+          "jp": "明日(あした)来(こ)られますか。",
+          "romaji": "ashita koraremasu ka.",
+          "en": "Can you come tomorrow?"
+        }
+      ],
+      "quiz": [
+        {
+          "id": 1,
+          "type": "mc_masu_conjugation_time",
+          "question_en": "Choose the correct polite verb form for today (今日).",
+          "hint_en": "Target: present aff",
+          "choices": [
+            "漢字(かんじ)が少し(すこし)読め(よめ)ます",
+            "漢字(かんじ)が少し(すこし)読め(よめ)ません",
+            "漢字(かんじ)が少し(すこし)読め(よめ)ました",
+            "漢字(かんじ)が少し(すこし)読め(よめ)ませんでした"
+          ],
+          "answer": "漢字(かんじ)が少し(すこし)読め(よめ)ます",
+          "choices_raw": [
+            "漢字が少し読めます",
+            "漢字が少し読めません",
+            "漢字が少し読めました",
+            "漢字が少し読めませんでした"
+          ],
+          "answer_raw": "漢字が少し読めます"
+        },
+        {
+          "id": 2,
+          "type": "mc_target_form",
+          "question_en": "Choose the correct potential form of 書(か)く.",
+          "choices": [
+            "書(か)けます",
+            "書(か)きます",
+            "書(か)かれます",
+            "書(か)くできます"
+          ],
+          "answer": "書(か)けます",
+          "choices_raw": [
+            "書けます",
+            "書きます",
+            "書かれます",
+            "書くできます"
+          ],
+          "answer_raw": "書けます"
+        },
+        {
+          "id": 3,
+          "type": "mc_target_form",
+          "question_en": "Choose the standard potential form of 食(た)べる.",
+          "choices": [
+            "食(た)べられます",
+            "食(た)べれます",
+            "食(た)べります",
+            "食(た)べできます"
+          ],
+          "answer": "食(た)べられます",
+          "choices_raw": [
+            "食べられます",
+            "食べれます",
+            "食べります",
+            "食べできます"
+          ],
+          "answer_raw": "食べられます"
+        }
+      ]
+    }
+  ],
+  "meta": {
+    "jlpt_level": "N5",
+    "enriched": true,
+    "created": "2026-04-17",
+    "lesson_count": 72,
+    "notes": [
+      "Translated Indonesian text to English (titles, categories, example translations).",
+      "Normalized Japanese example spacing and filled romaji fields.",
+      "Added 3 fill-in-the-blank quizzes per lesson."
+    ],
+    "reviewed": true,
+    "reviewed_at": "2026-07-19",
+    "review_sources": [
+      "grammar_n5-teacher-corrected.json",
+      "grammar.normalized-candidates.json",
+      "professional-validation-audit.json"
+    ]
+  }
+}

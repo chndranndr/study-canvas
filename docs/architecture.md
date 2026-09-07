@@ -2,6 +2,7 @@
 
 Study Canvas is a **local-first Android tablet app**. The product does not require a custom application backend for the MVP.
 
+> Curated JSON owns curriculum facts and existing reviewed lesson content. AI only adds optional grammar enrichment and generates sentence-production practice. Recognition and grading are deterministic/local.
 ```text
 Android tablet
 Kotlin + Jetpack Compose
@@ -18,24 +19,21 @@ Kotlin + Jetpack Compose
   |   `-- ML Kit Digital Ink recognition
   |
   |-- deterministic learning domain
-  |   |-- grading evidence
-  |   |-- mastery
-  |   |-- mistake memory
+  |   |-- GrammarContentRepository (bundled grammar_n5.json)
+  |   |-- Kana/Vocabulary/Kanji writing repositories
+  |   |-- DeterministicAnswerChecker (local NFKC & exact matching)
   |   |-- progressive hints
-  |   |-- probe
-  |   |-- curriculum DAG
-  |   `-- review scheduling
+  |   `-- attempt evidence
   |
   |-- local data
-  |   `-- Room -> SQLite
+  |   `-- Room -> SQLite (persists layouts, ink strokes, attempts, generated snapshots)
   |
-  `-- AI boundary
-      `-- AiTutorClient
+  `-- AI generation boundary (optional)
+      `-- GrammarLessonGenerator
            |
-           | HTTPS
+           | HTTPS (Gemini) — optional generation only
            v
       Managed model API
-      Primary MVP path: Firebase AI Logic -> Gemini
 ```
 
 ## Architectural principles
@@ -72,38 +70,36 @@ The MVP does not require:
 
 If cross-device sync, multi-user accounts, or shared content become real requirements later, introduce backend infrastructure then rather than designing for it prematurely.
 
-### 3. Deterministic code owns learning state
+### 3. Deterministic code owns checking and curriculum
 
-The model may interpret context and choose a pedagogical action, but it does not own application truth.
+The bundled JSON curriculum is the source of truth for lessons and curated quizzes.
 
 On-device deterministic code owns:
 
-- mastery arithmetic;
-- SRS/review scheduling;
-- curriculum prerequisites;
+- canonical grammar entries (72 N5 lessons);
+- curated quiz validation against `answer_raw`;
+- handwriting answer checking via `DeterministicAnswerChecker`;
 - attempt persistence;
 - hint evidence;
-- validation;
-- local transactions.
+- Room transactions.
 
-The AI must never invent or directly overwrite mastery values.
+Answer checking never calls Gemini or any other model.
 
-### 4. AI is a replaceable boundary
+### 4. AI is generation-only
 
-The Android app talks through one interface:
+AI does not grade answers, make curriculum decisions, or control navigation. It only:
 
+- produces optional supplemental enrichment notes grounded in the selected `GrammarEntry`;
+- generates exactly 10 sentence-production handwriting exercises with accepted Japanese variants.
+
+The domain layer does not depend on Gemini-specific types.
+
+For the MVP, Gemini is accessed via an API key or managed boundary. Alternative generators (including deterministic local generator for offline use) implement `GrammarLessonGenerator`.
 ```text
-AiTutorClient
+GrammarLessonGenerator
   |
-  |-- grade / explain
-  |-- generate exercise
-  |-- choose next action
-  `-- create concise annotation
+  `-- generate(grammar: GrammarEntry, exerciseCount = 10): Result<GeneratedGrammarLesson>
 ```
-
-The domain layer must not depend on Gemini-specific types.
-
-For the MVP, prefer **Firebase AI Logic with Gemini** because it allows a mobile app to call the model without shipping a production provider secret in the APK and without operating a custom backend.
 
 Alternative adapters may be added later:
 
@@ -181,50 +177,53 @@ review_schedule
 
 ### AI owns
 
-AI may:
+AI may only:
 
-- evaluate semantic correctness and naturalness where rules alone are insufficient;
-- explain a mistake;
-- generate a bounded practice variation;
-- choose one pedagogical next action from an allowed set;
-- create concise learner-facing annotation text.
+- generate optional supplemental grammar enrichment grounded in the selected `GrammarEntry`;
+- generate exactly 10 new sentence-production handwriting exercises with hints and accepted Japanese answers.
 
 AI does not own:
 
+- answer grading or correctness checking;
 - Room/SQLite access;
-- local database transactions;
-- mastery calculation;
-- review interval math;
-- canonical curriculum truth;
-- arbitrary state mutation;
+- curriculum source of truth;
+- mastery or review state;
 - application navigation.
 
-## Tutor decision contract
+## Grammar generation contract
 
-Keep AI output structured and narrow.
-
-Example:
+Keep AI output structured and narrow:
 
 ```json
 {
-  "action": "RETRY",
-  "message": "Use に for the destination of movement.",
-  "targetConceptId": "particle-ni-destination",
-  "reason": "The meaning is correct but the destination particle is wrong."
+  "grammarId": "54",
+  "enrichment": {
+    "summary": "concise explanation",
+    "formation": "pattern formation rule",
+    "commonMistakes": ["mistake 1"],
+    "notes": ["note 1"]
+  },
+  "exercises": [
+    {
+      "id": "generated-1",
+      "promptEn": "I want to go to Japan.",
+      "hints": {
+        "vocabulary": "Japan = 日本, go = 行く",
+        "pattern": "Place に/へ Vたいです",
+        "readingFallback": "日本 = にほん, 行く = いく"
+      },
+      "acceptedAnswers": [
+        "日本に行きたいです",
+        "日本へ行きたいです",
+        "にほんにいきたいです",
+        "にほんへいきたいです"
+      ]
+    }
+  ]
 }
 ```
 
-Initial allowed actions:
-
-```text
-NEXT_EXERCISE
-RETRY
-EXPLAIN
-INSERT_PREREQUISITE
-SCHEDULE_REVIEW
-```
-
-Validate the response before applying any local side effects.
+Validate the response before persisting or rendering.
 
 ## Practice canvas architecture
 
@@ -270,23 +269,18 @@ raw vector strokes ---------------------> Room
    |
 ML Kit Digital Ink
    |
-recognized Japanese
+bounded recognition candidates
    |
-local attempt context
-   |\
-   | \--> deterministic evidence/mastery/review update
+DeterministicAnswerChecker (local NFKC & exact match)
    |
-   `----> AiTutorClient
-              |
-         managed AI API
-              |
-         structured result
-              |
-          validation
-              |
-       inline canvas feedback
+acceptedAnswers from generated exercise or curated quiz
+   |
+local correct / incorrect feedback
+   |
+attempt persistence in Room
 ```
 
+Checking an answer performs zero AI / network calls.
 AI failure must never cause raw ink or attempt data to be lost.
 
 ## Suggested Android package structure

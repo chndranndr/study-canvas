@@ -12,6 +12,12 @@ import androidx.compose.foundation.gestures.calculatePan
 import androidx.compose.foundation.gestures.calculateRotation
 import androidx.compose.foundation.gestures.calculateZoom
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
+import dev.studycanvas.app.grammar.GrammarEntry
+import dev.studycanvas.app.grammar.LocalGrammarContentRepository
+import dev.studycanvas.app.tutor.GeminiGrammarLessonGenerator
+import dev.studycanvas.app.tutor.GrammarLessonGenerator
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -164,21 +170,41 @@ private suspend fun PointerInputScope.detectTouchTransformGestures(
 @Composable
 fun StudyCanvasScreen() {
     val context = LocalContext.current
-    val repository = remember(context) {
+    val grammarRepository = remember(context) {
+        LocalGrammarContentRepository.fromAssets(context)
+    }
+    val allLessons = remember(grammarRepository) { grammarRepository.getLessons() }
+    val categories = remember(grammarRepository) { listOf("Semua") + grammarRepository.getCategories() }
+
+    var selectedCategory by remember { mutableStateOf("Semua") }
+    var selectedLessonId by remember { mutableStateOf(allLessons.firstOrNull()?.id ?: "1") }
+    var showLessonPicker by remember { mutableStateOf(false) }
+
+    val repository = remember(context, grammarRepository) {
         val db = AppDatabase.getInstance(context)
-        LocalCanvasRepository(db.lessonDao())
+        LocalCanvasRepository(
+            lessonDao = db.lessonDao(),
+            grammarRepository = grammarRepository,
+            generatedLessonDao = db.generatedLessonDao(),
+        )
     }
     var apiKey by remember { mutableStateOf(ApiKeyStorage.getApiKey(context)) }
     var modelName by remember { mutableStateOf(ApiKeyStorage.getModel(context)) }
     var showKeyDialog by remember { mutableStateOf(false) }
+    val lessonGenerator: GrammarLessonGenerator = remember(apiKey, modelName) {
+        GeminiGrammarLessonGenerator(
+            apiKey = apiKey.ifBlank { null },
+            model = modelName.ifBlank { ApiKeyStorage.DEFAULT_MODEL },
+        )
+    }
     val tutorClient = remember(apiKey, modelName) {
         GeminiAiTutorClient(
             apiKey = apiKey.ifBlank { null },
             model = modelName.ifBlank { ApiKeyStorage.DEFAULT_MODEL },
         )
     }
-    val scope = rememberCoroutineScope()
     val density = LocalDensity.current.density
+    val scope = rememberCoroutineScope()
 
     var lesson by remember { mutableStateOf(phaseOneFallbackLesson()) }
     var viewport by remember { mutableStateOf(ViewportState()) }
@@ -186,8 +212,9 @@ fun StudyCanvasScreen() {
     var draggingElementId by remember { mutableStateOf<String?>(null) }
     var syncState by remember { mutableStateOf(SyncState.LOADING) }
 
-    LaunchedEffect(Unit) {
-        runCatching { repository.loadLesson(DemoLessonId) }
+    LaunchedEffect(selectedLessonId) {
+        syncState = SyncState.LOADING
+        runCatching { repository.loadLesson(selectedLessonId) }
             .onSuccess {
                 lesson = it
                 syncState = SyncState.SAVED
@@ -283,6 +310,18 @@ fun StudyCanvasScreen() {
         CanvasStatusOverlay(
             scale = viewport.scale,
             selectedElementId = selectedElementId,
+            currentLessonId = selectedLessonId,
+            currentLessonTitle = lesson.title,
+            allLessons = allLessons,
+            categories = categories,
+            selectedCategory = selectedCategory,
+            showLessonPicker = showLessonPicker,
+            onToggleLessonPicker = { showLessonPicker = !showLessonPicker },
+            onSelectCategory = { selectedCategory = it },
+            onSelectLesson = { newId ->
+                selectedLessonId = newId
+                showLessonPicker = false
+            },
             apiKey = apiKey,
             modelName = modelName,
             syncState = syncState,
@@ -290,7 +329,7 @@ fun StudyCanvasScreen() {
             onGenerateAiLesson = {
                 syncState = SyncState.GENERATING
                 scope.launch {
-                    repository.generateAndSaveLesson(DemoLessonId, "tai-desu", tutorClient)
+                    repository.generateAndSaveLesson(selectedLessonId, lessonGenerator)
                         .onSuccess {
                             lesson = it
                             syncState = SyncState.SAVED
@@ -362,6 +401,13 @@ private fun CanvasElementView(
             selected = selected,
             onSelect = onSelect,
             modifier = baseModifier.then(dragModifier),
+        )
+
+        CanvasElementKind.CURATED_QUIZ -> CuratedQuizCard(
+            element = element,
+            selected = selected,
+            onSelect = onSelect,
+            modifier = baseModifier,
         )
 
         CanvasElementKind.EXERCISE -> ExerciseCard(
@@ -469,9 +515,164 @@ private fun ExerciseCard(
 }
 
 @Composable
+private fun CuratedQuizCard(
+    element: CanvasElement,
+    selected: Boolean,
+    onSelect: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val content = element.content as CanvasElementContent.CuratedQuiz
+    val quiz = content.quiz
+    val shape = RoundedCornerShape(16.dp)
+    var selectedChoice by remember(quiz.id, element.id) { mutableStateOf<String?>(null) }
+    var isCorrect by remember(quiz.id, element.id) { mutableStateOf<Boolean?>(null) }
+
+    Card(
+        modifier = modifier
+            .width(element.size.width.dp)
+            .then(
+                if (selected) Modifier.border(2.dp, MaterialTheme.colorScheme.primary, shape)
+                else Modifier,
+            ),
+        shape = shape,
+        colors = CardDefaults.cardColors(containerColor = Color(0xFFFBFDFF)),
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    text = "Kuis ${quiz.id}",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.clickable { onSelect() },
+                )
+                Text(
+                    text = quiz.type,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color.Gray,
+                )
+            }
+
+            Spacer(Modifier.height(4.dp))
+            Text(
+                text = quiz.questionEn,
+                style = MaterialTheme.typography.bodyMedium,
+                color = Color(0xFF212121),
+            )
+
+            if (!quiz.questionJp.isNullOrBlank()) {
+                Spacer(Modifier.height(6.dp))
+                Text(
+                    text = quiz.questionJp,
+                    fontSize = 20.sp,
+                    style = MaterialTheme.typography.titleMedium,
+                    color = Color(0xFF1B5E20),
+                )
+            }
+
+            if (!quiz.targetJp.isNullOrBlank()) {
+                Spacer(Modifier.height(6.dp))
+                Text(
+                    text = quiz.targetJp,
+                    fontSize = 18.sp,
+                    style = MaterialTheme.typography.titleMedium,
+                    color = Color(0xFF0D47A1),
+                )
+                if (!quiz.sentenceEn.isNullOrBlank()) {
+                    Text(
+                        text = quiz.sentenceEn,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = Color.Gray,
+                    )
+                }
+            }
+
+            if (!quiz.hintEn.isNullOrBlank()) {
+                Spacer(Modifier.height(4.dp))
+                Text(
+                    text = "💡 Petunjuk: ${quiz.hintEn}",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color(0xFF795548),
+                )
+            }
+
+            Spacer(Modifier.height(10.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                quiz.choices.forEach { choice ->
+                    val isThisSelected = selectedChoice == choice
+                    val chipContainerColor = when {
+                        isThisSelected && isCorrect == true -> Color(0xFFE8F5E9)
+                        isThisSelected && isCorrect == false -> Color(0xFFFFEBEE)
+                        else -> Color(0xFFF5F5F5)
+                    }
+                    val chipTextColor = when {
+                        isThisSelected && isCorrect == true -> Color(0xFF2E7D32)
+                        isThisSelected && isCorrect == false -> Color(0xFFC62828)
+                        else -> Color(0xFF333333)
+                    }
+
+                    FilterChip(
+                        selected = isThisSelected,
+                        onClick = {
+                            selectedChoice = choice
+                            val strippedChoice = dev.studycanvas.app.grammar.FuriganaUtils.stripFurigana(choice).trim()
+                            val strippedAnswer = dev.studycanvas.app.grammar.FuriganaUtils.stripFurigana(quiz.answer).trim()
+                            val rawMatches = choice.trim() == quiz.answerRaw.trim() ||
+                                strippedChoice == quiz.answerRaw.trim() ||
+                                choice.trim() == quiz.answer.trim() ||
+                                strippedChoice == strippedAnswer
+                            isCorrect = rawMatches
+                        },
+                        label = {
+                            Text(
+                                text = choice,
+                                color = chipTextColor,
+                                fontSize = 14.sp,
+                            )
+                        },
+                    )
+                }
+            }
+
+            if (isCorrect != null) {
+                Spacer(Modifier.height(6.dp))
+                if (isCorrect == true) {
+                    Text(
+                        text = "Benar! ✓ (${quiz.answerRaw})",
+                        style = MaterialTheme.typography.labelMedium,
+                        color = Color(0xFF2E7D32),
+                    )
+                } else {
+                    Text(
+                        text = "Belum tepat. Coba pilihan lain.",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = Color(0xFFC62828),
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
 private fun CanvasStatusOverlay(
     scale: Float,
     selectedElementId: String?,
+    currentLessonId: String,
+    currentLessonTitle: String,
+    allLessons: List<GrammarEntry>,
+    categories: List<String>,
+    selectedCategory: String,
+    showLessonPicker: Boolean,
+    onToggleLessonPicker: () -> Unit,
+    onSelectCategory: (String) -> Unit,
+    onSelectLesson: (String) -> Unit,
     apiKey: String,
     modelName: String,
     syncState: SyncState,
@@ -486,35 +687,84 @@ private fun CanvasStatusOverlay(
         SyncState.GENERATING -> "menghasilkan materi AI…"
     }
 
-    Row(
+    Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.Top,
     ) {
-        Column {
-            Text(
-                text = "${(scale * 100).roundToInt()}%  •  pinch to zoom  •  drag empty canvas to pan",
-                style = MaterialTheme.typography.labelLarge,
-            )
-            Text(
-                text = "selected: ${selectedElementId ?: "none"}  •  $syncLabel",
-                style = MaterialTheme.typography.labelMedium,
-                color = Color(0xFF68645C),
-            )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.Top,
+        ) {
+            Column {
+                Text(
+                    text = "Pelajaran $currentLessonId: $currentLessonTitle",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.primary,
+                )
+                Text(
+                    text = "${(scale * 100).roundToInt()}%  •  pinch to zoom  •  drag canvas to pan",
+                    style = MaterialTheme.typography.labelMedium,
+                )
+                Text(
+                    text = "selected: ${selectedElementId ?: "none"}  •  $syncLabel",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color(0xFF68645C),
+                )
+            }
+
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                AssistChip(
+                    onClick = onToggleLessonPicker,
+                    label = { Text(if (showLessonPicker) "Tutup Daftar ▲" else "📚 Pelajaran ($currentLessonId/72)") },
+                )
+                AssistChip(
+                    onClick = onOpenKeyDialog,
+                    label = { Text(if (apiKey.isNotBlank()) "🔑 $modelName" else "⚙️ Atur Model AI") },
+                )
+                AssistChip(
+                    onClick = onGenerateAiLesson,
+                    label = { Text("✦ 10 Latihan AI") },
+                    enabled = syncState != SyncState.GENERATING && syncState != SyncState.SAVING,
+                )
+            }
         }
 
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            AssistChip(
-                onClick = onOpenKeyDialog,
-                label = { Text(if (apiKey.isNotBlank()) "🔑 $modelName" else "⚙️ Atur Model AI") },
-            )
-            AssistChip(
-                onClick = onGenerateAiLesson,
-                label = { Text("✦ Perbarui Materi (AI)") },
-                enabled = syncState != SyncState.GENERATING && syncState != SyncState.SAVING,
-            )
+        if (showLessonPicker && allLessons.isNotEmpty()) {
+            Spacer(Modifier.height(8.dp))
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(12.dp),
+                colors = CardDefaults.cardColors(containerColor = Color(0xFFFAF7F0)),
+            ) {
+                Column(modifier = Modifier.padding(12.dp)) {
+                    Text("Pilih Kategori:", style = MaterialTheme.typography.labelMedium)
+                    Spacer(Modifier.height(4.dp))
+                    LazyRow(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                        items(categories) { cat ->
+                            FilterChip(
+                                selected = selectedCategory == cat,
+                                onClick = { onSelectCategory(cat) },
+                                label = { Text(cat, fontSize = 12.sp) },
+                            )
+                        }
+                    }
+                    Spacer(Modifier.height(8.dp))
+                    Text("Daftar Pelajaran N5:", style = MaterialTheme.typography.labelMedium)
+                    Spacer(Modifier.height(4.dp))
+                    val filtered = if (selectedCategory == "Semua") allLessons else allLessons.filter { it.category == selectedCategory }
+                    LazyRow(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                        items(filtered) { entry ->
+                            FilterChip(
+                                selected = entry.id == currentLessonId,
+                                onClick = { onSelectLesson(entry.id) },
+                                label = { Text("${entry.id}. ${entry.title}", fontSize = 12.sp) },
+                            )
+                        }
+                    }
+                }
+            }
         }
     }
 }

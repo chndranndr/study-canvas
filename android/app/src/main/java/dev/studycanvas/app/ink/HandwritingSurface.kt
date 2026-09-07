@@ -49,6 +49,8 @@ import dev.studycanvas.app.canvas.CanvasElementContent
 import dev.studycanvas.app.canvas.ExerciseStage
 import dev.studycanvas.app.canvas.ExerciseState
 import dev.studycanvas.app.data.AppDatabase
+import dev.studycanvas.app.checker.AnswerChecker
+import dev.studycanvas.app.checker.DeterministicAnswerChecker
 import dev.studycanvas.app.data.ExerciseAttemptEntity
 import dev.studycanvas.app.tutor.AiTutorClient
 import dev.studycanvas.app.tutor.GeminiAiTutorClient
@@ -77,6 +79,7 @@ fun HandwritingSurface(
 
     val recognizer = remember { JapaneseHandwritingRecognizer() }
     val renderer = remember { CanvasStrokeRenderer.create() }
+    val answerChecker: AnswerChecker = remember { DeterministicAnswerChecker() }
     val brush = remember { createJetpackBrush() }
     val scope = rememberCoroutineScope()
 
@@ -215,7 +218,7 @@ fun HandwritingSurface(
         statusText = "Mengenali tulisan tangan…"
 
         scope.launch {
-            val recognized = exerciseState.recognizedText?.takeIf { it.isNotBlank() } ?: runCatching {
+            val recResult = runCatching {
                 recognizer.recognize(
                     RecognitionRequest(
                         strokes = strokes,
@@ -225,43 +228,59 @@ fun HandwritingSurface(
                         ),
                     ),
                 )
-            }.getOrNull()?.candidates?.firstOrNull()?.text.orEmpty()
-            if (recognized.isBlank()) {
+            }.getOrNull()
+
+            val candidates = recResult?.candidates?.map { it.text.trim() }?.filter { it.isNotBlank() } ?: emptyList()
+            if (candidates.isEmpty()) {
                 statusText = "Tulisan belum terdeteksi jelas. Coba tulis kembali."
                 exerciseState = exerciseState.copy(stage = ExerciseStage.WRITING)
                 return@launch
             }
 
+            val recognized = candidates.first()
             exerciseState = exerciseState.onRecognized(recognized)
             exerciseState = exerciseState.onGrading()
-            statusText = "AI Tutor sedang memeriksa…"
+            statusText = "Memeriksa jawaban secara lokal…"
 
-            val grade = tutorClient.gradeAttempt(
-                exercisePrompt = exerciseContent.prompt,
-                recognizedText = recognized,
-                targetConceptId = exerciseContent.targetConceptId,
-            ).getOrElse {
+            val accepted = exerciseContent.acceptedAnswers.ifEmpty {
+                if (exerciseContent.solution.isNotBlank()) listOf(exerciseContent.solution) else emptyList()
+            }
+            val checkResult = answerChecker.check(
+                recognizedCandidates = candidates,
+                acceptedAnswers = accepted,
+            )
+
+            val grade = if (checkResult.correct) {
+                GradeResult(
+                    correct = true,
+                    meaningScore = 1f,
+                    grammarScore = 1f,
+                    naturalnessScore = 1f,
+                    explanation = "Jawaban cocok dengan kunci: ${checkResult.matchedAcceptedAnswer ?: recognized}",
+                )
+            } else {
                 GradeResult(
                     correct = false,
-                    meaningScore = 0.5f,
-                    grammarScore = 0.5f,
-                    naturalnessScore = 0.5f,
-                    explanation = "Gagal memeriksa jawaban. Coba periksa koneksi atau ulangi.",
+                    meaningScore = 0f,
+                    grammarScore = 0f,
+                    naturalnessScore = 0f,
+                    explanation = "Belum sesuai dengan kunci jawaban. Coba periksa petunjuk atau perbaiki tulisan.",
+                    errors = listOf("mismatch"),
                 )
             }
 
             exerciseState = exerciseState.onGraded(grade)
             statusText = ""
 
-            // Persist attempt evidence
+            // Persist deterministic attempt evidence
             runCatching {
                 db.attemptDao().insertAttempt(
                     ExerciseAttemptEntity(
                         id = UUID.randomUUID().toString(),
                         lessonId = lessonId,
                         exerciseElementId = exerciseElementId,
-                        recognizedText = recognized,
-                        correct = grade.correct,
+                        recognizedText = checkResult.matchedCandidate ?: recognized,
+                        correct = checkResult.correct,
                         grammarScore = grade.grammarScore,
                         meaningScore = grade.meaningScore,
                         naturalnessScore = grade.naturalnessScore,

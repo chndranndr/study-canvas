@@ -1,0 +1,212 @@
+package dev.studycanvas.app.grammar
+
+import java.io.File
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertNull
+import org.junit.Assert.assertThrows
+import org.junit.Assert.assertTrue
+import org.junit.Before
+import org.junit.Test
+
+class GrammarDatasetTest {
+
+    private lateinit var grammarJson: String
+    private val dataSource = GrammarJsonDataSource()
+
+    @Before
+    fun setUp() {
+        val candidates = listOf(
+            File("src/main/assets/content/grammar_n5.json"),
+            File("../app/src/main/assets/content/grammar_n5.json"),
+            File("../../data/grammar_n5.json"),
+            File("../data/grammar_n5.json"),
+            File("data/grammar_n5.json"),
+        )
+        val file = candidates.firstOrNull { it.exists() }
+            ?: throw IllegalStateException("grammar_n5.json not found in test candidates: $candidates")
+        grammarJson = file.readText()
+    }
+
+    @Test
+    fun `parses complete bundled N5 dataset with 72 lessons`() {
+        val dataset = dataSource.parse(grammarJson, enforceBundledInvariants = true)
+
+        assertEquals("N5", dataset.meta.jlptLevel)
+        assertEquals(72, dataset.meta.lessonCount)
+        assertEquals(72, dataset.lessons.size)
+        assertTrue(dataset.meta.reviewed)
+        assertTrue(dataset.meta.enriched)
+
+        val repository = LocalGrammarContentRepository(dataset)
+        assertEquals(72, repository.getLessons().size)
+
+        val lesson1 = repository.getLesson("1")
+        assertNotNull(lesson1)
+        assertEquals("i-adjectives (Affirmative)", lesson1?.title)
+        assertEquals("N5", lesson1?.level)
+        assertEquals("Adjectives", lesson1?.category)
+        assertEquals("~i desu", lesson1?.pattern)
+        assertEquals(4, lesson1?.examples?.size)
+        assertEquals(3, lesson1?.quiz?.size)
+
+        val lesson72 = repository.getLesson("72")
+        assertNotNull(lesson72)
+    }
+
+    @Test
+    fun `all 72 lesson IDs are unique stable strings from 1 to 72`() {
+        val dataset = dataSource.parse(grammarJson, enforceBundledInvariants = true)
+        val ids = dataset.lessons.map { it.id }
+        val expectedIds = (1..72).map { it.toString() }
+
+        assertEquals(72, ids.toSet().size)
+        assertEquals(expectedIds, ids)
+    }
+
+    @Test
+    fun `each lesson contains 4 valid examples and 3 valid quizzes`() {
+        val dataset = dataSource.parse(grammarJson, enforceBundledInvariants = true)
+
+        for (lesson in dataset.lessons) {
+            assertEquals("Lesson ${lesson.id} examples count", 4, lesson.examples.size)
+            for (ex in lesson.examples) {
+                assertTrue("Lesson ${lesson.id} jp non-blank", ex.jp.isNotBlank())
+                assertTrue("Lesson ${lesson.id} romaji non-blank", ex.romaji.isNotBlank())
+                assertTrue("Lesson ${lesson.id} en non-blank", ex.en.isNotBlank())
+            }
+
+            assertEquals("Lesson ${lesson.id} quiz count", 3, lesson.quiz.size)
+            for (q in lesson.quiz) {
+                assertTrue("Lesson ${lesson.id} quiz ${q.id} type non-blank", q.type.isNotBlank())
+                assertTrue("Lesson ${lesson.id} quiz ${q.id} questionEn non-blank", q.questionEn.isNotBlank())
+                assertTrue("Lesson ${lesson.id} quiz ${q.id} choices non-empty", q.choices.isNotEmpty())
+                assertTrue("Lesson ${lesson.id} quiz ${q.id} answer non-blank", q.answer.isNotBlank())
+                assertTrue(
+                    "Lesson ${lesson.id} quiz ${q.id} answer in choices",
+                    q.choices.contains(q.answer),
+                )
+                assertTrue("Lesson ${lesson.id} quiz ${q.id} choicesRaw non-empty", q.choicesRaw.isNotEmpty())
+                assertTrue("Lesson ${lesson.id} quiz ${q.id} answerRaw non-blank", q.answerRaw.isNotBlank())
+                assertTrue(
+                    "Lesson ${lesson.id} quiz ${q.id} answerRaw in choicesRaw",
+                    q.choicesRaw.contains(q.answerRaw),
+                )
+            }
+        }
+    }
+
+    @Test
+    fun `annotated and raw quiz answers are distinct when furigana is present`() {
+        val dataset = dataSource.parse(grammarJson, enforceBundledInvariants = true)
+        val repo = LocalGrammarContentRepository(dataset)
+        val lesson5 = repo.getLesson("5")
+        assertNotNull(lesson5)
+
+        val quiz3 = lesson5?.quiz?.find { it.id == 3 }
+        assertNotNull(quiz3)
+        assertEquals("この店(みせ)はサービスがいいです。", quiz3?.answer)
+        assertEquals("この店はサービスがいいです。", quiz3?.answerRaw)
+    }
+
+    @Test
+    fun `optional quiz fields parse when present and are null when absent`() {
+        val dataset = dataSource.parse(grammarJson, enforceBundledInvariants = true)
+        val repo = LocalGrammarContentRepository(dataset)
+
+        // Lesson 1, Quiz 2 has question_jp
+        val l1q2 = repo.getLesson("1")?.quiz?.find { it.id == 2 }
+        assertNotNull(l1q2?.questionJp)
+
+        // Lesson 1, Quiz 3 has target_jp and sentence_en
+        val l1q3 = repo.getLesson("1")?.quiz?.find { it.id == 3 }
+        assertNotNull(l1q3?.targetJp)
+        assertNotNull(l1q3?.sentenceEn)
+
+        // Lesson 1, Quiz 1 has hint_en
+        val l1q1 = repo.getLesson("1")?.quiz?.find { it.id == 1 }
+        assertNotNull(l1q1?.hintEn)
+        assertNull(l1q1?.targetJp)
+    }
+
+    @Test
+    fun `rejects duplicate lesson IDs`() {
+        val malformed = """
+            {
+              "meta": { "lesson_count": 2 },
+              "lessons": [
+                {
+                  "id": "1", "title": "A", "level": "N5", "category": "C", "pattern": "P", "explanation": "E",
+                  "examples": [{"jp": "j", "romaji": "r", "en": "e"}],
+                  "quiz": [{"id": 1, "type": "mc", "question_en": "q", "choices": ["a"], "answer": "a", "choices_raw": ["a"], "answer_raw": "a"}]
+                },
+                {
+                  "id": "1", "title": "B", "level": "N5", "category": "C", "pattern": "P", "explanation": "E",
+                  "examples": [{"jp": "j", "romaji": "r", "en": "e"}],
+                  "quiz": [{"id": 1, "type": "mc", "question_en": "q", "choices": ["a"], "answer": "a", "choices_raw": ["a"], "answer_raw": "a"}]
+                }
+              ]
+            }
+        """.trimIndent()
+
+        val ex = assertThrows(IllegalArgumentException::class.java) {
+            dataSource.parse(malformed, enforceBundledInvariants = false)
+        }
+        assertTrue(ex.message?.contains("Duplicate lesson id") == true)
+    }
+
+    @Test
+    fun `rejects quiz when answer does not exist in choices`() {
+        val malformed = """
+            {
+              "meta": { "lesson_count": 1 },
+              "lessons": [
+                {
+                  "id": "100", "title": "A", "level": "N5", "category": "C", "pattern": "P", "explanation": "E",
+                  "examples": [{"jp": "j", "romaji": "r", "en": "e"}],
+                  "quiz": [{"id": 1, "type": "mc", "question_en": "q", "choices": ["a", "b"], "answer": "c", "choices_raw": ["a", "b"], "answer_raw": "c"}]
+                }
+              ]
+            }
+        """.trimIndent()
+
+        val ex = assertThrows(IllegalArgumentException::class.java) {
+            dataSource.parse(malformed, enforceBundledInvariants = false)
+        }
+        assertTrue(ex.message?.contains("not found in choices") == true)
+    }
+
+    @Test
+    fun `unknown future quiz type parses without crash`() {
+        val futureJson = """
+            {
+              "meta": { "lesson_count": 1 },
+              "lessons": [
+                {
+                  "id": "999", "title": "Future", "level": "N5", "category": "Future", "pattern": "P", "explanation": "E",
+                  "examples": [{"jp": "j", "romaji": "r", "en": "e"}],
+                  "quiz": [{"id": 1, "type": "future_interactive_drag_drop", "question_en": "q", "choices": ["a"], "answer": "a", "choices_raw": ["a"], "answer_raw": "a"}]
+                }
+              ]
+            }
+        """.trimIndent()
+
+        val dataset = dataSource.parse(futureJson, enforceBundledInvariants = false)
+        assertEquals("future_interactive_drag_drop", dataset.lessons.first().quiz.first().type)
+    }
+
+    @Test
+    fun `furigana utils parses and strips furigana correctly`() {
+        val text = "今日(きょう)はおもしろ（　）です。"
+        val stripped = FuriganaUtils.stripFurigana(text)
+        assertEquals("今日はおもしろ（　）です。", stripped)
+
+        val segments = FuriganaUtils.parseFurigana(text)
+        assertEquals(2, segments.size)
+        assertEquals(FuriganaSegment("今日", "きょう"), segments[0])
+        assertEquals(FuriganaSegment("はおもしろ（　）です。"), segments[1])
+
+        val mixed = "漢字(かんじ)が少し(すこし)読め(よめ)ます"
+        assertEquals("漢字が少し読めます", FuriganaUtils.stripFurigana(mixed))
+    }
+}
