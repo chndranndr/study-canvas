@@ -397,7 +397,7 @@ fun HandwritingSurface(
                 }
                 if (exerciseState.hintLevel >= 3 && exerciseContent.hint3Romaji.isNotBlank()) {
                     Text(
-                        text = "💡 Romaji: ${exerciseContent.hint3Romaji}",
+                        text = "💡 Bacaan/Romaji: ${exerciseContent.hint3Romaji}",
                         style = MaterialTheme.typography.bodySmall,
                         color = Color(0xFF5D4037),
                     )

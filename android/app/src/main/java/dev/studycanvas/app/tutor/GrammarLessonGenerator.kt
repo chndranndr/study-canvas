@@ -107,39 +107,100 @@ class DeterministicGrammarLessonGenerator : GrammarLessonGenerator {
             ),
         )
 
-        // Generate exactly 10 sentence-production exercises grounded in the source entry
-        val samplePairs = listOf(
-            Pair("Interesting.", listOf("おもしろいです", "面白(おもしろ)いです")),
-            Pair("This restaurant is cheap.", listOf("このレストランは安いです", "このレストランはやすいです")),
-            Pair("It's hot today.", listOf("今日は暑いです", "きょうはあついです")),
-            Pair("Japanese is difficult, but interesting.", listOf("日本語は難しいですが、おもしろいです", "にほんごはむずかしいですが、おもしろいです")),
-            Pair("The weather was not good yesterday.", listOf("昨日の天気はよくなかったです", "きのうのてんきはよくなかったです")),
-            Pair("This shop has good service.", listOf("この店はサービスがいいです", "このみせはサービスがいいです")),
-            Pair("Today is not so good.", listOf("今日はあまりよくないです", "きょうはあまりよくないです")),
-            Pair("The weather was nice yesterday.", listOf("昨日は天気がよかったです", "きのうはてんきがよかったです")),
-            Pair("This room is quiet.", listOf("この部屋は静かです", "このへやはしずかです")),
-            Pair("Yamada-san is kind.", listOf("山田さんは親切です", "やまださんはしんせつです")),
+        data class PracticeSeed(
+            val promptEn: String,
+            val vocabHint: String,
+            val readingHint: String,
+            val acceptedAnswers: List<String>,
+        )
+
+        val sampleSeeds = listOf(
+            PracticeSeed(
+                promptEn = "Interesting.",
+                vocabHint = "interesting = おもしろい",
+                readingHint = "おもしろい (omoshiroi)",
+                acceptedAnswers = listOf("おもしろいです", "面白(おもしろ)いです"),
+            ),
+            PracticeSeed(
+                promptEn = "This restaurant is cheap.",
+                vocabHint = "restaurant = レストラン, cheap = 安い",
+                readingHint = "安い = やすい (yasui)",
+                acceptedAnswers = listOf("このレストランは安いです", "このレストランはやすいです"),
+            ),
+            PracticeSeed(
+                promptEn = "It's hot today.",
+                vocabHint = "today = 今日, hot = 暑い",
+                readingHint = "今日 = きょう, 暑い = あつい",
+                acceptedAnswers = listOf("今日は暑いです", "きょうはあついです"),
+            ),
+            PracticeSeed(
+                promptEn = "Japanese is difficult, but interesting.",
+                vocabHint = "Japanese = 日本語, difficult = 難しい, interesting = おもしろい",
+                readingHint = "日本語 = にほんご, 難しい = むずかしい",
+                acceptedAnswers = listOf("日本語は難しいですが、おもしろいです", "日本語はむずかしいですが、おもしろいです", "にほんごはむずかしいですが、おもしろいです"),
+            ),
+            PracticeSeed(
+                promptEn = "The weather was not good yesterday.",
+                vocabHint = "yesterday = 昨日, weather = 天気, good = いい/よく",
+                readingHint = "昨日 = きのう, 天気 = てんき",
+                acceptedAnswers = listOf("昨日の天気はよくなかったです", "きのうのてんきはよくなかったです"),
+            ),
+            PracticeSeed(
+                promptEn = "This shop has good service.",
+                vocabHint = "shop = 店, service = サービス",
+                readingHint = "店 = みせ (mise)",
+                acceptedAnswers = listOf("この店はサービスがいいです", "このみせはサービスがいいです"),
+            ),
+            PracticeSeed(
+                promptEn = "Today is not so good.",
+                vocabHint = "today = 今日, not so = あまり, good = よく",
+                readingHint = "今日 = きょう (kyou)",
+                acceptedAnswers = listOf("今日はあまりよくないです", "きょうはあまりよくないです"),
+            ),
+            PracticeSeed(
+                promptEn = "The weather was nice yesterday.",
+                vocabHint = "yesterday = 昨日, weather = 天気, good = よかった",
+                readingHint = "昨日 = きのう, 天気 = てんき",
+                acceptedAnswers = listOf("昨日は天気がよかったです", "きのうはてんきがよかったです"),
+            ),
+            PracticeSeed(
+                promptEn = "This room is quiet.",
+                vocabHint = "room = 部屋, quiet = 静か",
+                readingHint = "部屋 = へや, 静か = しずか",
+                acceptedAnswers = listOf("この部屋は静かです", "このへやはしずかです"),
+            ),
+            PracticeSeed(
+                promptEn = "Yamada-san is kind.",
+                vocabHint = "Yamada = 山田, kind = 親切",
+                readingHint = "山田 = やまだ, 親切 = しんせつ",
+                acceptedAnswers = listOf("山田さんは親切です", "やまださんはしんせつです"),
+            ),
         )
 
         val exercises = mutableListOf<GeneratedGrammarExercise>()
         for (i in 0 until exerciseCount) {
-            val pairIndex = i % samplePairs.size
-            val (basePrompt, baseAnswers) = if (i < grammar.examples.size) {
+            val item = if (i < grammar.examples.size) {
                 val ex = grammar.examples[i]
-                Pair(ex.en, listOf(dev.studycanvas.app.grammar.FuriganaUtils.stripFurigana(ex.jp)))
+                val segments = dev.studycanvas.app.grammar.FuriganaUtils.parseFurigana(ex.jp)
+                val kanjiPairs = segments.filter { it.ruby != null }.joinToString(", ") { "${it.text} = ${it.ruby}" }
+                val vocab = if (kanjiPairs.isNotBlank()) kanjiPairs else ex.en
+                val reading = "Romaji: ${ex.romaji}"
+                val clean = listOf(dev.studycanvas.app.grammar.FuriganaUtils.stripFurigana(ex.jp))
+                PracticeSeed(ex.en, vocab, reading, clean)
             } else {
-                samplePairs[pairIndex]
+                val seed = sampleSeeds[i % sampleSeeds.size]
+                PracticeSeed(seed.promptEn, seed.vocabHint, seed.readingHint, seed.acceptedAnswers)
             }
 
-            val cleanAnswers = baseAnswers.map { dev.studycanvas.app.grammar.FuriganaUtils.stripFurigana(it) }.distinct()
+            val cleanAnswers = item.acceptedAnswers.map { dev.studycanvas.app.grammar.FuriganaUtils.stripFurigana(it) }.distinct()
             exercises.add(
                 GeneratedGrammarExercise(
                     id = "generated-${grammar.id}-${i + 1}",
-                    promptEn = "$basePrompt [Practice ${i + 1}]",
+                    promptEn = if (i < grammar.examples.size) item.promptEn else "${item.promptEn} [Practice ${i + 1}]",
                     hints = GeneratedExerciseHints(
-                        vocabulary = "Target: ${grammar.category}",
+                        vocabulary = item.vocabHint,
                         pattern = grammar.pattern,
-                        readingFallback = "Pattern: ${grammar.pattern}",
+                        readingFallback = item.readingHint,
                     ),
                     acceptedAnswers = cleanAnswers,
                 ),
@@ -203,9 +264,11 @@ class GeminiGrammarLessonGenerator(
             - grammarId MUST be exactly "${grammar.id}".
             - exercises MUST contain exactly $exerciseCount items.
             - Each exercise promptEn MUST be an English sentence for the learner to write in Japanese.
+            - hints.vocabulary MUST provide key vocabulary mappings (e.g., "Japan = 日本, go = 行く").
+            - hints.pattern MUST provide the grammar structure (e.g., "${grammar.pattern}").
+            - hints.readingFallback MUST provide the reading of key kanji words or romaji (e.g., "日本 = にほん, 行く = いく").
             - Each exercise MUST have acceptedAnswers containing Japanese strings (kanji and kana variants).
             - NO romaji-only or English-only acceptedAnswers.
-            - Output JSON format:
             {
               "grammarId": "${grammar.id}",
               "enrichment": {
