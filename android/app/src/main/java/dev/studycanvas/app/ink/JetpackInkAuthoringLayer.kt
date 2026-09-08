@@ -99,10 +99,19 @@ fun JetpackInkAuthoringLayer(
                             true
                         }
 
-                        MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+                        MotionEvent.ACTION_UP -> {
                             view.parent?.requestDisallowInterceptTouchEvent(false)
                             if (activePointerId != INVALID_POINTER_ID) {
                                 finishStroke(event, activePointerId)
+                                activePointerId = INVALID_POINTER_ID
+                            }
+                            true
+                        }
+
+                        MotionEvent.ACTION_CANCEL -> {
+                            view.parent?.requestDisallowInterceptTouchEvent(false)
+                            if (activePointerId != INVALID_POINTER_ID) {
+                                cancelStroke(event, activePointerId)
                                 activePointerId = INVALID_POINTER_ID
                             }
                             true

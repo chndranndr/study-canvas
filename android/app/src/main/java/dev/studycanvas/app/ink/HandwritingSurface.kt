@@ -455,8 +455,10 @@ fun HandwritingSurface(
                             awaitEachGesture {
                                 val down = awaitFirstDown(requireUnconsumed = false)
                                 if (down.type != PointerType.Stylus && down.type != PointerType.Eraser) {
+                                    down.consume()
                                     while (true) {
                                         val event = awaitPointerEvent()
+                                        event.changes.forEach { it.consume() }
                                         if (event.changes.none { it.pressed }) break
                                     }
                                     return@awaitEachGesture
