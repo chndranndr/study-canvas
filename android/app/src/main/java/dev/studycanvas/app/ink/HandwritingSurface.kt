@@ -39,6 +39,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.input.pointer.PointerType
+import androidx.compose.ui.input.pointer.PointerId
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
@@ -456,44 +457,51 @@ fun HandwritingSurface(
                                 val down = awaitFirstDown(requireUnconsumed = false)
                                 if (down.type != PointerType.Stylus && down.type != PointerType.Eraser) {
                                     down.consume()
-                                    while (true) {
-                                        val event = awaitPointerEvent()
-                                        event.changes.forEach { it.consume() }
-                                        if (event.changes.none { it.pressed }) break
-                                    }
-                                    return@awaitEachGesture
                                 }
+
+                                var activePointerId: PointerId? = if (down.type == PointerType.Stylus || down.type == PointerType.Eraser) {
+                                    down.id
+                                } else {
+                                    null
+                                }
+
                                 val erasedIds = mutableSetOf<String>()
-                                var previousPosition = down.position
-                                eraseSegment.value(
-                                    previousPosition,
-                                    previousPosition,
-                                    erasedIds,
-                                )
+                                var previousPosition = if (activePointerId != null) down.position else Offset.Zero
+                                if (activePointerId != null) {
+                                    eraseSegment.value(previousPosition, previousPosition, erasedIds)
+                                }
 
                                 while (true) {
                                     val event = awaitPointerEvent()
-                                    val change = event.changes.firstOrNull { it.id == down.id }
-                                    if (change == null) {
-                                        break
+                                    // Consume non-stylus/palm events inside writing area so they don't pan canvas
+                                    event.changes.forEach {
+                                        if (it.type != PointerType.Stylus && it.type != PointerType.Eraser) {
+                                            it.consume()
+                                        }
                                     }
 
-                                    val currentPosition = change.position
-                                    if (change.pressed) {
-                                        eraseSegment.value(
-                                            previousPosition,
-                                            currentPosition,
-                                            erasedIds,
-                                        )
-                                        previousPosition = currentPosition
-                                        change.consume()
+                                    if (event.changes.none { it.pressed }) break
+
+                                    // If palm touched down first, start eraser when stylus/eraser contacts surface
+                                    if (activePointerId == null) {
+                                        val stylusDown = event.changes.firstOrNull {
+                                            it.pressed && (it.type == PointerType.Stylus || it.type == PointerType.Eraser)
+                                        }
+                                        if (stylusDown != null) {
+                                            activePointerId = stylusDown.id
+                                            previousPosition = stylusDown.position
+                                            eraseSegment.value(previousPosition, previousPosition, erasedIds)
+                                        }
                                     } else {
-                                        eraseSegment.value(
-                                            previousPosition,
-                                            currentPosition,
-                                            erasedIds,
-                                        )
-                                        break
+                                        val change = event.changes.firstOrNull { it.id == activePointerId }
+                                        if (change != null) {
+                                            val currentPosition = change.position
+                                            eraseSegment.value(previousPosition, currentPosition, erasedIds)
+                                            previousPosition = currentPosition
+                                            if (!change.pressed) {
+                                                activePointerId = null
+                                            }
+                                        }
                                     }
                                 }
                             }
