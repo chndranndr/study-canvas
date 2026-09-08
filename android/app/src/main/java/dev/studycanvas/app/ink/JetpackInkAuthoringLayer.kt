@@ -23,7 +23,7 @@ fun JetpackInkAuthoringLayer(
     modifier: Modifier = Modifier,
 ) {
     val latestOnFinished by rememberUpdatedState(onStrokesFinished)
-    val latestViewportScale by rememberUpdatedState(viewportScale)
+    val latestViewportScale = rememberUpdatedState(viewportScale)
 
     AndroidView(
         modifier = modifier,
@@ -34,6 +34,8 @@ fun JetpackInkAuthoringLayer(
                 setBackgroundColor(AndroidColor.TRANSPARENT)
                 @Suppress("DEPRECATION")
                 useHighLatencyRenderHelper = true
+                motionEventToViewTransform =
+                    createMotionEventToWorldTransform(latestViewportScale.value)
                 eagerInit()
                 addFinishedStrokesListener(
                     object : InProgressStrokesFinishedListener {
@@ -64,7 +66,7 @@ fun JetpackInkAuthoringLayer(
                                     pointerId = activePointerId,
                                     brush = brush,
                                     motionEventToWorldTransform =
-                                        createMotionEventToWorldTransform(latestViewportScale),
+                                        createMotionEventToWorldTransform(latestViewportScale.value),
                                 )
                             }
                             true
@@ -83,7 +85,7 @@ fun JetpackInkAuthoringLayer(
                                     pointerId = activePointerId,
                                     brush = brush,
                                     motionEventToWorldTransform =
-                                        createMotionEventToWorldTransform(latestViewportScale),
+                                        createMotionEventToWorldTransform(latestViewportScale.value),
                                 )
                             }
                             true
@@ -139,11 +141,14 @@ fun JetpackInkAuthoringLayer(
         },
         update = { view ->
             view.isEnabled = enabled
+            view.motionEventToViewTransform =
+                createMotionEventToWorldTransform(viewportScale)
         },
     )
 }
 
 private const val INVALID_POINTER_ID = -1
+
 private fun createMotionEventToWorldTransform(viewportScale: Float): Matrix =
     Matrix().apply {
         val inverseScale = 1f / viewportScale.coerceAtLeast(0.0001f)
