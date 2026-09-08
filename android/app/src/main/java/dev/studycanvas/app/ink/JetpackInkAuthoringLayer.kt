@@ -1,6 +1,7 @@
 package dev.studycanvas.app.ink
 
 import android.graphics.Color as AndroidColor
+import android.graphics.Matrix
 import android.view.MotionEvent
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -17,10 +18,12 @@ import androidx.ink.strokes.Stroke
 fun JetpackInkAuthoringLayer(
     enabled: Boolean,
     brush: Brush,
+    viewportScale: Float,
     onStrokesFinished: (List<Stroke>) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val latestOnFinished by rememberUpdatedState(onStrokesFinished)
+    val latestViewportScale by rememberUpdatedState(viewportScale)
 
     AndroidView(
         modifier = modifier,
@@ -60,6 +63,8 @@ fun JetpackInkAuthoringLayer(
                                     event = event,
                                     pointerId = activePointerId,
                                     brush = brush,
+                                    motionEventToWorldTransform =
+                                        createMotionEventToWorldTransform(latestViewportScale),
                                 )
                             }
                             true
@@ -77,6 +82,8 @@ fun JetpackInkAuthoringLayer(
                                     event = event,
                                     pointerId = activePointerId,
                                     brush = brush,
+                                    motionEventToWorldTransform =
+                                        createMotionEventToWorldTransform(latestViewportScale),
                                 )
                             }
                             true
@@ -137,3 +144,8 @@ fun JetpackInkAuthoringLayer(
 }
 
 private const val INVALID_POINTER_ID = -1
+private fun createMotionEventToWorldTransform(viewportScale: Float): Matrix =
+    Matrix().apply {
+        val inverseScale = 1f / viewportScale.coerceAtLeast(0.0001f)
+        setScale(inverseScale, inverseScale)
+    }

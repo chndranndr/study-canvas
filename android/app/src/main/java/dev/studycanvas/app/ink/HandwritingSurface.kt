@@ -67,6 +67,7 @@ private const val EraserRadius = 24f
 fun HandwritingSurface(
     lessonId: String,
     exerciseElementId: String,
+    viewportScale: Float,
     exerciseContent: CanvasElementContent.Exercise,
     modifier: Modifier = Modifier,
 ) {
@@ -445,6 +446,7 @@ fun HandwritingSurface(
                 JetpackInkAuthoringLayer(
                     enabled = true,
                     brush = brush,
+                    viewportScale = viewportScale,
                     onStrokesFinished = ::commitFinished,
                     modifier = Modifier.fillMaxSize(),
                 )

@@ -405,6 +405,7 @@ private fun CanvasElementView(
             lessonId = lessonId,
             element = element,
             selected = selected,
+            viewportScale = viewportScale,
             onSelect = onSelect,
             modifier = baseModifier,
         )
@@ -463,6 +464,7 @@ private fun ExerciseCard(
     lessonId: String,
     element: CanvasElement,
     selected: Boolean,
+    viewportScale: Float,
     onSelect: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -496,6 +498,7 @@ private fun ExerciseCard(
             HandwritingSurface(
                 lessonId = lessonId,
                 exerciseElementId = element.id,
+                viewportScale = viewportScale,
                 exerciseContent = content,
             )
         }
