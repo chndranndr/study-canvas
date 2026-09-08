@@ -45,61 +45,70 @@ fun JetpackInkAuthoringLayer(
 
                 setOnTouchListener { view, event ->
                     if (!view.isEnabled) return@setOnTouchListener false
+                    view.parent?.requestDisallowInterceptTouchEvent(true)
 
                     when (event.actionMasked) {
                         MotionEvent.ACTION_DOWN -> {
                             val pointerIndex = event.actionIndex
                             val toolType = event.getToolType(pointerIndex)
-                            // Strict palm rejection: only stylus and stylus-eraser can write
-                            if (toolType != MotionEvent.TOOL_TYPE_STYLUS &&
-                                toolType != MotionEvent.TOOL_TYPE_ERASER
+                            if (toolType == MotionEvent.TOOL_TYPE_STYLUS ||
+                                toolType == MotionEvent.TOOL_TYPE_ERASER
                             ) {
-                                return@setOnTouchListener false
+                                activePointerId = event.getPointerId(pointerIndex)
+                                view.requestUnbufferedDispatch(event)
+                                startStroke(
+                                    event = event,
+                                    pointerId = activePointerId,
+                                    brush = brush,
+                                )
                             }
-                            view.parent?.requestDisallowInterceptTouchEvent(true)
-                            activePointerId = event.getPointerId(pointerIndex)
-                            view.requestUnbufferedDispatch(event)
-                            startStroke(
-                                event = event,
-                                pointerId = activePointerId,
-                                brush = brush,
-                            )
+                            true
+                        }
+
+                        MotionEvent.ACTION_POINTER_DOWN -> {
+                            val pointerIndex = event.actionIndex
+                            val toolType = event.getToolType(pointerIndex)
+                            if (activePointerId == INVALID_POINTER_ID &&
+                                (toolType == MotionEvent.TOOL_TYPE_STYLUS || toolType == MotionEvent.TOOL_TYPE_ERASER)
+                            ) {
+                                activePointerId = event.getPointerId(pointerIndex)
+                                view.requestUnbufferedDispatch(event)
+                                startStroke(
+                                    event = event,
+                                    pointerId = activePointerId,
+                                    brush = brush,
+                                )
+                            }
                             true
                         }
 
                         MotionEvent.ACTION_MOVE -> {
-                            if (activePointerId == INVALID_POINTER_ID) {
-                                false
-                            } else {
-                                view.parent?.requestDisallowInterceptTouchEvent(true)
+                            if (activePointerId != INVALID_POINTER_ID) {
                                 addToStroke(event, activePointerId)
-                                true
                             }
+                            true
                         }
 
-                        MotionEvent.ACTION_UP -> {
-                            if (activePointerId == INVALID_POINTER_ID) {
-                                false
-                            } else {
-                                view.parent?.requestDisallowInterceptTouchEvent(false)
+                        MotionEvent.ACTION_POINTER_UP -> {
+                            val pointerIndex = event.actionIndex
+                            val pointerId = event.getPointerId(pointerIndex)
+                            if (pointerId == activePointerId) {
                                 finishStroke(event, activePointerId)
                                 activePointerId = INVALID_POINTER_ID
-                                true
                             }
+                            true
                         }
 
-                        MotionEvent.ACTION_CANCEL -> {
+                        MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
                             view.parent?.requestDisallowInterceptTouchEvent(false)
                             if (activePointerId != INVALID_POINTER_ID) {
                                 finishStroke(event, activePointerId)
                                 activePointerId = INVALID_POINTER_ID
-                                true
-                            } else {
-                                false
                             }
+                            true
                         }
 
-                        else -> activePointerId != INVALID_POINTER_ID
+                        else -> true
                     }
                 }
             }

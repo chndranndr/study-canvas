@@ -425,24 +425,6 @@ fun HandwritingSurface(
                     shape = RoundedCornerShape(8.dp),
                 )
                 .background(Color.White, RoundedCornerShape(8.dp))
-                .pointerInput(exerciseState.canWrite) {
-                    if (exerciseState.canWrite) {
-                        awaitEachGesture {
-                            val down = awaitFirstDown(requireUnconsumed = false)
-                            if (down.type == PointerType.Touch) {
-                                down.consume()
-                                do {
-                                    val event = awaitPointerEvent()
-                                    event.changes.forEach {
-                                        if (it.type == PointerType.Touch) {
-                                            it.consume()
-                                        }
-                                    }
-                                } while (event.changes.any { it.pressed && it.type == PointerType.Touch })
-                            }
-                        }
-                    }
-                },
         ) {
             val renderedStrokes = remember(strokes) {
                 strokes.mapNotNull { stroke -> runCatching { stroke.toJetpackStroke() }.getOrNull() }
