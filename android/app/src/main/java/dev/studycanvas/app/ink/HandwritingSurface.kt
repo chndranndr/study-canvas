@@ -480,19 +480,8 @@ fun HandwritingSurface(
                                         }
                                     }
 
-                                    if (event.changes.none { it.pressed }) break
-
-                                    // If palm touched down first, start eraser when stylus/eraser contacts surface
-                                    if (activePointerId == null) {
-                                        val stylusDown = event.changes.firstOrNull {
-                                            it.pressed && (it.type == PointerType.Stylus || it.type == PointerType.Eraser)
-                                        }
-                                        if (stylusDown != null) {
-                                            activePointerId = stylusDown.id
-                                            previousPosition = stylusDown.position
-                                            eraseSegment.value(previousPosition, previousPosition, erasedIds)
-                                        }
-                                    } else {
+                                    // If active pointer exists, process its movement or final lift
+                                    if (activePointerId != null) {
                                         val change = event.changes.firstOrNull { it.id == activePointerId }
                                         if (change != null) {
                                             val currentPosition = change.position
@@ -502,7 +491,19 @@ fun HandwritingSurface(
                                                 activePointerId = null
                                             }
                                         }
+                                    } else {
+                                        // If palm touched down first, start eraser when stylus/eraser contacts surface
+                                        val stylusDown = event.changes.firstOrNull {
+                                            it.pressed && (it.type == PointerType.Stylus || it.type == PointerType.Eraser)
+                                        }
+                                        if (stylusDown != null) {
+                                            activePointerId = stylusDown.id
+                                            previousPosition = stylusDown.position
+                                            eraseSegment.value(previousPosition, previousPosition, erasedIds)
+                                        }
                                     }
+
+                                    if (event.changes.none { it.pressed }) break
                                 }
                             }
                         },
