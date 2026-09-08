@@ -121,16 +121,6 @@ private suspend fun PointerInputScope.detectTouchTransformGestures(
             val canceled = event.changes.any { it.isConsumed }
             if (canceled) break
 
-            // Require at least two active touch pointers for canvas pan/zoom to prevent palm drift
-            val activeTouches = event.changes.filter { it.pressed && it.type == PointerType.Touch }
-            if (activeTouches.size < 2) {
-                pastTouchSlop = false
-                zoom = 1f
-                rotation = 0f
-                pan = Offset.Zero
-                continue
-            }
-
             if (!canceled) {
                 val zoomChange = event.calculateZoom()
                 val rotationChange = event.calculateRotation()
@@ -702,7 +692,7 @@ private fun CanvasStatusOverlay(
                     color = MaterialTheme.colorScheme.primary,
                 )
                 Text(
-                    text = "${(scale * 100).roundToInt()}%  •  2 jari untuk zoom & pan  •  stylus untuk menulis",
+                    text = "${(scale * 100).roundToInt()}%  •  geser & zoom kanvas dengan jari  •  menulis dengan stylus",
                     style = MaterialTheme.typography.labelMedium,
                 )
                 Text(
