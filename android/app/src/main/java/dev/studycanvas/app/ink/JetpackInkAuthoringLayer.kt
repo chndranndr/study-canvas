@@ -93,7 +93,11 @@ fun JetpackInkAuthoringLayer(
                             val pointerIndex = event.actionIndex
                             val pointerId = event.getPointerId(pointerIndex)
                             if (pointerId == activePointerId) {
-                                finishStroke(event, activePointerId)
+                                if ((event.flags and MotionEvent.FLAG_CANCELED) != 0) {
+                                    cancelStroke(event, activePointerId)
+                                } else {
+                                    finishStroke(event, activePointerId)
+                                }
                                 activePointerId = INVALID_POINTER_ID
                             }
                             true
