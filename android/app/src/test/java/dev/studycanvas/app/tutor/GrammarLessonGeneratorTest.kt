@@ -3,6 +3,7 @@ package dev.studycanvas.app.tutor
 import dev.studycanvas.app.grammar.GrammarEntry
 import dev.studycanvas.app.grammar.GrammarExample
 import dev.studycanvas.app.grammar.GrammarQuiz
+import java.net.SocketTimeoutException
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -332,4 +333,20 @@ class GrammarLessonGeneratorTest {
         org.junit.Assert.assertNotNull(ex4)
         assertTrue(ex4?.message?.contains("blank 'grammarId'") == true)
     }
+    @Test
+    fun `generation error formatter returns bounded actionable messages`() {
+        assertEquals(
+            "API key Gemini ditolak. Periksa API key.",
+            formatGenerationError(GeminiApiException(403)),
+        )
+        assertEquals(
+            "Koneksi timeout. Periksa internet dan coba lagi.",
+            formatGenerationError(SocketTimeoutException()),
+        )
+        assertEquals(
+            "Respons Gemini tidak sesuai format latihan. Coba lagi.",
+            formatGenerationError(IllegalArgumentException("""raw provider JSON: {"message":"secret"}""")),
+        )
+    }
+
 }

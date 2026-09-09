@@ -2,8 +2,11 @@ package dev.studycanvas.app.tutor
 
 import dev.studycanvas.app.grammar.GrammarEntry
 import java.io.BufferedReader
+import java.io.IOException
 import java.io.InputStreamReader
 import java.net.HttpURLConnection
+import java.net.SocketTimeoutException
+import java.net.UnknownHostException
 import java.net.URL
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -43,6 +46,33 @@ interface GrammarLessonGenerator {
         exerciseCount: Int = 10,
     ): Result<GeneratedGrammarLesson>
 }
+
+internal class GeminiApiException(
+    val statusCode: Int,
+) : IllegalStateException("Gemini API request failed with HTTP $statusCode")
+
+internal fun formatGenerationError(error: Throwable): String =
+    when (error) {
+        is GeminiApiException -> when (error.statusCode) {
+            401, 403 -> "API key Gemini ditolak. Periksa API key."
+            404 -> "Model Gemini tidak ditemukan. Pilih model lain."
+            429 -> "Kuota Gemini habis. Coba lagi nanti."
+            in 500..599 -> "Layanan Gemini sedang bermasalah (HTTP ${error.statusCode}). Coba lagi nanti."
+            else -> "Gemini menolak permintaan (HTTP ${error.statusCode}). Periksa model/API key."
+        }
+        is SocketTimeoutException -> "Koneksi timeout. Periksa internet dan coba lagi."
+        is UnknownHostException, is IOException -> "Tidak ada koneksi internet. Periksa jaringan dan coba lagi."
+        is IllegalStateException -> {
+            if (error.message == "Gemini API key is not configured") {
+                "API key Gemini belum diatur. Buka pengaturan AI."
+            } else {
+                "Gagal membuat latihan. Periksa model/API key lalu coba lagi."
+            }
+        }
+        is IllegalArgumentException -> "Respons Gemini tidak sesuai format latihan. Coba lagi."
+        else -> "Gagal membuat latihan. Periksa model/API key lalu coba lagi."
+    }
+
 
 object GeneratedLessonValidator {
     private val japaneseCharRegex = Regex("[\\p{IsHiragana}\\p{IsKatakana}\\p{IsHan}]")
@@ -398,13 +428,11 @@ class GeminiGrammarLessonGenerator(
         }
 
         val responseCode = conn.responseCode
-        val stream = if (responseCode in 200..299) conn.inputStream else conn.errorStream
-        val responseText = BufferedReader(InputStreamReader(stream)).use { it.readText() }
-
         if (responseCode !in 200..299) {
-            throw IllegalStateException("Gemini API error ($responseCode): $responseText")
+            throw GeminiApiException(responseCode)
         }
 
+        val responseText = BufferedReader(InputStreamReader(conn.inputStream)).use { it.readText() }
         val json = JSONObject(responseText)
         val candidates = json.optJSONArray("candidates")
             ?: throw IllegalStateException("No candidates in response")

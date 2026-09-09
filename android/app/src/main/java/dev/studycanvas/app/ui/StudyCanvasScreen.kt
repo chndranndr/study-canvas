@@ -19,6 +19,7 @@ import dev.studycanvas.app.grammar.GrammarEntry
 import dev.studycanvas.app.grammar.LocalGrammarContentRepository
 import dev.studycanvas.app.tutor.GeminiGrammarLessonGenerator
 import dev.studycanvas.app.tutor.GrammarLessonGenerator
+import dev.studycanvas.app.tutor.formatGenerationError
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -341,8 +342,7 @@ fun StudyCanvasScreen() {
                             android.util.Log.e("StudyCanvasAI", "onFailure: ${error.javaClass.simpleName}: ${error.message}")
                             if (selectedLessonId == generatingLessonId) {
                                 syncState = SyncState.OFFLINE
-                                val msg = error.message?.take(80) ?: "Gagal membuat latihan"
-                                Toast.makeText(context, "Gagal: $msg", Toast.LENGTH_LONG).show()
+                                Toast.makeText(context, "Gagal: ${formatGenerationError(error)}", Toast.LENGTH_LONG).show()
                             }
                         }
                 }
