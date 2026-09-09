@@ -320,9 +320,12 @@ class GeminiGrammarLessonGenerator(
             .trim()
 
         val root = JSONObject(cleaned)
-        val grammarId = root.optString("grammarId").trim()
+        require(root.has("grammarId") && !root.isNull("grammarId") && root.get("grammarId") is String) {
+            "Generated response is missing required string 'grammarId'"
+        }
+        val grammarId = root.getString("grammarId").trim()
         require(grammarId.isNotBlank()) {
-            "Generated response is missing required 'grammarId'"
+            "Generated response has a blank 'grammarId'"
         }
         val enrichmentObj = root.optJSONObject("enrichment") ?: JSONObject()
 

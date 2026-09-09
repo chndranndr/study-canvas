@@ -8,15 +8,7 @@ object ApiKeyStorage {
     private const val KEY_GEMINI = "gemini_api_key"
     private const val KEY_MODEL = "gemini_model_name"
     const val DEFAULT_MODEL = "gemini-3.5-flash"
-
-    private val DEPRECATED_MODELS = setOf(
-        "gemini-1.5-flash",
-        "gemini-1.5-pro",
-        "gemini-2.0-flash",
-        "gemini-2.5-flash",
-        "gemini-2.5-pro",
-        "gemini-2.5-flash-lite",
-    )
+    private const val LEGACY_DEFAULT_MODEL = "gemini-1.5-flash"
 
     private fun getPrefs(context: Context): SharedPreferences =
         context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
@@ -34,7 +26,7 @@ object ApiKeyStorage {
 
     fun getModel(context: Context): String {
         val raw = getPrefs(context).getString(KEY_MODEL, DEFAULT_MODEL) ?: DEFAULT_MODEL
-        if (raw in DEPRECATED_MODELS) {
+        if (raw == LEGACY_DEFAULT_MODEL) {
             setModel(context, DEFAULT_MODEL)
             return DEFAULT_MODEL
         }
@@ -43,7 +35,6 @@ object ApiKeyStorage {
 
     fun setModel(context: Context, model: String) {
         val clean = model.trim().ifBlank { DEFAULT_MODEL }
-        val target = if (clean in DEPRECATED_MODELS) DEFAULT_MODEL else clean
-        getPrefs(context).edit().putString(KEY_MODEL, target).apply()
+        getPrefs(context).edit().putString(KEY_MODEL, clean).apply()
     }
 }

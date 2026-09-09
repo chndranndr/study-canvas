@@ -305,20 +305,31 @@ class GrammarLessonGeneratorTest {
         assertTrue("Error message should mention API key", result.exceptionOrNull()?.message?.contains("API key") == true)
     }
     @Test
-    fun `generator rejects missing grammarId in response`() {
-        val jsonWithoutId = """
-            {
-              "enrichment": {"summary": "s", "formation": "f"},
-              "exercises": []
-            }
-        """.trimIndent()
-
+    fun `generator rejects missing, null, or non-string grammarId in response`() {
         val gemini = GeminiGrammarLessonGenerator(apiKey = "dummy")
-        val exception = runCatching {
-            gemini.parseResponse(sampleGrammar, jsonWithoutId)
-        }.exceptionOrNull()
 
-        org.junit.Assert.assertNotNull(exception)
-        assertTrue(exception?.message?.contains("missing required 'grammarId'") == true)
+        // 1. Missing grammarId
+        val jsonWithoutId = """{"enrichment": {"summary": "s", "formation": "f"}, "exercises": []}"""
+        val ex1 = runCatching { gemini.parseResponse(sampleGrammar, jsonWithoutId) }.exceptionOrNull()
+        org.junit.Assert.assertNotNull(ex1)
+        assertTrue(ex1?.message?.contains("missing required string 'grammarId'") == true)
+
+        // 2. Explicit null grammarId
+        val jsonWithNullId = """{"grammarId": null, "enrichment": {"summary": "s", "formation": "f"}, "exercises": []}"""
+        val ex2 = runCatching { gemini.parseResponse(sampleGrammar, jsonWithNullId) }.exceptionOrNull()
+        org.junit.Assert.assertNotNull(ex2)
+        assertTrue(ex2?.message?.contains("missing required string 'grammarId'") == true)
+
+        // 3. Non-string integer grammarId
+        val jsonWithIntId = """{"grammarId": 123, "enrichment": {"summary": "s", "formation": "f"}, "exercises": []}"""
+        val ex3 = runCatching { gemini.parseResponse(sampleGrammar, jsonWithIntId) }.exceptionOrNull()
+        org.junit.Assert.assertNotNull(ex3)
+        assertTrue(ex3?.message?.contains("missing required string 'grammarId'") == true)
+
+        // 4. Blank string grammarId
+        val jsonWithBlankId = """{"grammarId": "   ", "enrichment": {"summary": "s", "formation": "f"}, "exercises": []}"""
+        val ex4 = runCatching { gemini.parseResponse(sampleGrammar, jsonWithBlankId) }.exceptionOrNull()
+        org.junit.Assert.assertNotNull(ex4)
+        assertTrue(ex4?.message?.contains("blank 'grammarId'") == true)
     }
 }
