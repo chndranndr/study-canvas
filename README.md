@@ -85,6 +85,25 @@ The current Android client targets `compileSdk 36`, Compose BOM `2026.06.01`, Ro
 
 The Japanese Digital Ink model is downloaded on demand on first use and requires network access for the initial model download. Finger gestures remain available for canvas navigation while the pen authoring layer accepts stylus input.
 
+## Agent commands
+
+From the repository root, use the single dependency-free command surface:
+
+```text
+python scripts/repo.py setup
+python scripts/repo.py dev
+python scripts/repo.py format
+python scripts/repo.py check
+python scripts/repo.py test
+python scripts/repo.py eval
+python scripts/repo.py doctor
+python scripts/repo.py gc --dry-run
+```
+
+See [`docs/index.md`](docs/index.md) for the repository map, source-of-truth links, smoke path, and maintenance workflow. `doctor` is the required pre-handoff check; `gc --dry-run` reports only reproducible Android build/cache output.
+
+On Windows, `dev` starts the configured tablet emulator; on other hosts it builds the debug APK through the Gradle wrapper.
+
 ## Local-first architecture status
 
 The local-first migration is complete. Lesson layouts, vector ink strokes, learner profiles, and exercise attempts are persisted on-device via Room + SQLite. Pedagogical feedback and grading operate via the on-device `AiTutorClient` boundary.

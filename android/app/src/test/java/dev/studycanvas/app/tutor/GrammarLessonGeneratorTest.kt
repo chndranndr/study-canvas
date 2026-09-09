@@ -141,7 +141,7 @@ class GrammarLessonGeneratorTest {
             grammarId = "99",
             enrichment = GeneratedEnrichment("s", "f"),
             exercises = (1..10).map {
-                GeneratedGrammarExercise("id-$it", "prompt", GeneratedExerciseHints("vocab", "pattern", "reading"), listOf("日本語"))
+                GeneratedGrammarExercise("id-$it", "prompt", GeneratedExerciseHints("vocab", sampleGrammar.pattern, "reading"), listOf("日本語"))
             },
         )
         val validation = GeneratedLessonValidator.validate(sampleGrammar, generated)
@@ -154,7 +154,7 @@ class GrammarLessonGeneratorTest {
             grammarId = "1",
             enrichment = GeneratedEnrichment("s", "f"),
             exercises = (1..9).map {
-                GeneratedGrammarExercise("id-$it", "prompt", GeneratedExerciseHints("vocab", "pattern", "reading"), listOf("日本語"))
+                GeneratedGrammarExercise("id-$it", "prompt", GeneratedExerciseHints("vocab", sampleGrammar.pattern, "reading"), listOf("日本語"))
             },
         )
         assertFalse(GeneratedLessonValidator.validate(sampleGrammar, generated9).isSuccess)
@@ -163,7 +163,7 @@ class GrammarLessonGeneratorTest {
     @Test
     fun `validator rejects blank prompt`() {
         val exercises = (1..10).map {
-            GeneratedGrammarExercise("id-$it", if (it == 5) "" else "prompt", GeneratedExerciseHints("vocab", "pattern", "reading"), listOf("日本語"))
+            GeneratedGrammarExercise("id-$it", if (it == 5) "" else "prompt", GeneratedExerciseHints("vocab", sampleGrammar.pattern, "reading"), listOf("日本語"))
         }
         val generated = GeneratedGrammarLesson(grammarId = "1", enrichment = GeneratedEnrichment("s", "f"), exercises = exercises)
         assertFalse(GeneratedLessonValidator.validate(sampleGrammar, generated).isSuccess)
@@ -173,13 +173,13 @@ class GrammarLessonGeneratorTest {
     fun `validator rejects placeholder hints`() {
         // Target: placeholder in vocabulary
         val exWithTarget = (1..10).map {
-            GeneratedGrammarExercise("id-$it", "prompt", GeneratedExerciseHints(if (it == 1) "Target: adjectives" else "vocab", "pattern", "reading"), listOf("日本語"))
+            GeneratedGrammarExercise("id-$it", "prompt", GeneratedExerciseHints(if (it == 1) "Target: adjectives" else "vocab", sampleGrammar.pattern, "reading"), listOf("日本語"))
         }
         assertFalse(GeneratedLessonValidator.validate(sampleGrammar, GeneratedGrammarLesson("1", GeneratedEnrichment("s", "f"), exWithTarget)).isSuccess)
 
         // Pattern: placeholder in reading
         val exWithPattern = (1..10).map {
-            GeneratedGrammarExercise("id-$it", "prompt", GeneratedExerciseHints("vocab", "pattern", if (it == 2) "Pattern: ~i desu" else "reading"), listOf("日本語"))
+            GeneratedGrammarExercise("id-$it", "prompt", GeneratedExerciseHints("vocab", sampleGrammar.pattern, if (it == 2) "Pattern: ~i desu" else "reading"), listOf("日本語"))
         }
         assertFalse(GeneratedLessonValidator.validate(sampleGrammar, GeneratedGrammarLesson("1", GeneratedEnrichment("s", "f"), exWithPattern)).isSuccess)
     }
@@ -187,7 +187,7 @@ class GrammarLessonGeneratorTest {
     @Test
     fun `validator rejects empty accepted answers`() {
         val exercises = (1..10).map {
-            GeneratedGrammarExercise("id-$it", "prompt", GeneratedExerciseHints("vocab", "pattern", "reading"), if (it == 3) emptyList() else listOf("日本語"))
+            GeneratedGrammarExercise("id-$it", "prompt", GeneratedExerciseHints("vocab", sampleGrammar.pattern, "reading"), if (it == 3) emptyList() else listOf("日本語"))
         }
         val generated = GeneratedGrammarLesson(grammarId = "1", enrichment = GeneratedEnrichment("s", "f"), exercises = exercises)
         assertFalse(GeneratedLessonValidator.validate(sampleGrammar, generated).isSuccess)
@@ -196,9 +196,112 @@ class GrammarLessonGeneratorTest {
     @Test
     fun `validator rejects romaji-only or English-only accepted answers`() {
         val exercises = (1..10).map {
-            GeneratedGrammarExercise("id-$it", "prompt", GeneratedExerciseHints("vocab", "pattern", "reading"), if (it == 2) listOf("nihon ni ikitai desu") else listOf("日本語"))
+            GeneratedGrammarExercise("id-$it", "prompt", GeneratedExerciseHints("vocab", sampleGrammar.pattern, "reading"), if (it == 2) listOf("nihon ni ikitai desu") else listOf("日本語"))
         }
         val generated = GeneratedGrammarLesson(grammarId = "1", enrichment = GeneratedEnrichment("s", "f"), exercises = exercises)
         assertFalse(GeneratedLessonValidator.validate(sampleGrammar, generated).isSuccess)
+    }
+    @Test
+    fun `validator rejects pattern hint not matching grammar pattern`() {
+        val exercises = (1..10).map {
+            GeneratedGrammarExercise(
+                "id-$it",
+                "prompt",
+                GeneratedExerciseHints("vocab", if (it == 4) "~te kudasai" else sampleGrammar.pattern, "reading"),
+                listOf("日本語"),
+            )
+        }
+        val generated = GeneratedGrammarLesson(grammarId = "1", enrichment = GeneratedEnrichment("s", "f"), exercises = exercises)
+        val result = GeneratedLessonValidator.validate(sampleGrammar, generated)
+        assertFalse(result.isSuccess)
+        assertTrue(result.exceptionOrNull()?.message?.contains("pattern hint") == true)
+    }
+
+    @Test
+    fun `deterministic generator grounds all exercises to non-adjective grammar entries`() = runBlocking {
+        val nonAdjectiveLessons = listOf(
+            GrammarEntry(
+                id = "54",
+                title = "Vたいです (Desire)",
+                level = "N5",
+                category = "Verbs",
+                pattern = "Vたいです",
+                explanation = "Expressing desire to do something",
+                examples = listOf(
+                    GrammarExample("日本(にほん)に行(い)きたいです。", "nihon ni ikitai desu.", "I want to go to Japan."),
+                    GrammarExample("水(みず)を飲(の)みたいです。", "mizu o nomitai desu.", "I want to drink water."),
+                    GrammarExample("映画(えいが)を見(み)たいです。", "eiga o mitai desu.", "I want to watch a movie."),
+                    GrammarExample("寿司(すし)を食(た)べたいです。", "sushi o tabetai desu.", "I want to eat sushi."),
+                ),
+                quiz = listOf(
+                    GrammarQuiz(
+                        id = 1,
+                        type = "fill-in",
+                        questionEn = "I want to buy a book.",
+                        answer = "本(ほん)を買(か)いたいです",
+                        answerRaw = "本を買いたいです",
+                        choices = emptyList(),
+                        choicesRaw = emptyList(),
+                        hintEn = "book = 本, buy = 買う",
+                        targetJp = "買いたいです",
+                    ),
+                ),
+            ),
+            GrammarEntry(
+                id = "12",
+                title = "Vてください (Please do)",
+                level = "N5",
+                category = "Verbs",
+                pattern = "Vてください",
+                explanation = "Polite request",
+                examples = listOf(
+                    GrammarExample("待(ま)ってください。", "matte kudasai.", "Please wait."),
+                    GrammarExample("見(み)てください。", "mite kudasai.", "Please look."),
+                    GrammarExample("座(すわ)ってください。", "suwatte kudasai.", "Please sit."),
+                    GrammarExample("食(た)べてください。", "tabete kudasai.", "Please eat."),
+                ),
+                quiz = emptyList(),
+            ),
+            GrammarEntry(
+                id = "20",
+                title = "Particle に (Time / Destination)",
+                level = "N5",
+                category = "Particles",
+                pattern = "N に",
+                explanation = "Indicates time or goal of movement",
+                examples = listOf(
+                    GrammarExample("七時(しちじ)に起(お)きます。", "shichiji ni okimasu.", "I wake up at 7 o'clock."),
+                    GrammarExample("学校(がっこう)に行(い)きます。", "gakkou ni ikimasu.", "I go to school."),
+                    GrammarExample("日本(にほん)に来(き)ました。", "nihon ni kimashita.", "I came to Japan."),
+                    GrammarExample("うちへ帰(かえ)ります。", "uchi e kaerimasu.", "I return home."),
+                ),
+                quiz = emptyList(),
+            ),
+        )
+
+        for (grammar in nonAdjectiveLessons) {
+            val result = generator.generate(grammar, 10).getOrThrow()
+            assertEquals("Must produce 10 exercises", 10, result.exercises.size)
+
+            for ((idx, ex) in result.exercises.withIndex()) {
+                assertEquals("Ex $idx pattern hint must exactly match grammar pattern", grammar.pattern, ex.hints.pattern)
+                assertFalse("Ex $idx must not contain unrelated restaurant seed", ex.promptEn.contains("restaurant", ignoreCase = true))
+                assertFalse("Ex $idx must not contain unrelated quiet seed", ex.promptEn.contains("quiet", ignoreCase = true))
+                assertFalse("Ex $idx must not contain unrelated hot seed", ex.promptEn.contains("hot", ignoreCase = true))
+                assertFalse("Ex $idx must not contain unrelated cheap seed", ex.promptEn.contains("cheap", ignoreCase = true))
+                assertTrue("Ex $idx accepted answers must not be empty", ex.acceptedAnswers.isNotEmpty())
+            }
+
+            val validated = GeneratedLessonValidator.validate(grammar, result)
+            assertTrue("Validation must pass for ${grammar.title}", validated.isSuccess)
+        }
+    }
+
+    @Test
+    fun `gemini generator fails when api key is not configured`() = runBlocking {
+        val gemini = GeminiGrammarLessonGenerator(apiKey = null)
+        val result = gemini.generate(sampleGrammar, 10)
+        assertTrue("Must fail when api key is null", result.isFailure)
+        assertTrue("Error message should mention API key", result.exceptionOrNull()?.message?.contains("API key") == true)
     }
 }

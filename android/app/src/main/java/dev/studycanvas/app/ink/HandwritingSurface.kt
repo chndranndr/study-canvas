@@ -457,10 +457,6 @@ fun HandwritingSurface(
                         .pointerInput(lessonId, exerciseElementId) {
                             awaitEachGesture {
                                 val down = awaitFirstDown(requireUnconsumed = false)
-                                if (down.type != PointerType.Stylus && down.type != PointerType.Eraser) {
-                                    down.consume()
-                                }
-
                                 var activePointerId: PointerId? = if (down.type == PointerType.Stylus || down.type == PointerType.Eraser) {
                                     down.id
                                 } else {
@@ -475,13 +471,14 @@ fun HandwritingSurface(
 
                                 while (true) {
                                     val event = awaitPointerEvent()
-                                    // Consume non-stylus/palm events inside writing area so they don't pan canvas
-                                    event.changes.forEach {
-                                        if (it.type != PointerType.Stylus && it.type != PointerType.Eraser) {
-                                            it.consume()
+                                    // Consume non-stylus/palm events inside writing area only while actively erasing
+                                    if (activePointerId != null) {
+                                        event.changes.forEach {
+                                            if (it.type != PointerType.Stylus && it.type != PointerType.Eraser) {
+                                                it.consume()
+                                            }
                                         }
                                     }
-
                                     // If active pointer exists, process its movement or final lift
                                     if (activePointerId != null) {
                                         val change = event.changes.firstOrNull { it.id == activePointerId }

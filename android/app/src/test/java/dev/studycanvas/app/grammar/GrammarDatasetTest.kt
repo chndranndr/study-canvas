@@ -308,4 +308,17 @@ class GrammarDatasetTest {
         assertEquals(FuriganaSegment("銀行", "ぎんこう"), shopsSegments[1])
         assertEquals(FuriganaSegment("があります。"), shopsSegments[2])
     }
+    @Test
+    fun `deterministic generator generates valid exercises for all 72 lessons in dataset`() = kotlinx.coroutines.runBlocking {
+        val dataset = dataSource.parse(grammarJson, enforceBundledInvariants = true)
+        val generator = dev.studycanvas.app.tutor.DeterministicGrammarLessonGenerator()
+        for (lesson in dataset.lessons) {
+            val result = generator.generate(lesson, 10).getOrThrow()
+            assertEquals("Lesson ${lesson.id} must generate 10 exercises", 10, result.exercises.size)
+            for ((idx, ex) in result.exercises.withIndex()) {
+                assertEquals("Lesson ${lesson.id} ex $idx must match grammar pattern", lesson.pattern, ex.hints.pattern)
+                assertTrue("Lesson ${lesson.id} ex $idx must have accepted answers", ex.acceptedAnswers.isNotEmpty())
+            }
+        }
+    }
 }

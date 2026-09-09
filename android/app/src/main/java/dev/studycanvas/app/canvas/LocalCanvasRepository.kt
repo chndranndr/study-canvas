@@ -6,6 +6,7 @@ import dev.studycanvas.app.data.LessonDao
 import dev.studycanvas.app.data.LessonElementEntity
 import dev.studycanvas.app.data.LessonEntity
 import dev.studycanvas.app.grammar.GrammarContentRepository
+import dev.studycanvas.app.grammar.GrammarEntry
 import dev.studycanvas.app.grammar.GrammarQuiz
 import dev.studycanvas.app.tutor.GeneratedGrammarLesson
 import dev.studycanvas.app.tutor.GrammarLessonGenerator
@@ -14,6 +15,7 @@ import kotlinx.coroutines.withContext
 import org.json.JSONArray
 import org.json.JSONObject
 
+const val CURRENT_GENERATOR_VERSION = "v2-grounded"
 class LocalCanvasRepository(
     private val lessonDao: LessonDao,
     private val grammarRepository: GrammarContentRepository? = null,
@@ -24,13 +26,12 @@ class LocalCanvasRepository(
         val grammar = grammarRepository?.getLesson(lessonId)
         if (grammar != null) {
             val generatedEntity = generatedLessonDao?.getGeneratedLesson(lessonId)
-            val generatedExercises = parseGeneratedExercises(generatedEntity)
-            val enrichmentNotes = parseEnrichmentNotes(generatedEntity)
-
-            // If a snapshot existed in DB but contained stale placeholders, purge it
+            val generatedExercises = parseGeneratedExercises(generatedEntity, grammar)
+            val enrichmentNotes = if (generatedExercises.isNotEmpty()) parseEnrichmentNotes(generatedEntity) else emptyList()
+            // If a snapshot existed in DB but contained stale or invalid content, purge the generated snapshot
+            // while preserving user's customized positions for canonical lesson elements.
             if (generatedEntity != null && generatedExercises.isEmpty()) {
                 generatedLessonDao?.deleteGeneratedLesson(lessonId)
-                lessonDao.deleteElementsForLesson(lessonId)
             }
             val baseCanvas = createGrammarLessonCanvas(
                 grammar = grammar,
@@ -128,6 +129,7 @@ class LocalCanvasRepository(
 
         val entity = GeneratedLessonEntity(
             grammarId = generated.grammarId,
+            generatorVersion = CURRENT_GENERATOR_VERSION,
             summary = generated.enrichment.summary,
             formation = generated.enrichment.formation,
             commonMistakesJson = JSONArray(generated.enrichment.commonMistakes).toString(),
@@ -139,12 +141,18 @@ class LocalCanvasRepository(
         generatedLessonDao.insertGeneratedLesson(entity)
     }
 
-    private fun parseGeneratedExercises(entity: GeneratedLessonEntity?): List<CanvasElementContent.Exercise> {
+    private fun parseGeneratedExercises(
+        entity: GeneratedLessonEntity?,
+        grammar: GrammarEntry? = null,
+    ): List<CanvasElementContent.Exercise> {
         if (entity == null || entity.exercisesJson.isBlank()) return emptyList()
+        if (entity.generatorVersion != CURRENT_GENERATOR_VERSION) return emptyList()
 
         return runCatching {
             val array = JSONArray(entity.exercisesJson)
             if (array.length() != 10) return emptyList()
+            val expectedPattern = grammar?.pattern?.trim()?.replace("\\s+".toRegex(), " ")
+            val japaneseCharRegex = Regex("[\\p{IsHiragana}\\p{IsKatakana}\\p{IsHan}]")
 
             val list = mutableListOf<CanvasElementContent.Exercise>()
             for (i in 0 until array.length()) {
@@ -155,21 +163,23 @@ class LocalCanvasRepository(
                 val hint3 = obj.optString("hint3Romaji", "").trim()
                 val acceptedAnswers = obj.optJSONArray("acceptedAnswers")?.toStringList() ?: emptyList()
 
-                // Reject stale snapshots with generic placeholders or blank hints
+                // Reject stale snapshots with generic placeholders, blank hints, mismatched pattern, or non-Japanese answers
                 if (prompt.isBlank() ||
                     hint1.isBlank() ||
                     hint1.startsWith("Target:", ignoreCase = true) ||
                     hint1.equals("vocab hint", ignoreCase = true) ||
                     hint1.equals(prompt, ignoreCase = true) ||
                     hint2.isBlank() ||
+                    hint2.equals("pattern hint", ignoreCase = true) ||
+                    (expectedPattern != null && hint2.replace("\\s+".toRegex(), " ") != expectedPattern) ||
                     hint3.isBlank() ||
                     hint3.startsWith("Pattern:", ignoreCase = true) ||
                     hint3.equals("reading hint", ignoreCase = true) ||
-                    acceptedAnswers.isEmpty()
+                    acceptedAnswers.isEmpty() ||
+                    acceptedAnswers.any { it.isBlank() || !japaneseCharRegex.containsMatchIn(it) }
                 ) {
                     return emptyList()
                 }
-
                 list.add(
                     CanvasElementContent.Exercise(
                         title = "Practice ${i + 1}",

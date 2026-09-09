@@ -5,9 +5,13 @@
 
 # Android
 android/.gradle/
+android/.kotlin/
 android/local.properties
 android/**/build/
 
+# Python / scripts
+__pycache__/
+*.pyc
 # Logs
 *.log
 

@@ -101,6 +101,15 @@ object GeneratedLessonValidator {
                     IllegalArgumentException("Exercise $index has blank or placeholder pattern hint: '$pHint'"),
                 )
             }
+            val normPatternHint = pHint.replace("\\s+".toRegex(), " ")
+            val normGrammarPattern = grammar.pattern.trim().replace("\\s+".toRegex(), " ")
+            if (normPatternHint != normGrammarPattern) {
+                return Result.failure(
+                    IllegalArgumentException(
+                        "Exercise $index pattern hint '$pHint' does not match grammar pattern '${grammar.pattern}'",
+                    ),
+                )
+            }
 
             val rHint = ex.hints.readingFallback.trim()
             if (rHint.isBlank() ||
@@ -143,114 +152,69 @@ class DeterministicGrammarLessonGenerator : GrammarLessonGenerator {
             val acceptedAnswers: List<String>,
         )
 
-        val sampleSeeds = listOf(
-            PracticeSeed(
-                promptEn = "Interesting.",
-                vocabHint = "kosakata: おもしろい",
-                readingHint = "Romaji: omoshiroi desu",
-                acceptedAnswers = listOf("おもしろいです", "面白(おもしろ)いです"),
-            ),
-            PracticeSeed(
-                promptEn = "This restaurant is cheap.",
-                vocabHint = "restaurant = レストラン, cheap = 安い",
-                readingHint = "安い = やすい (yasui)",
-                acceptedAnswers = listOf("このレストランは安いです", "このレストランはやすいです"),
-            ),
-            PracticeSeed(
-                promptEn = "It's hot today.",
-                vocabHint = "today = 今日, hot = 暑い",
-                readingHint = "今日 = きょう, 暑い = あつい",
-                acceptedAnswers = listOf("今日は暑いです", "きょうはあついです"),
-            ),
-            PracticeSeed(
-                promptEn = "Japanese is difficult, but interesting.",
-                vocabHint = "Japanese = 日本語, difficult = 難しい, interesting = おもしろい",
-                readingHint = "日本語 = にほんご, 難しい = むずかしい",
-                acceptedAnswers = listOf("日本語は難しいですが、おもしろいです", "日本語はむずかしいですが、おもしろいです", "にほんごはむずかしいですが、おもしろいです"),
-            ),
-            PracticeSeed(
-                promptEn = "The weather was not good yesterday.",
-                vocabHint = "yesterday = 昨日, weather = 天気, good = いい/よく",
-                readingHint = "昨日 = きのう, 天気 = てんき",
-                acceptedAnswers = listOf("昨日の天気はよくなかったです", "きのうのてんきはよくなかったです"),
-            ),
-            PracticeSeed(
-                promptEn = "This shop has good service.",
-                vocabHint = "shop = 店, service = サービス",
-                readingHint = "店 = みせ (mise)",
-                acceptedAnswers = listOf("この店はサービスがいいです", "このみせはサービスがいいです"),
-            ),
-            PracticeSeed(
-                promptEn = "Today is not so good.",
-                vocabHint = "today = 今日, not so = あまり, good = よく",
-                readingHint = "今日 = きょう (kyou)",
-                acceptedAnswers = listOf("今日はあまりよくないです", "きょうはあまりよくないです"),
-            ),
-            PracticeSeed(
-                promptEn = "The weather was nice yesterday.",
-                vocabHint = "yesterday = 昨日, weather = 天気, good = よかった",
-                readingHint = "昨日 = きのう, 天気 = てんき",
-                acceptedAnswers = listOf("昨日は天気がよかったです", "きのうはてんきがよかったです"),
-            ),
-            PracticeSeed(
-                promptEn = "This room is quiet.",
-                vocabHint = "room = 部屋, quiet = 静か",
-                readingHint = "部屋 = へや, 静か = しずか",
-                acceptedAnswers = listOf("この部屋は静かです", "このへやはしずかです"),
-            ),
-            PracticeSeed(
-                promptEn = "Yamada-san is kind.",
-                vocabHint = "Yamada = 山田, kind = 親切",
-                readingHint = "山田 = やまだ, 親切 = しんせつ",
-                acceptedAnswers = listOf("山田さんは親切です", "やまださんはしんせつです"),
-            ),
-        )
+        fun exampleToSeed(ex: dev.studycanvas.app.grammar.GrammarExample): PracticeSeed {
+            val segments = dev.studycanvas.app.grammar.FuriganaUtils.parseFurigana(ex.jp)
+            val kanjiPairs = segments.mapIndexedNotNull { segIdx, seg ->
+                if (seg.ruby == null) return@mapIndexedNotNull null
+                val prevSeg = if (segIdx > 0) segments[segIdx - 1] else null
+                val honorific = when {
+                    prevSeg != null && prevSeg.ruby == null &&
+                        (prevSeg.text.endsWith("お") || prevSeg.text.endsWith("ご")) -> {
+                        if (prevSeg.text.endsWith("お")) "お" else "ご"
+                    }
+                    else -> ""
+                }
+                "${honorific}${seg.text} (${seg.ruby})"
+            }.joinToString(", ")
+            val vocab = if (kanjiPairs.isNotBlank()) {
+                "kanji: $kanjiPairs"
+            } else {
+                val rootWord = dev.studycanvas.app.grammar.FuriganaUtils.stripFurigana(ex.jp)
+                    .removeSuffix("。")
+                    .removeSuffix("です")
+                    .removeSuffix("ます")
+                "kosakata: $rootWord"
+            }
+            val reading = "Romaji: ${ex.romaji}"
+            val clean = listOf(dev.studycanvas.app.grammar.FuriganaUtils.stripFurigana(ex.jp))
+            return PracticeSeed(ex.en, vocab, reading, clean)
+        }
 
+        val canonicalSeeds = grammar.examples.map { exampleToSeed(it) }
+
+        val baseSeeds = if (canonicalSeeds.isNotEmpty()) {
+            canonicalSeeds
+        } else {
+            listOf(
+                PracticeSeed(
+                    promptEn = grammar.title,
+                    vocabHint = "pola: ${grammar.pattern}",
+                    readingHint = "Pattern: ${grammar.pattern}",
+                    acceptedAnswers = listOf(grammar.pattern),
+                ),
+            )
+        }
         val exercises = mutableListOf<GeneratedGrammarExercise>()
         for (i in 0 until exerciseCount) {
-            val item = if (i < grammar.examples.size) {
-                val ex = grammar.examples[i]
-                val segments = dev.studycanvas.app.grammar.FuriganaUtils.parseFurigana(ex.jp)
-                val kanjiPairs = segments.mapIndexedNotNull { segIdx, seg ->
-                    if (seg.ruby == null) return@mapIndexedNotNull null
-                    val prevSeg = if (segIdx > 0) segments[segIdx - 1] else null
-                    val honorific = when {
-                        prevSeg != null && prevSeg.ruby == null &&
-                            (prevSeg.text.endsWith("お") || prevSeg.text.endsWith("ご")) -> {
-                            if (prevSeg.text.endsWith("お")) "お" else "ご"
-                        }
-                        else -> ""
-                    }
-                    "${honorific}${seg.text} (${seg.ruby})"
-                }.joinToString(", ")
-                val vocab = if (kanjiPairs.isNotBlank()) {
-                    "kanji: $kanjiPairs"
-                } else {
-                    val rootWord = dev.studycanvas.app.grammar.FuriganaUtils.stripFurigana(ex.jp)
-                        .removeSuffix("。")
-                        .removeSuffix("です")
-                        .removeSuffix("ます")
-                    "kosakata: $rootWord"
-                }
-                val reading = "Romaji: ${ex.romaji}"
-                val clean = listOf(dev.studycanvas.app.grammar.FuriganaUtils.stripFurigana(ex.jp))
-                PracticeSeed(ex.en, vocab, reading, clean)
+            val baseSeed = baseSeeds[i % baseSeeds.size]
+            val prompt = if (i < baseSeeds.size) {
+                baseSeed.promptEn
             } else {
-                val seed = sampleSeeds[i % sampleSeeds.size]
-                PracticeSeed(seed.promptEn, seed.vocabHint, seed.readingHint, seed.acceptedAnswers)
+                "${baseSeed.promptEn} [Practice ${i + 1}]"
             }
-            val cleanAnswers = item.acceptedAnswers.flatMap {
+            val cleanAnswers = baseSeed.acceptedAnswers.flatMap {
                 val s = dev.studycanvas.app.grammar.FuriganaUtils.stripFurigana(it).trim()
                 listOf(s, s.removeSuffix("。"))
             }.distinct()
+
             exercises.add(
                 GeneratedGrammarExercise(
                     id = "generated-${grammar.id}-${i + 1}",
-                    promptEn = if (i < grammar.examples.size) item.promptEn else "${item.promptEn} [Practice ${i + 1}]",
+                    promptEn = prompt,
                     hints = GeneratedExerciseHints(
-                        vocabulary = item.vocabHint,
+                        vocabulary = baseSeed.vocabHint,
                         pattern = grammar.pattern,
-                        readingFallback = item.readingHint,
+                        readingFallback = baseSeed.readingHint,
                     ),
                     acceptedAnswers = cleanAnswers,
                 ),
@@ -270,8 +234,8 @@ class DeterministicGrammarLessonGenerator : GrammarLessonGenerator {
 
 class GeminiGrammarLessonGenerator(
     private val apiKey: String? = null,
-    private val model: String = "gemini-1.5-flash",
-    private val fallback: GrammarLessonGenerator = DeterministicGrammarLessonGenerator(),
+    private val model: String = "gemini-3.5-flash",
+    private val fallback: GrammarLessonGenerator? = null,
 ) : GrammarLessonGenerator {
 
     override suspend fun generate(
@@ -279,17 +243,21 @@ class GeminiGrammarLessonGenerator(
         exerciseCount: Int,
     ): Result<GeneratedGrammarLesson> = withContext(Dispatchers.IO) {
         if (apiKey.isNullOrBlank()) {
-            return@withContext fallback.generate(grammar, exerciseCount)
+            if (fallback != null) {
+                return@withContext fallback.generate(grammar, exerciseCount)
+            }
+            return@withContext Result.failure(IllegalStateException("Gemini API key is not configured"))
         }
-
         runCatching {
+            android.util.Log.i("StudyCanvasAI", "Starting generation with model: $model")
             val prompt = buildPrompt(grammar, exerciseCount)
             val responseText = callGeminiApi(prompt)
-            val parsed = parseResponse(grammar.id, responseText)
+            val parsed = parseResponse(grammar, responseText)
             GeneratedLessonValidator.validate(grammar, parsed).getOrThrow()
+            android.util.Log.i("StudyCanvasAI", "Generation succeeded for grammar ${grammar.id}")
             parsed
-        }.recoverCatching {
-            fallback.generate(grammar, exerciseCount).getOrThrow()
+        }.onFailure { err ->
+            android.util.Log.e("StudyCanvasAI", "Generation failed: ${err.message}")
         }
     }
 
@@ -313,10 +281,11 @@ class GeminiGrammarLessonGenerator(
             - Output MUST be strictly valid JSON.
             - grammarId MUST be exactly "${grammar.id}".
             - exercises MUST contain exactly $exerciseCount items.
-            - Each exercise promptEn MUST be an English sentence for the learner to write in Japanese.
+            - Every exercise MUST be grounded in and test the target grammar pattern "${grammar.pattern}".
+            - Each exercise promptEn MUST be an English sentence testing "${grammar.pattern}".
             - hints.vocabulary MUST provide key vocabulary mappings (e.g., "Japan = 日本, go = 行く").
-            - hints.pattern MUST provide the grammar structure (e.g., "${grammar.pattern}").
-            - hints.readingFallback MUST provide the reading of key kanji words or romaji (e.g., "日本 = にほん, 行く = いく").
+            - hints.pattern MUST be EXACTLY "${grammar.pattern}". Do not change or substitute this pattern string.
+            - hints.readingFallback MUST provide the reading of key kanji words or romaji.
             - Each exercise MUST have acceptedAnswers containing Japanese strings (kanji and kana variants).
             - NO romaji-only or English-only acceptedAnswers.
             {
@@ -343,7 +312,7 @@ class GeminiGrammarLessonGenerator(
         """.trimIndent()
     }
 
-    private fun parseResponse(expectedGrammarId: String, responseJson: String): GeneratedGrammarLesson {
+    private fun parseResponse(grammar: GrammarEntry, responseJson: String): GeneratedGrammarLesson {
         val cleaned = responseJson.trim()
             .removePrefix("```json")
             .removePrefix("```")
@@ -351,7 +320,7 @@ class GeminiGrammarLessonGenerator(
             .trim()
 
         val root = JSONObject(cleaned)
-        val grammarId = root.optString("grammarId", expectedGrammarId)
+        val grammarId = root.optString("grammarId", grammar.id)
         val enrichmentObj = root.optJSONObject("enrichment") ?: JSONObject()
 
         val enrichment = GeneratedEnrichment(
@@ -370,11 +339,11 @@ class GeminiGrammarLessonGenerator(
 
             exercises.add(
                 GeneratedGrammarExercise(
-                    id = exObj.optString("id", "generated-${expectedGrammarId}-${i + 1}"),
+                    id = exObj.optString("id", "generated-${grammar.id}-${i + 1}"),
                     promptEn = exObj.optString("promptEn", ""),
                     hints = GeneratedExerciseHints(
                         vocabulary = hintsObj.optString("vocabulary", ""),
-                        pattern = hintsObj.optString("pattern", ""),
+                        pattern = hintsObj.optString("pattern", "").trim(),
                         readingFallback = hintsObj.optString("readingFallback", ""),
                     ),
                     acceptedAnswers = exObj.optJSONArray("acceptedAnswers")?.toStringList() ?: emptyList(),
@@ -396,8 +365,9 @@ class GeminiGrammarLessonGenerator(
         conn.requestMethod = "POST"
         conn.setRequestProperty("Content-Type", "application/json")
         conn.doOutput = true
-        conn.connectTimeout = 15000
-        conn.readTimeout = 20000
+        conn.connectTimeout = 30000
+        conn.readTimeout = 60000
+        android.util.Log.i("StudyCanvasAI", "HTTP request sent to model $model (timeouts: 30s/60s)")
 
         val requestBody = JSONObject().apply {
             put(

@@ -1,5 +1,6 @@
 package dev.studycanvas.app.ui
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -204,17 +205,21 @@ fun StudyCanvasScreen() {
     var selectedElementId by remember { mutableStateOf<String?>(null) }
     var draggingElementId by remember { mutableStateOf<String?>(null) }
     var syncState by remember { mutableStateOf(SyncState.LOADING) }
-
     LaunchedEffect(selectedLessonId) {
+        selectedElementId = null
+        draggingElementId = null
         syncState = SyncState.LOADING
-        runCatching { repository.loadLesson(selectedLessonId) }
-            .onSuccess {
-                lesson = it
-                syncState = SyncState.SAVED
-            }
-            .onFailure {
-                syncState = SyncState.OFFLINE
-            }
+        try {
+            val loaded = repository.loadLesson(selectedLessonId)
+            lesson = loaded
+            syncState = SyncState.SAVED
+            val hasExercises = loaded.elements.any { it.kind == CanvasElementKind.EXERCISE }
+            viewport = ViewportState(scale = if (hasExercises) 0.45f else 1.0f)
+        } catch (c: kotlinx.coroutines.CancellationException) {
+            throw c
+        } catch (e: Throwable) {
+            syncState = SyncState.OFFLINE
+        }
     }
 
     fun moveElement(elementId: String, deltaPx: Offset) {
@@ -311,7 +316,12 @@ fun StudyCanvasScreen() {
             onToggleLessonPicker = { showLessonPicker = !showLessonPicker },
             onSelectCategory = { selectedCategory = it },
             onSelectLesson = { newId ->
-                selectedLessonId = newId
+                if (newId != selectedLessonId) {
+                    viewport = ViewportState()
+                    selectedElementId = null
+                    draggingElementId = null
+                    selectedLessonId = newId
+                }
                 showLessonPicker = false
             },
             apiKey = apiKey,
@@ -319,15 +329,25 @@ fun StudyCanvasScreen() {
             syncState = syncState,
             onOpenKeyDialog = { showKeyDialog = true },
             onGenerateAiLesson = {
+                val generatingLessonId = selectedLessonId
                 syncState = SyncState.GENERATING
                 scope.launch {
-                    repository.generateAndSaveLesson(selectedLessonId, lessonGenerator)
+                    repository.generateAndSaveLesson(generatingLessonId, lessonGenerator)
                         .onSuccess {
-                            lesson = it
-                            syncState = SyncState.SAVED
+                            if (selectedLessonId == generatingLessonId) {
+                                lesson = it
+                                syncState = SyncState.SAVED
+                                viewport = ViewportState(scale = 0.45f)
+                                Toast.makeText(context, "Berhasil membuat 10 latihan AI!", Toast.LENGTH_SHORT).show()
+                            }
                         }
-                        .onFailure {
-                            syncState = SyncState.SAVED
+                        .onFailure { error ->
+                            android.util.Log.e("StudyCanvasAI", "onFailure: ${error.javaClass.simpleName}: ${error.message}")
+                            if (selectedLessonId == generatingLessonId) {
+                                syncState = SyncState.OFFLINE
+                                val msg = error.message?.take(80) ?: "Gagal membuat latihan"
+                                Toast.makeText(context, "Gagal: $msg", Toast.LENGTH_LONG).show()
+                            }
                         }
                 }
             },
@@ -770,7 +790,7 @@ private fun ApiKeyDialog(
 ) {
     var inputKey by remember { mutableStateOf(currentKey) }
     var inputModel by remember { mutableStateOf(currentModel) }
-    val commonModels = listOf("gemini-1.5-flash", "gemini-2.0-flash", "gemini-1.5-pro", "gemini-2.5-flash")
+    val commonModels = listOf("gemini-3.5-flash", "gemini-3.5-flash-lite")
 
     AlertDialog(
         onDismissRequest = onDismiss,
