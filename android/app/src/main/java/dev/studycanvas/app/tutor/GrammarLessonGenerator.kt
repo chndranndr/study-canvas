@@ -312,7 +312,7 @@ class GeminiGrammarLessonGenerator(
         """.trimIndent()
     }
 
-    private fun parseResponse(grammar: GrammarEntry, responseJson: String): GeneratedGrammarLesson {
+    internal fun parseResponse(grammar: GrammarEntry, responseJson: String): GeneratedGrammarLesson {
         val cleaned = responseJson.trim()
             .removePrefix("```json")
             .removePrefix("```")
@@ -320,7 +320,10 @@ class GeminiGrammarLessonGenerator(
             .trim()
 
         val root = JSONObject(cleaned)
-        val grammarId = root.optString("grammarId", grammar.id)
+        val grammarId = root.optString("grammarId").trim()
+        require(grammarId.isNotBlank()) {
+            "Generated response is missing required 'grammarId'"
+        }
         val enrichmentObj = root.optJSONObject("enrichment") ?: JSONObject()
 
         val enrichment = GeneratedEnrichment(

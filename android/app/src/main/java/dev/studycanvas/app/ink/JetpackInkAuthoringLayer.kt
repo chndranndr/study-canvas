@@ -68,10 +68,10 @@ fun JetpackInkAuthoringLayer(
                                     motionEventToWorldTransform =
                                         createMotionEventToWorldTransform(latestViewportScale.value),
                                 )
-                                true
                             } else {
-                                false
+                                activePointerId = INVALID_POINTER_ID
                             }
+                            true
                         }
 
                         MotionEvent.ACTION_POINTER_DOWN -> {
@@ -90,20 +90,16 @@ fun JetpackInkAuthoringLayer(
                                     motionEventToWorldTransform =
                                         createMotionEventToWorldTransform(latestViewportScale.value),
                                 )
-                                true
-                            } else {
-                                activePointerId != INVALID_POINTER_ID
                             }
+                            true
                         }
 
                         MotionEvent.ACTION_MOVE -> {
                             if (activePointerId != INVALID_POINTER_ID) {
                                 view.parent?.requestDisallowInterceptTouchEvent(true)
                                 addToStroke(event, activePointerId)
-                                true
-                            } else {
-                                false
                             }
+                            true
                         }
 
                         MotionEvent.ACTION_POINTER_UP -> {
@@ -117,10 +113,8 @@ fun JetpackInkAuthoringLayer(
                                 }
                                 activePointerId = INVALID_POINTER_ID
                                 view.parent?.requestDisallowInterceptTouchEvent(false)
-                                true
-                            } else {
-                                activePointerId != INVALID_POINTER_ID
                             }
+                            true
                         }
 
                         MotionEvent.ACTION_UP -> {
@@ -132,10 +126,8 @@ fun JetpackInkAuthoringLayer(
                                     finishStroke(event, activePointerId)
                                 }
                                 activePointerId = INVALID_POINTER_ID
-                                true
-                            } else {
-                                false
                             }
+                            true
                         }
 
                         MotionEvent.ACTION_CANCEL -> {
@@ -143,13 +135,11 @@ fun JetpackInkAuthoringLayer(
                             if (activePointerId != INVALID_POINTER_ID) {
                                 cancelStroke(event, activePointerId)
                                 activePointerId = INVALID_POINTER_ID
-                                true
-                            } else {
-                                false
                             }
+                            true
                         }
 
-                        else -> activePointerId != INVALID_POINTER_ID
+                        else -> true
                     }
                 }
             }

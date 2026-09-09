@@ -304,4 +304,21 @@ class GrammarLessonGeneratorTest {
         assertTrue("Must fail when api key is null", result.isFailure)
         assertTrue("Error message should mention API key", result.exceptionOrNull()?.message?.contains("API key") == true)
     }
+    @Test
+    fun `generator rejects missing grammarId in response`() {
+        val jsonWithoutId = """
+            {
+              "enrichment": {"summary": "s", "formation": "f"},
+              "exercises": []
+            }
+        """.trimIndent()
+
+        val gemini = GeminiGrammarLessonGenerator(apiKey = "dummy")
+        val exception = runCatching {
+            gemini.parseResponse(sampleGrammar, jsonWithoutId)
+        }.exceptionOrNull()
+
+        org.junit.Assert.assertNotNull(exception)
+        assertTrue(exception?.message?.contains("missing required 'grammarId'") == true)
+    }
 }

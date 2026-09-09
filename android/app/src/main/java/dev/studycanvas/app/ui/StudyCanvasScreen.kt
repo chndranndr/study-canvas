@@ -119,50 +119,46 @@ private suspend fun PointerInputScope.detectTouchTransformGestures(
                 }
                 return@awaitEachGesture
             }
-            val canceled = event.changes.any { it.isConsumed }
-            if (canceled) break
 
-            if (!canceled) {
-                val zoomChange = event.calculateZoom()
-                val rotationChange = event.calculateRotation()
-                val panChange = event.calculatePan()
+            val zoomChange = event.calculateZoom()
+            val rotationChange = event.calculateRotation()
+            val panChange = event.calculatePan()
 
-                if (!pastTouchSlop) {
-                    zoom *= zoomChange
-                    rotation += rotationChange
-                    pan += panChange
+            if (!pastTouchSlop) {
+                zoom *= zoomChange
+                rotation += rotationChange
+                pan += panChange
 
-                    val centroidSize = event.calculateCentroidSize(useCurrent = false)
-                    val zoomMotion = abs(1 - zoom) * centroidSize
-                    val rotationMotion = abs(rotation * PI.toFloat() * centroidSize / 180f)
-                    val panMotion = pan.getDistance()
+                val centroidSize = event.calculateCentroidSize(useCurrent = false)
+                val zoomMotion = abs(1 - zoom) * centroidSize
+                val rotationMotion = abs(rotation * PI.toFloat() * centroidSize / 180f)
+                val panMotion = pan.getDistance()
 
-                    if (
-                        zoomMotion > touchSlop ||
-                            rotationMotion > touchSlop ||
-                            panMotion > touchSlop
-                    ) {
-                        pastTouchSlop = true
-                    }
+                if (
+                    zoomMotion > touchSlop ||
+                        rotationMotion > touchSlop ||
+                        panMotion > touchSlop
+                ) {
+                    pastTouchSlop = true
                 }
+            }
 
-                if (pastTouchSlop) {
-                    val centroid = event.calculateCentroid(useCurrent = false)
-                    if (
-                        rotationChange != 0f ||
-                            zoomChange != 1f ||
-                            panChange != Offset.Zero
-                    ) {
-                        onGesture(centroid, panChange, zoomChange)
-                    }
-                    event.changes.forEach {
-                        if (it.type == PointerType.Touch && it.positionChanged()) {
-                            it.consume()
-                        }
+            if (pastTouchSlop) {
+                val centroid = event.calculateCentroid(useCurrent = false)
+                if (
+                    rotationChange != 0f ||
+                        zoomChange != 1f ||
+                        panChange != Offset.Zero
+                ) {
+                    onGesture(centroid, panChange, zoomChange)
+                }
+                event.changes.forEach {
+                    if (it.type == PointerType.Touch && it.positionChanged()) {
+                        it.consume()
                     }
                 }
             }
-        } while (!canceled && event.changes.any { it.pressed })
+        } while (event.changes.any { it.pressed })
     }
 }
 
@@ -790,7 +786,7 @@ private fun ApiKeyDialog(
 ) {
     var inputKey by remember { mutableStateOf(currentKey) }
     var inputModel by remember { mutableStateOf(currentModel) }
-    val commonModels = listOf("gemini-3.5-flash", "gemini-3.5-flash-lite")
+    val commonModels = listOf("gemini-3.5-flash", "gemini-3.8-flash", "gemini-flash-latest")
 
     AlertDialog(
         onDismissRequest = onDismiss,
