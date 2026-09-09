@@ -55,11 +55,11 @@ fun JetpackInkAuthoringLayer(
                         MotionEvent.ACTION_DOWN -> {
                             val pointerIndex = event.actionIndex
                             val toolType = event.getToolType(pointerIndex)
+                            view.parent?.requestDisallowInterceptTouchEvent(true)
                             if (toolType == MotionEvent.TOOL_TYPE_STYLUS ||
                                 toolType == MotionEvent.TOOL_TYPE_ERASER
                             ) {
                                 activePointerId = event.getPointerId(pointerIndex)
-                                view.parent?.requestDisallowInterceptTouchEvent(true)
                                 view.requestUnbufferedDispatch(event)
                                 startStroke(
                                     event = event,
