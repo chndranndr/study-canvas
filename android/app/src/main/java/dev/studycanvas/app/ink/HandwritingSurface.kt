@@ -546,7 +546,7 @@ fun HandwritingSurface(
         exerciseState.gradeResult?.let { feedback ->
             if (!feedback.correct) {
                 Text(
-                    text = "AI Tutor: ${feedback.explanation}",
+                    text = feedback.explanation,
                     modifier = Modifier
                         .width(WritingAreaWidth.dp)
                         .padding(top = 2.dp),
