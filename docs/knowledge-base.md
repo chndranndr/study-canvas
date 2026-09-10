@@ -34,7 +34,7 @@ Completed milestones are represented by executable tests, CI, and the current so
 
 The focused evaluation is intentionally behavior-oriented: it loads a canonical lesson, builds an exercise canvas, round-trips stylus ink through the local repository, grades a recognized answer deterministically, and persists the attempt. Device rendering and multi-touch remain an adapter-level manual check.
 
-- Device smoke evidence (2026-09-10, Galaxy Tab SM-X700): APK installed with `adb install -r`; `MainActivity` launched in foreground with no crash; toolbar taps and finger pan remained stable; the user manually verified pinch. Palm-first stylus input remains unverified.
+- Device smoke evidence (2026-09-10, Galaxy Tab SM-X700): APK installed with `adb install -r`; `MainActivity` launched in foreground with no crash; toolbar taps and finger pan remained stable; the user manually verified pinch and palm-first S Pen writing.
 
 ## Reliability
 
@@ -56,7 +56,6 @@ The focused evaluation is intentionally behavior-oriented: it loads a canonical 
 | Item | Evidence | Smallest next action |
 | --- | --- | --- |
 | No maintained Android instrumented smoke suite | `android/app/src/androidTest` is empty; device QA uses the documented ADB/emulator adapter. | Add a focused `androidTest` only when a repeatable interactive regression needs automation. |
-| Palm-first stylus input lacks a repeatable device check | ADB can verify finger pan but cannot reproduce a resting palm plus real stylus contact; low-level multi-touch injection is permission-denied. | On an uncompleted writing card, place the palm/finger first, touch the stylus down and draw, then lift stylus before palm; verify only the stylus produces/persists ink and the viewport does not pan. |
 | No Kotlin formatter/linter dependency | The repository uses Gradle/JVM tests plus the repository text-hygiene check. | Add one stable formatter/linter only when style drift becomes a recurring failure. |
 | Optional Gemini enrichment needs network/model availability | The local-first path is deterministic, while model download/API calls are optional. | Keep offline behavior authoritative; add provider-specific checks only with a real integration environment. |
 | Curriculum copies lack a documented regeneration/sync command | Root `data/*.json` and bundled `android/app/src/main/assets/content/*.json` are both present; runtime reads the bundled assets. | Establish one canonical generation or sync check before changing curriculum ingestion. |
