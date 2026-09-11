@@ -1,6 +1,7 @@
 package dev.studycanvas.app.ink
 
 import android.graphics.Color as AndroidColor
+import android.graphics.Matrix
 import android.view.MotionEvent
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -17,10 +18,12 @@ import androidx.ink.strokes.Stroke
 fun JetpackInkAuthoringLayer(
     enabled: Boolean,
     brush: Brush,
+    viewportScale: Float,
     onStrokesFinished: (List<Stroke>) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val latestOnFinished by rememberUpdatedState(onStrokesFinished)
+    val latestViewportScale = rememberUpdatedState(viewportScale)
 
     AndroidView(
         modifier = modifier,
@@ -31,6 +34,8 @@ fun JetpackInkAuthoringLayer(
                 setBackgroundColor(AndroidColor.TRANSPARENT)
                 @Suppress("DEPRECATION")
                 useHighLatencyRenderHelper = true
+                motionEventToViewTransform =
+                    createMotionEventToWorldTransform(latestViewportScale.value)
                 eagerInit()
                 addFinishedStrokesListener(
                     object : InProgressStrokesFinishedListener {
@@ -50,64 +55,107 @@ fun JetpackInkAuthoringLayer(
                         MotionEvent.ACTION_DOWN -> {
                             val pointerIndex = event.actionIndex
                             val toolType = event.getToolType(pointerIndex)
-                            // Strict palm rejection: only stylus and stylus-eraser can write
-                            if (toolType != MotionEvent.TOOL_TYPE_STYLUS &&
-                                toolType != MotionEvent.TOOL_TYPE_ERASER
-                            ) {
-                                return@setOnTouchListener false
-                            }
                             view.parent?.requestDisallowInterceptTouchEvent(true)
-                            activePointerId = event.getPointerId(pointerIndex)
-                            view.requestUnbufferedDispatch(event)
-                            startStroke(
-                                event = event,
-                                pointerId = activePointerId,
-                                brush = brush,
-                            )
+                            if (toolType == MotionEvent.TOOL_TYPE_STYLUS ||
+                                toolType == MotionEvent.TOOL_TYPE_ERASER
+                            ) {
+                                activePointerId = event.getPointerId(pointerIndex)
+                                view.requestUnbufferedDispatch(event)
+                                startStroke(
+                                    event = event,
+                                    pointerId = activePointerId,
+                                    brush = brush,
+                                    motionEventToWorldTransform =
+                                        createMotionEventToWorldTransform(latestViewportScale.value),
+                                )
+                            } else {
+                                activePointerId = INVALID_POINTER_ID
+                            }
+                            true
+                        }
+
+                        MotionEvent.ACTION_POINTER_DOWN -> {
+                            val pointerIndex = event.actionIndex
+                            val toolType = event.getToolType(pointerIndex)
+                            if (activePointerId == INVALID_POINTER_ID &&
+                                (toolType == MotionEvent.TOOL_TYPE_STYLUS || toolType == MotionEvent.TOOL_TYPE_ERASER)
+                            ) {
+                                activePointerId = event.getPointerId(pointerIndex)
+                                view.parent?.requestDisallowInterceptTouchEvent(true)
+                                view.requestUnbufferedDispatch(event)
+                                startStroke(
+                                    event = event,
+                                    pointerId = activePointerId,
+                                    brush = brush,
+                                    motionEventToWorldTransform =
+                                        createMotionEventToWorldTransform(latestViewportScale.value),
+                                )
+                            }
                             true
                         }
 
                         MotionEvent.ACTION_MOVE -> {
-                            if (activePointerId == INVALID_POINTER_ID) {
-                                false
-                            } else {
+                            if (activePointerId != INVALID_POINTER_ID) {
                                 view.parent?.requestDisallowInterceptTouchEvent(true)
                                 addToStroke(event, activePointerId)
-                                true
                             }
+                            true
+                        }
+
+                        MotionEvent.ACTION_POINTER_UP -> {
+                            val pointerIndex = event.actionIndex
+                            val pointerId = event.getPointerId(pointerIndex)
+                            if (pointerId == activePointerId) {
+                                if ((event.flags and MotionEvent.FLAG_CANCELED) != 0) {
+                                    cancelStroke(event, activePointerId)
+                                } else {
+                                    finishStroke(event, activePointerId)
+                                }
+                                activePointerId = INVALID_POINTER_ID
+                                view.parent?.requestDisallowInterceptTouchEvent(false)
+                            }
+                            true
                         }
 
                         MotionEvent.ACTION_UP -> {
-                            if (activePointerId == INVALID_POINTER_ID) {
-                                false
-                            } else {
-                                view.parent?.requestDisallowInterceptTouchEvent(false)
-                                finishStroke(event, activePointerId)
+                            view.parent?.requestDisallowInterceptTouchEvent(false)
+                            if (activePointerId != INVALID_POINTER_ID) {
+                                if ((event.flags and MotionEvent.FLAG_CANCELED) != 0) {
+                                    cancelStroke(event, activePointerId)
+                                } else {
+                                    finishStroke(event, activePointerId)
+                                }
                                 activePointerId = INVALID_POINTER_ID
-                                true
                             }
+                            true
                         }
 
                         MotionEvent.ACTION_CANCEL -> {
                             view.parent?.requestDisallowInterceptTouchEvent(false)
                             if (activePointerId != INVALID_POINTER_ID) {
-                                finishStroke(event, activePointerId)
+                                cancelStroke(event, activePointerId)
                                 activePointerId = INVALID_POINTER_ID
-                                true
-                            } else {
-                                false
                             }
+                            true
                         }
 
-                        else -> activePointerId != INVALID_POINTER_ID
+                        else -> true
                     }
                 }
             }
         },
         update = { view ->
             view.isEnabled = enabled
+            view.motionEventToViewTransform =
+                createMotionEventToWorldTransform(viewportScale)
         },
     )
 }
 
 private const val INVALID_POINTER_ID = -1
+
+private fun createMotionEventToWorldTransform(viewportScale: Float): Matrix =
+    Matrix().apply {
+        val inverseScale = 1f / viewportScale.coerceAtLeast(0.0001f)
+        setScale(inverseScale, inverseScale)
+    }

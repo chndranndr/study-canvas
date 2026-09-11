@@ -1,6 +1,9 @@
 package dev.studycanvas.app.canvas
 
 import androidx.compose.ui.geometry.Offset
+import dev.studycanvas.app.grammar.GrammarEntry
+import dev.studycanvas.app.grammar.GrammarExample
+import dev.studycanvas.app.grammar.GrammarQuiz
 
 /**
  * Logical canvas coordinates are density-independent world units (1 world unit = 1 dp at scale 1).
@@ -60,6 +63,7 @@ data class ViewportState(
 
 enum class CanvasElementKind {
     LESSON_TEXT,
+    CURATED_QUIZ,
     EXERCISE,
 }
 
@@ -67,6 +71,17 @@ sealed interface CanvasElementContent {
     data class LessonText(
         val title: String,
         val body: String,
+        val pattern: String = "",
+        val category: String = "",
+        val level: String = "N5",
+        val explanation: String = "",
+        val examples: List<GrammarExample> = emptyList(),
+        val notes: List<String> = emptyList(),
+    ) : CanvasElementContent
+
+    data class CuratedQuiz(
+        val quiz: GrammarQuiz,
+        val lessonId: String,
     ) : CanvasElementContent
 
     data class Exercise(
@@ -75,8 +90,10 @@ sealed interface CanvasElementContent {
         val hint1Kosakata: String = "",
         val hint2Pola: String = "",
         val hint3Romaji: String = "",
-        val solution: String = "",
+        val acceptedAnswers: List<String> = emptyList(),
+        val revealAnswer: String = acceptedAnswers.firstOrNull().orEmpty(),
         val targetConceptId: String = "tai-desu",
+        val solution: String = revealAnswer,
     ) : CanvasElementContent
 }
 
@@ -102,6 +119,85 @@ data class CanvasElementLayout(
     val id: String,
     val position: WorldPoint,
 )
+
+fun createGrammarLessonCanvas(
+    grammar: GrammarEntry,
+    generatedExercises: List<CanvasElementContent.Exercise> = emptyList(),
+    enrichmentNotes: List<String> = emptyList(),
+): LessonCanvas {
+    val elements = mutableListOf<CanvasElement>()
+
+    val examplesText = grammar.examples.mapIndexed { idx, ex ->
+        "${idx + 1}. ${ex.jp}\n   (${ex.romaji}) — ${ex.en}"
+    }.joinToString("\n\n")
+
+    val notesText = if (enrichmentNotes.isNotEmpty()) {
+        "\n\n[Catatan Tambahan AI]\n" + enrichmentNotes.joinToString("\n") { "• $it" }
+    } else ""
+
+    val fullBody = "Pola: ${grammar.pattern}\nKategori: ${grammar.category} (${grammar.level})\n\n" +
+        "${grammar.explanation}\n\n" +
+        "Contoh Kalimat:\n$examplesText$notesText"
+
+    elements += CanvasElement(
+        id = "grammar-${grammar.id}-material",
+        kind = CanvasElementKind.LESSON_TEXT,
+        position = WorldPoint(180f, 100f),
+        size = WorldSize(880f, 480f),
+        zIndex = 10,
+        readOnly = true,
+        movable = true,
+        content = CanvasElementContent.LessonText(
+            title = "${grammar.id}. ${grammar.title}",
+            body = fullBody,
+            pattern = grammar.pattern,
+            category = grammar.category,
+            level = grammar.level,
+            explanation = grammar.explanation,
+            examples = grammar.examples,
+            notes = enrichmentNotes,
+        ),
+    )
+
+    var currentY = 620f
+    grammar.quiz.forEach { quiz ->
+        elements += CanvasElement(
+            id = "grammar-${grammar.id}-quiz-${quiz.id}",
+            kind = CanvasElementKind.CURATED_QUIZ,
+            position = WorldPoint(180f, currentY),
+            size = WorldSize(880f, 260f),
+            zIndex = 8,
+            readOnly = true,
+            movable = false,
+            content = CanvasElementContent.CuratedQuiz(
+                quiz = quiz,
+                lessonId = grammar.id,
+            ),
+        )
+        currentY += 280f
+    }
+
+    generatedExercises.forEachIndexed { index, exercise ->
+        elements += CanvasElement(
+            id = "grammar-${grammar.id}-exercise-${index + 1}",
+            kind = CanvasElementKind.EXERCISE,
+            position = WorldPoint(180f, currentY),
+            size = WorldSize(880f, 440f),
+            zIndex = 5,
+            readOnly = true,
+            movable = false,
+            content = exercise,
+        )
+        currentY += 480f
+    }
+
+    return LessonCanvas(
+        id = grammar.id,
+        title = grammar.title,
+        worldSize = WorldSize(width = 2400f, height = maxOf(3200f, currentY + 300f)),
+        elements = elements,
+    )
+}
 
 fun phaseOneFallbackLesson(): LessonCanvas = LessonCanvas(
     id = "tai-desu-demo",

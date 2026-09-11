@@ -1,5 +1,6 @@
 package dev.studycanvas.app.ui
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -12,6 +13,13 @@ import androidx.compose.foundation.gestures.calculatePan
 import androidx.compose.foundation.gestures.calculateRotation
 import androidx.compose.foundation.gestures.calculateZoom
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
+import dev.studycanvas.app.grammar.GrammarEntry
+import dev.studycanvas.app.grammar.LocalGrammarContentRepository
+import dev.studycanvas.app.tutor.GeminiGrammarLessonGenerator
+import dev.studycanvas.app.tutor.GrammarLessonGenerator
+import dev.studycanvas.app.tutor.formatGenerationError
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -66,9 +74,7 @@ import dev.studycanvas.app.data.AppDatabase
 import dev.studycanvas.app.canvas.ViewportState
 import dev.studycanvas.app.canvas.phaseOneFallbackLesson
 import dev.studycanvas.app.ink.HandwritingSurface
-import dev.studycanvas.app.tutor.AiTutorClient
 import dev.studycanvas.app.tutor.ApiKeyStorage
-import dev.studycanvas.app.tutor.GeminiAiTutorClient
 import kotlinx.coroutines.launch
 import kotlin.math.PI
 import kotlin.math.abs
@@ -115,48 +121,45 @@ private suspend fun PointerInputScope.detectTouchTransformGestures(
                 return@awaitEachGesture
             }
 
-            val canceled = event.changes.any { it.isConsumed }
-            if (!canceled) {
-                val zoomChange = event.calculateZoom()
-                val rotationChange = event.calculateRotation()
-                val panChange = event.calculatePan()
+            val zoomChange = event.calculateZoom()
+            val rotationChange = event.calculateRotation()
+            val panChange = event.calculatePan()
 
-                if (!pastTouchSlop) {
-                    zoom *= zoomChange
-                    rotation += rotationChange
-                    pan += panChange
+            if (!pastTouchSlop) {
+                zoom *= zoomChange
+                rotation += rotationChange
+                pan += panChange
 
-                    val centroidSize = event.calculateCentroidSize(useCurrent = false)
-                    val zoomMotion = abs(1 - zoom) * centroidSize
-                    val rotationMotion = abs(rotation * PI.toFloat() * centroidSize / 180f)
-                    val panMotion = pan.getDistance()
+                val centroidSize = event.calculateCentroidSize(useCurrent = false)
+                val zoomMotion = abs(1 - zoom) * centroidSize
+                val rotationMotion = abs(rotation * PI.toFloat() * centroidSize / 180f)
+                val panMotion = pan.getDistance()
 
-                    if (
-                        zoomMotion > touchSlop ||
-                            rotationMotion > touchSlop ||
-                            panMotion > touchSlop
-                    ) {
-                        pastTouchSlop = true
-                    }
+                if (
+                    zoomMotion > touchSlop ||
+                        rotationMotion > touchSlop ||
+                        panMotion > touchSlop
+                ) {
+                    pastTouchSlop = true
                 }
+            }
 
-                if (pastTouchSlop) {
-                    val centroid = event.calculateCentroid(useCurrent = false)
-                    if (
-                        rotationChange != 0f ||
-                            zoomChange != 1f ||
-                            panChange != Offset.Zero
-                    ) {
-                        onGesture(centroid, panChange, zoomChange)
-                    }
-                    event.changes.forEach {
-                        if (it.type == PointerType.Touch && it.positionChanged()) {
-                            it.consume()
-                        }
+            if (pastTouchSlop) {
+                val centroid = event.calculateCentroid(useCurrent = false)
+                if (
+                    rotationChange != 0f ||
+                        zoomChange != 1f ||
+                        panChange != Offset.Zero
+                ) {
+                    onGesture(centroid, panChange, zoomChange)
+                }
+                event.changes.forEach {
+                    if (it.type == PointerType.Touch && it.positionChanged()) {
+                        it.consume()
                     }
                 }
             }
-        } while (!canceled && event.changes.any { it.pressed })
+        } while (event.changes.any { it.pressed })
     }
 }
 
@@ -164,37 +167,56 @@ private suspend fun PointerInputScope.detectTouchTransformGestures(
 @Composable
 fun StudyCanvasScreen() {
     val context = LocalContext.current
-    val repository = remember(context) {
+    val grammarRepository = remember(context) {
+        LocalGrammarContentRepository.fromAssets(context)
+    }
+    val allLessons = remember(grammarRepository) { grammarRepository.getLessons() }
+    val categories = remember(grammarRepository) { listOf("Semua") + grammarRepository.getCategories() }
+
+    var selectedCategory by remember { mutableStateOf("Semua") }
+    var selectedLessonId by remember { mutableStateOf(allLessons.firstOrNull()?.id ?: "1") }
+    var showLessonPicker by remember { mutableStateOf(false) }
+
+    val repository = remember(context, grammarRepository) {
         val db = AppDatabase.getInstance(context)
-        LocalCanvasRepository(db.lessonDao())
+        LocalCanvasRepository(
+            lessonDao = db.lessonDao(),
+            grammarRepository = grammarRepository,
+            generatedLessonDao = db.generatedLessonDao(),
+        )
     }
     var apiKey by remember { mutableStateOf(ApiKeyStorage.getApiKey(context)) }
     var modelName by remember { mutableStateOf(ApiKeyStorage.getModel(context)) }
     var showKeyDialog by remember { mutableStateOf(false) }
-    val tutorClient = remember(apiKey, modelName) {
-        GeminiAiTutorClient(
+    val lessonGenerator: GrammarLessonGenerator = remember(apiKey, modelName) {
+        GeminiGrammarLessonGenerator(
             apiKey = apiKey.ifBlank { null },
             model = modelName.ifBlank { ApiKeyStorage.DEFAULT_MODEL },
         )
     }
-    val scope = rememberCoroutineScope()
     val density = LocalDensity.current.density
+    val scope = rememberCoroutineScope()
 
     var lesson by remember { mutableStateOf(phaseOneFallbackLesson()) }
     var viewport by remember { mutableStateOf(ViewportState()) }
     var selectedElementId by remember { mutableStateOf<String?>(null) }
     var draggingElementId by remember { mutableStateOf<String?>(null) }
     var syncState by remember { mutableStateOf(SyncState.LOADING) }
-
-    LaunchedEffect(Unit) {
-        runCatching { repository.loadLesson(DemoLessonId) }
-            .onSuccess {
-                lesson = it
-                syncState = SyncState.SAVED
-            }
-            .onFailure {
-                syncState = SyncState.OFFLINE
-            }
+    LaunchedEffect(selectedLessonId) {
+        selectedElementId = null
+        draggingElementId = null
+        syncState = SyncState.LOADING
+        try {
+            val loaded = repository.loadLesson(selectedLessonId)
+            lesson = loaded
+            syncState = SyncState.SAVED
+            val hasExercises = loaded.elements.any { it.kind == CanvasElementKind.EXERCISE }
+            viewport = ViewportState(scale = if (hasExercises) 0.45f else 1.0f)
+        } catch (c: kotlinx.coroutines.CancellationException) {
+            throw c
+        } catch (e: Throwable) {
+            syncState = SyncState.OFFLINE
+        }
     }
 
     fun moveElement(elementId: String, deltaPx: Offset) {
@@ -275,7 +297,6 @@ fun StudyCanvasScreen() {
                             draggingElementId = null
                             persistElement(element.id)
                         },
-                        tutorClient = tutorClient,
                     )
                 }
         }
@@ -283,20 +304,46 @@ fun StudyCanvasScreen() {
         CanvasStatusOverlay(
             scale = viewport.scale,
             selectedElementId = selectedElementId,
+            currentLessonId = selectedLessonId,
+            currentLessonTitle = lesson.title,
+            allLessons = allLessons,
+            categories = categories,
+            selectedCategory = selectedCategory,
+            showLessonPicker = showLessonPicker,
+            onToggleLessonPicker = { showLessonPicker = !showLessonPicker },
+            onSelectCategory = { selectedCategory = it },
+            onSelectLesson = { newId ->
+                if (newId != selectedLessonId) {
+                    viewport = ViewportState()
+                    selectedElementId = null
+                    draggingElementId = null
+                    selectedLessonId = newId
+                }
+                showLessonPicker = false
+            },
             apiKey = apiKey,
             modelName = modelName,
             syncState = syncState,
             onOpenKeyDialog = { showKeyDialog = true },
             onGenerateAiLesson = {
+                val generatingLessonId = selectedLessonId
                 syncState = SyncState.GENERATING
                 scope.launch {
-                    repository.generateAndSaveLesson(DemoLessonId, "tai-desu", tutorClient)
+                    repository.generateAndSaveLesson(generatingLessonId, lessonGenerator)
                         .onSuccess {
-                            lesson = it
-                            syncState = SyncState.SAVED
+                            if (selectedLessonId == generatingLessonId) {
+                                lesson = it
+                                syncState = SyncState.SAVED
+                                viewport = ViewportState(scale = 0.45f)
+                                Toast.makeText(context, "Berhasil membuat 10 latihan AI!", Toast.LENGTH_SHORT).show()
+                            }
                         }
-                        .onFailure {
-                            syncState = SyncState.SAVED
+                        .onFailure { error ->
+                            android.util.Log.e("StudyCanvasAI", "onFailure: ${error.javaClass.simpleName}: ${error.message}")
+                            if (selectedLessonId == generatingLessonId) {
+                                syncState = SyncState.OFFLINE
+                                Toast.makeText(context, "Gagal: ${formatGenerationError(error)}", Toast.LENGTH_LONG).show()
+                            }
                         }
                 }
             },
@@ -335,7 +382,6 @@ private fun CanvasElementView(
     onDragStarted: () -> Unit,
     onDrag: (Offset) -> Unit,
     onDragFinished: () -> Unit,
-    tutorClient: AiTutorClient,
 ) {
     val baseModifier = Modifier
         .offset(x = element.position.x.dp, y = element.position.y.dp)
@@ -364,12 +410,19 @@ private fun CanvasElementView(
             modifier = baseModifier.then(dragModifier),
         )
 
+        CanvasElementKind.CURATED_QUIZ -> CuratedQuizCard(
+            element = element,
+            selected = selected,
+            onSelect = onSelect,
+            modifier = baseModifier,
+        )
+
         CanvasElementKind.EXERCISE -> ExerciseCard(
             lessonId = lessonId,
             element = element,
             selected = selected,
+            viewportScale = viewportScale,
             onSelect = onSelect,
-            tutorClient = tutorClient,
             modifier = baseModifier,
         )
     }
@@ -427,8 +480,8 @@ private fun ExerciseCard(
     lessonId: String,
     element: CanvasElement,
     selected: Boolean,
+    viewportScale: Float,
     onSelect: () -> Unit,
-    tutorClient: AiTutorClient,
     modifier: Modifier = Modifier,
 ) {
     val content = element.content as CanvasElementContent.Exercise
@@ -461,9 +514,155 @@ private fun ExerciseCard(
             HandwritingSurface(
                 lessonId = lessonId,
                 exerciseElementId = element.id,
+                viewportScale = viewportScale,
                 exerciseContent = content,
-                tutorClient = tutorClient,
             )
+        }
+    }
+}
+
+@Composable
+private fun CuratedQuizCard(
+    element: CanvasElement,
+    selected: Boolean,
+    onSelect: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val content = element.content as CanvasElementContent.CuratedQuiz
+    val quiz = content.quiz
+    val shape = RoundedCornerShape(16.dp)
+    var selectedChoice by remember(quiz.id, element.id) { mutableStateOf<String?>(null) }
+    var isCorrect by remember(quiz.id, element.id) { mutableStateOf<Boolean?>(null) }
+
+    Card(
+        modifier = modifier
+            .width(element.size.width.dp)
+            .then(
+                if (selected) Modifier.border(2.dp, MaterialTheme.colorScheme.primary, shape)
+                else Modifier,
+            ),
+        shape = shape,
+        colors = CardDefaults.cardColors(containerColor = Color(0xFFFBFDFF)),
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    text = "Kuis ${quiz.id}",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.clickable { onSelect() },
+                )
+                Text(
+                    text = quiz.type,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color.Gray,
+                )
+            }
+
+            Spacer(Modifier.height(4.dp))
+            Text(
+                text = quiz.questionEn,
+                style = MaterialTheme.typography.bodyMedium,
+                color = Color(0xFF212121),
+            )
+
+            if (!quiz.questionJp.isNullOrBlank()) {
+                Spacer(Modifier.height(6.dp))
+                Text(
+                    text = quiz.questionJp,
+                    fontSize = 20.sp,
+                    style = MaterialTheme.typography.titleMedium,
+                    color = Color(0xFF1B5E20),
+                )
+            }
+
+            if (!quiz.targetJp.isNullOrBlank()) {
+                Spacer(Modifier.height(6.dp))
+                Text(
+                    text = quiz.targetJp,
+                    fontSize = 18.sp,
+                    style = MaterialTheme.typography.titleMedium,
+                    color = Color(0xFF0D47A1),
+                )
+                if (!quiz.sentenceEn.isNullOrBlank()) {
+                    Text(
+                        text = quiz.sentenceEn,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = Color.Gray,
+                    )
+                }
+            }
+
+            if (!quiz.hintEn.isNullOrBlank()) {
+                Spacer(Modifier.height(4.dp))
+                Text(
+                    text = "💡 Petunjuk: ${quiz.hintEn}",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color(0xFF795548),
+                )
+            }
+
+            Spacer(Modifier.height(10.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                quiz.choices.forEach { choice ->
+                    val isThisSelected = selectedChoice == choice
+                    val chipContainerColor = when {
+                        isThisSelected && isCorrect == true -> Color(0xFFE8F5E9)
+                        isThisSelected && isCorrect == false -> Color(0xFFFFEBEE)
+                        else -> Color(0xFFF5F5F5)
+                    }
+                    val chipTextColor = when {
+                        isThisSelected && isCorrect == true -> Color(0xFF2E7D32)
+                        isThisSelected && isCorrect == false -> Color(0xFFC62828)
+                        else -> Color(0xFF333333)
+                    }
+
+                    FilterChip(
+                        selected = isThisSelected,
+                        onClick = {
+                            selectedChoice = choice
+                            val strippedChoice = dev.studycanvas.app.grammar.FuriganaUtils.stripFurigana(choice).trim()
+                            val strippedAnswer = dev.studycanvas.app.grammar.FuriganaUtils.stripFurigana(quiz.answer).trim()
+                            val rawMatches = choice.trim() == quiz.answerRaw.trim() ||
+                                strippedChoice == quiz.answerRaw.trim() ||
+                                choice.trim() == quiz.answer.trim() ||
+                                strippedChoice == strippedAnswer
+                            isCorrect = rawMatches
+                        },
+                        label = {
+                            Text(
+                                text = choice,
+                                color = chipTextColor,
+                                fontSize = 14.sp,
+                            )
+                        },
+                    )
+                }
+            }
+
+            if (isCorrect != null) {
+                Spacer(Modifier.height(6.dp))
+                if (isCorrect == true) {
+                    Text(
+                        text = "Benar! ✓ (${quiz.answerRaw})",
+                        style = MaterialTheme.typography.labelMedium,
+                        color = Color(0xFF2E7D32),
+                    )
+                } else {
+                    Text(
+                        text = "Belum tepat. Coba pilihan lain.",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = Color(0xFFC62828),
+                    )
+                }
+            }
         }
     }
 }
@@ -472,6 +671,15 @@ private fun ExerciseCard(
 private fun CanvasStatusOverlay(
     scale: Float,
     selectedElementId: String?,
+    currentLessonId: String,
+    currentLessonTitle: String,
+    allLessons: List<GrammarEntry>,
+    categories: List<String>,
+    selectedCategory: String,
+    showLessonPicker: Boolean,
+    onToggleLessonPicker: () -> Unit,
+    onSelectCategory: (String) -> Unit,
+    onSelectLesson: (String) -> Unit,
     apiKey: String,
     modelName: String,
     syncState: SyncState,
@@ -486,35 +694,84 @@ private fun CanvasStatusOverlay(
         SyncState.GENERATING -> "menghasilkan materi AI…"
     }
 
-    Row(
+    Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.Top,
     ) {
-        Column {
-            Text(
-                text = "${(scale * 100).roundToInt()}%  •  pinch to zoom  •  drag empty canvas to pan",
-                style = MaterialTheme.typography.labelLarge,
-            )
-            Text(
-                text = "selected: ${selectedElementId ?: "none"}  •  $syncLabel",
-                style = MaterialTheme.typography.labelMedium,
-                color = Color(0xFF68645C),
-            )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.Top,
+        ) {
+            Column {
+                Text(
+                    text = "Pelajaran $currentLessonId: $currentLessonTitle",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.primary,
+                )
+                Text(
+                    text = "${(scale * 100).roundToInt()}%  •  geser & zoom kanvas dengan jari  •  menulis dengan stylus",
+                    style = MaterialTheme.typography.labelMedium,
+                )
+                Text(
+                    text = "selected: ${selectedElementId ?: "none"}  •  $syncLabel",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color(0xFF68645C),
+                )
+            }
+
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                AssistChip(
+                    onClick = onToggleLessonPicker,
+                    label = { Text(if (showLessonPicker) "Tutup Daftar ▲" else "📚 Pelajaran ($currentLessonId/72)") },
+                )
+                AssistChip(
+                    onClick = onOpenKeyDialog,
+                    label = { Text(if (apiKey.isNotBlank()) "🔑 $modelName" else "⚙️ Atur Model AI") },
+                )
+                AssistChip(
+                    onClick = onGenerateAiLesson,
+                    label = { Text("✦ 10 Latihan AI") },
+                    enabled = syncState != SyncState.GENERATING && syncState != SyncState.SAVING,
+                )
+            }
         }
 
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            AssistChip(
-                onClick = onOpenKeyDialog,
-                label = { Text(if (apiKey.isNotBlank()) "🔑 $modelName" else "⚙️ Atur Model AI") },
-            )
-            AssistChip(
-                onClick = onGenerateAiLesson,
-                label = { Text("✦ Perbarui Materi (AI)") },
-                enabled = syncState != SyncState.GENERATING && syncState != SyncState.SAVING,
-            )
+        if (showLessonPicker && allLessons.isNotEmpty()) {
+            Spacer(Modifier.height(8.dp))
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(12.dp),
+                colors = CardDefaults.cardColors(containerColor = Color(0xFFFAF7F0)),
+            ) {
+                Column(modifier = Modifier.padding(12.dp)) {
+                    Text("Pilih Kategori:", style = MaterialTheme.typography.labelMedium)
+                    Spacer(Modifier.height(4.dp))
+                    LazyRow(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                        items(categories) { cat ->
+                            FilterChip(
+                                selected = selectedCategory == cat,
+                                onClick = { onSelectCategory(cat) },
+                                label = { Text(cat, fontSize = 12.sp) },
+                            )
+                        }
+                    }
+                    Spacer(Modifier.height(8.dp))
+                    Text("Daftar Pelajaran N5:", style = MaterialTheme.typography.labelMedium)
+                    Spacer(Modifier.height(4.dp))
+                    val filtered = if (selectedCategory == "Semua") allLessons else allLessons.filter { it.category == selectedCategory }
+                    LazyRow(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                        items(filtered) { entry ->
+                            FilterChip(
+                                selected = entry.id == currentLessonId,
+                                onClick = { onSelectLesson(entry.id) },
+                                label = { Text("${entry.id}. ${entry.title}", fontSize = 12.sp) },
+                            )
+                        }
+                    }
+                }
+            }
         }
     }
 }
@@ -529,7 +786,7 @@ private fun ApiKeyDialog(
 ) {
     var inputKey by remember { mutableStateOf(currentKey) }
     var inputModel by remember { mutableStateOf(currentModel) }
-    val commonModels = listOf("gemini-1.5-flash", "gemini-2.0-flash", "gemini-1.5-pro", "gemini-2.5-flash")
+    val commonModels = listOf("gemini-3.5-flash", "gemini-3.8-flash", "gemini-flash-latest")
 
     AlertDialog(
         onDismissRequest = onDismiss,

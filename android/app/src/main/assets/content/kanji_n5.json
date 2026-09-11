@@ -1,0 +1,25 @@
+{
+  "level": "N5",
+  "kanji": [
+    { "id": "kanji-1", "kanji": "一", "onyomi": "イチ", "kunyomi": "ひと", "meaning_en": "one", "stroke_count": 1 },
+    { "id": "kanji-2", "kanji": "二", "onyomi": "ニ", "kunyomi": "ふた", "meaning_en": "two", "stroke_count": 2 },
+    { "id": "kanji-3", "kanji": "三", "onyomi": "サン", "kunyomi": "み", "meaning_en": "three", "stroke_count": 3 },
+    { "id": "kanji-4", "kanji": "四", "onyomi": "シ", "kunyomi": "よん", "meaning_en": "four", "stroke_count": 4 },
+    { "id": "kanji-5", "kanji": "五", "onyomi": "ゴ", "kunyomi": "いつ", "meaning_en": "five", "stroke_count": 5 },
+    { "id": "kanji-6", "kanji": "六", "onyomi": "ロク", "kunyomi": "む", "meaning_en": "six", "stroke_count": 6 },
+    { "id": "kanji-7", "kanji": "七", "onyomi": "シチ", "kunyomi": "なな", "meaning_en": "seven", "stroke_count": 7 },
+    { "id": "kanji-8", "kanji": "八", "onyomi": "ハチ", "kunyomi": "や", "meaning_en": "eight", "stroke_count": 8 },
+    { "id": "kanji-9", "kanji": "九", "onyomi": "キュウ", "kunyomi": "ここの", "meaning_en": "nine", "stroke_count": 9 },
+    { "id": "kanji-10", "kanji": "十", "onyomi": "ジュウ", "kunyomi": "とお", "meaning_en": "ten", "stroke_count": 2 },
+    { "id": "kanji-11", "kanji": "百", "onyomi": "ヒャク", "kunyomi": "もも", "meaning_en": "hundred", "stroke_count": 6 },
+    { "id": "kanji-12", "kanji": "千", "onyomi": "セン", "kunyomi": "ち", "meaning_en": "thousand", "stroke_count": 3 },
+    { "id": "kanji-13", "kanji": "日", "onyomi": "ニチ", "kunyomi": "ひ", "meaning_en": "sun / day", "stroke_count": 4 },
+    { "id": "kanji-14", "kanji": "月", "onyomi": "ゲツ", "kunyomi": "つき", "meaning_en": "moon / month", "stroke_count": 4 },
+    { "id": "kanji-15", "kanji": "火", "onyomi": "カ", "kunyomi": "ひ", "meaning_en": "fire", "stroke_count": 4 },
+    { "id": "kanji-16", "kanji": "水", "onyomi": "スイ", "kunyomi": "みず", "meaning_en": "water", "stroke_count": 4 },
+    { "id": "kanji-17", "kanji": "木", "onyomi": "ボク", "kunyomi": "き", "meaning_en": "tree", "stroke_count": 4 },
+    { "id": "kanji-18", "kanji": "金", "onyomi": "キン", "kunyomi": "かね", "meaning_en": "gold / money", "stroke_count": 8 },
+    { "id": "kanji-19", "kanji": "土", "onyomi": "ド", "kunyomi": "つち", "meaning_en": "earth / soil", "stroke_count": 3 },
+    { "id": "kanji-20", "kanji": "人", "onyomi": "ジン", "kunyomi": "ひと", "meaning_en": "person", "stroke_count": 2 }
+  ]
+}

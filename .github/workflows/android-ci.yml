@@ -15,8 +15,7 @@ jobs:
         with:
           distribution: "temurin"
           java-version: "21"
-      - name: Run Android unit tests
-        working-directory: android
+      - name: Run repository doctor
         run: |
-          chmod +x gradlew
-          ./gradlew testDebugUnitTest --console=plain
+          chmod +x android/gradlew
+          python scripts/repo.py doctor

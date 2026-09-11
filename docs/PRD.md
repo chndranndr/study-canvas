@@ -16,12 +16,13 @@ Instead of presenting Japanese lessons as linear screens, flashcards, or chat me
 
 The product is intentionally **local-first**. Durable learner state lives on the Android device. The app does not require a custom Node/Fastify backend for the MVP.
 
-The AI tutor is a bounded capability accessed through a managed API. It helps with semantic grading, explanations, exercise generation, and choosing the next pedagogical action. Deterministic application code remains responsible for mastery, curriculum rules, review scheduling, validation, and persistence.
+> Curated JSON owns curriculum facts and existing reviewed lesson content. AI only adds optional grammar enrichment and generates sentence-production practice. Recognition and grading are deterministic/local.
+
+The bundled JSON file (`grammar_n5.json`) is the curriculum source of truth for all 72 N5 lessons. AI is only an optional bounded generator for supplemental explanation notes and exactly 10 sentence-production handwriting exercises. Handwriting recognition and answer checking are completely local and deterministic.
 
 Core learning loop:
 
-`Probe -> Plan -> Teach -> Practice -> Grade -> Update mastery -> Adapt -> Review`
-
+`Learn (Canonical JSON) -> Review Quizzes -> Handwrite -> Deterministic Check -> Concise Feedback`
 ---
 
 ## 2. Problem Statement
@@ -95,17 +96,20 @@ Hints reveal information gradually instead of immediately exposing the answer.
 
 If a learner frequently requests romaji, the tutor should not simply provide more romaji. It should infer possible kana weakness and adapt practice accordingly.
 
-### 4.7 AI chooses pedagogy; deterministic code owns state
+### 4.7 Curated JSON owns curriculum; AI is generation-only; checking is deterministic
 
-AI may decide what explanation, remediation, or exercise is pedagogically useful. Deterministic application logic owns:
+Curated JSON owns the 72 canonical N5 lessons, reviewed explanations, examples, and curated quizzes.
 
-- mastery scores;
-- review schedules;
-- curriculum dependencies;
-- validation;
-- persistence;
-- local transactions.
+AI is generation-only:
+- produces optional supplemental enrichment notes grounded in the selected `GrammarEntry`;
+- generates exactly 10 sentence-production handwriting exercises with accepted Japanese variants.
 
+Deterministic application logic owns:
+- ML Kit candidate recognition;
+- `DeterministicAnswerChecker` (Unicode NFKC, whitespace stripping, punctuation stripping);
+- curated quiz validation against `answer_raw`;
+- attempt persistence;
+- Room transactions.
 ### 4.8 The canvas is structured, not a rendered image
 
 Lesson content, exercises, user ink, and AI annotations are native elements in world coordinates. They remain crisp at any zoom level and can be repositioned independently.

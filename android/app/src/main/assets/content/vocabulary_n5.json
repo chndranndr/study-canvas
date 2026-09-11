@@ -1,0 +1,25 @@
+{
+  "level": "N5",
+  "vocabulary": [
+    { "id": "vocab-1", "word": "本", "reading": "ほん", "meaning_en": "book" },
+    { "id": "vocab-2", "word": "水", "reading": "みず", "meaning_en": "water" },
+    { "id": "vocab-3", "word": "猫", "reading": "ねこ", "meaning_en": "cat" },
+    { "id": "vocab-4", "word": "犬", "reading": "いぬ", "meaning_en": "dog" },
+    { "id": "vocab-5", "word": "車", "reading": "くるま", "meaning_en": "car" },
+    { "id": "vocab-6", "word": "山", "reading": "やま", "meaning_en": "mountain" },
+    { "id": "vocab-7", "word": "川", "reading": "かわ", "meaning_en": "river" },
+    { "id": "vocab-8", "word": "学校", "reading": "がっこう", "meaning_en": "school" },
+    { "id": "vocab-9", "word": "先生", "reading": "せんせい", "meaning_en": "teacher" },
+    { "id": "vocab-10", "word": "学生", "reading": "がくせい", "meaning_en": "student" },
+    { "id": "vocab-11", "word": "友達", "reading": "ともだち", "meaning_en": "friend" },
+    { "id": "vocab-12", "word": "今日", "reading": "きょう", "meaning_en": "today" },
+    { "id": "vocab-13", "word": "明日", "reading": "あした", "meaning_en": "tomorrow" },
+    { "id": "vocab-14", "word": "昨日", "reading": "きのう", "meaning_en": "yesterday" },
+    { "id": "vocab-15", "word": "時間", "reading": "じかん", "meaning_en": "time" },
+    { "id": "vocab-16", "word": "食べる", "reading": "たべる", "meaning_en": "to eat" },
+    { "id": "vocab-17", "word": "飲む", "reading": "のむ", "meaning_en": "to drink" },
+    { "id": "vocab-18", "word": "行く", "reading": "いく", "meaning_en": "to go" },
+    { "id": "vocab-19", "word": "来る", "reading": "くる", "meaning_en": "to come" },
+    { "id": "vocab-20", "word": "見る", "reading": "みる", "meaning_en": "to see / watch" }
+  ]
+}

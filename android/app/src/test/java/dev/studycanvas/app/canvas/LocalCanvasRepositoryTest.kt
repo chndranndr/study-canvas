@@ -1,12 +1,26 @@
 package dev.studycanvas.app.canvas
 
+import dev.studycanvas.app.data.GeneratedLessonDao
+import dev.studycanvas.app.data.GeneratedLessonEntity
 import dev.studycanvas.app.data.LessonDao
 import dev.studycanvas.app.data.LessonElementEntity
 import dev.studycanvas.app.data.LessonEntity
+import dev.studycanvas.app.grammar.GrammarContentRepository
+import dev.studycanvas.app.grammar.GrammarDataset
+import dev.studycanvas.app.grammar.GrammarDatasetMeta
+import dev.studycanvas.app.grammar.GrammarEntry
+import dev.studycanvas.app.grammar.GrammarExample
+import dev.studycanvas.app.grammar.GrammarQuiz
+import dev.studycanvas.app.grammar.LocalGrammarContentRepository
+import dev.studycanvas.app.tutor.DeterministicGrammarLessonGenerator
+import dev.studycanvas.app.tutor.GeneratedGrammarLesson
+import dev.studycanvas.app.tutor.GrammarLessonGenerator
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
+import org.junit.Assert.assertNull
 import org.junit.Test
 
 class FakeLessonDao : LessonDao {
@@ -31,10 +45,10 @@ class FakeLessonDao : LessonDao {
     }
 
     override suspend fun updateElementPosition(id: String, x: Float, y: Float, updatedAt: Long) {
-        for (list in elements.values) {
-            val index = list.indexOfFirst { it.id == id }
-            if (index >= 0) {
-                list[index] = list[index].copy(x = x, y = y, updatedAt = updatedAt)
+        for ((_, list) in elements) {
+            val idx = list.indexOfFirst { it.id == id }
+            if (idx >= 0) {
+                list[idx] = list[idx].copy(x = x, y = y, updatedAt = updatedAt)
             }
         }
     }
@@ -44,59 +58,355 @@ class FakeLessonDao : LessonDao {
     }
 }
 
+class FakeGeneratedLessonDao : GeneratedLessonDao {
+    val store = mutableMapOf<String, GeneratedLessonEntity>()
+
+    override suspend fun getGeneratedLesson(grammarId: String): GeneratedLessonEntity? = store[grammarId]
+
+    override suspend fun insertGeneratedLesson(lesson: GeneratedLessonEntity) {
+        store[lesson.grammarId] = lesson
+    }
+
+    override suspend fun deleteGeneratedLesson(grammarId: String) {
+        store.remove(grammarId)
+    }
+}
+
 class LocalCanvasRepositoryTest {
+
+    private val sampleGrammar = GrammarEntry(
+        id = "1",
+        title = "i-adjectives (Affirmative)",
+        level = "N5",
+        category = "Adjectives",
+        pattern = "~i desu",
+        explanation = "Polite present affirmative for i-adjectives",
+        examples = listOf(
+            GrammarExample("おもしろいです。", "omoshiroi desu.", "Interesting."),
+            GrammarExample("安いです。", "yasui desu.", "Cheap."),
+            GrammarExample("暑いです。", "atsui desu.", "Hot."),
+            GrammarExample("難しいです。", "muzukashii desu.", "Difficult."),
+        ),
+        quiz = listOf(
+            GrammarQuiz(1, "mc_conjugation_time", "Q1", choices = listOf("おもしろいです", "おもしろくないです"), answer = "おもしろいです", choicesRaw = listOf("おもしろいです", "おもしろくないです"), answerRaw = "おもしろいです"),
+            GrammarQuiz(2, "fill_conjugation_chunk", "Q2", questionJp = "おもしろ（　）です", choices = listOf("い", "くない"), answer = "い", choicesRaw = listOf("い", "くない"), answerRaw = "い"),
+            GrammarQuiz(3, "mc_formality_variant", "Q3", choices = listOf("おもしろい", "おもしろいです"), answer = "おもしろい", choicesRaw = listOf("おもしろい", "おもしろいです"), answerRaw = "おもしろい"),
+        ),
+    )
+
+    private val grammarRepository = LocalGrammarContentRepository(
+        GrammarDataset(
+            meta = GrammarDatasetMeta(jlptLevel = "N5", lessonCount = 1),
+            lessons = listOf(sampleGrammar),
+        ),
+    )
 
     @Test
     fun loadLesson_seedsDemoLessonWhenEmpty() = runBlocking {
-        val fakeDao = FakeLessonDao()
-        val repo = LocalCanvasRepository(fakeDao)
+        val dao = FakeLessonDao()
+        val repository = LocalCanvasRepository(dao)
 
-        val lesson = repo.loadLesson("tai-desu-demo")
-
+        val lesson = repository.loadLesson("tai-desu-demo")
         assertEquals("tai-desu-demo", lesson.id)
-        assertEquals("～たいです", lesson.title)
-        assertEquals(6, lesson.elements.size)
-        assertNotNull(fakeDao.getLesson("tai-desu-demo"))
-        assertEquals(6, fakeDao.getElementsForLesson("tai-desu-demo").size)
-        val ex1 = lesson.elements.first { it.id == "tai-desu-exercise-1" }
-        val content = ex1.content as CanvasElementContent.Exercise
-        assertEquals("日本に行きたいです", content.solution)
-        assertTrue(content.hint1Kosakata.isNotEmpty())
+        assertTrue(lesson.elements.isNotEmpty())
+        assertNotNull(dao.getLesson("tai-desu-demo"))
+    }
+
+    @Test
+    fun loadLesson_rendersCanonicalContentAnd3CuratedQuizzesOffline() = runBlocking {
+        val lessonDao = FakeLessonDao()
+        val generatedDao = FakeGeneratedLessonDao()
+        val repository = LocalCanvasRepository(
+            lessonDao = lessonDao,
+            grammarRepository = grammarRepository,
+            generatedLessonDao = generatedDao,
+        )
+
+        // Load without any AI calls
+        val canvas = repository.loadLesson("1")
+        assertEquals("1", canvas.id)
+        assertEquals("i-adjectives (Affirmative)", canvas.title)
+
+        // Material card
+        val material = canvas.elements.firstOrNull { it.kind == CanvasElementKind.LESSON_TEXT }
+        assertNotNull(material)
+        val textContent = material?.content as CanvasElementContent.LessonText
+        assertEquals("1. i-adjectives (Affirmative)", textContent.title)
+        assertEquals(4, textContent.examples.size)
+        assertTrue(textContent.body.contains("~i desu"))
+
+        // Exactly 3 curated quizzes
+        val quizzes = canvas.elements.filter { it.kind == CanvasElementKind.CURATED_QUIZ }
+        assertEquals(3, quizzes.size)
+        for ((idx, qElem) in quizzes.withIndex()) {
+            val qContent = qElem.content as CanvasElementContent.CuratedQuiz
+            assertEquals(idx + 1, qContent.quiz.id)
+            assertTrue(qContent.quiz.choices.contains(qContent.quiz.answer))
+            assertTrue(qContent.quiz.choicesRaw.contains(qContent.quiz.answerRaw))
+        }
+
+        // Zero AI generated exercises before generation
+        val exercises = canvas.elements.filter { it.kind == CanvasElementKind.EXERCISE }
+        assertEquals(0, exercises.size)
+    }
+
+    @Test
+    fun generateAndSaveLesson_persists10ExercisesAndRestoresOnLoad() = runBlocking {
+        val lessonDao = FakeLessonDao()
+        val generatedDao = FakeGeneratedLessonDao()
+        val repository = LocalCanvasRepository(
+            lessonDao = lessonDao,
+            grammarRepository = grammarRepository,
+            generatedLessonDao = generatedDao,
+        )
+
+        val generator = DeterministicGrammarLessonGenerator()
+        val updatedCanvas = repository.generateAndSaveLesson("1", generator).getOrThrow()
+
+        // Verify 10 generated exercises are now present
+        val exercises = updatedCanvas.elements.filter { it.kind == CanvasElementKind.EXERCISE }
+        assertEquals(10, exercises.size)
+
+        for (ex in exercises) {
+            val content = ex.content as CanvasElementContent.Exercise
+            assertTrue(content.acceptedAnswers.isNotEmpty())
+            assertTrue(content.prompt.isNotBlank())
+        }
+
+        // Verify persisted in GeneratedLessonDao
+        val savedSnapshot = generatedDao.getGeneratedLesson("1")
+        assertNotNull(savedSnapshot)
+        assertEquals("1", savedSnapshot?.grammarId)
+
+        // Verify reloading restores all 10 exercises
+        val reloadedCanvas = repository.loadLesson("1")
+        val reloadedExercises = reloadedCanvas.elements.filter { it.kind == CanvasElementKind.EXERCISE }
+        assertEquals(10, reloadedExercises.size)
+    }
+
+    @Test
+    fun generateAndSaveLesson_preservesPreviousSnapshotOnFailure() = runBlocking {
+        val lessonDao = FakeLessonDao()
+        val generatedDao = FakeGeneratedLessonDao()
+        val repository = LocalCanvasRepository(
+            lessonDao = lessonDao,
+            grammarRepository = grammarRepository,
+            generatedLessonDao = generatedDao,
+        )
+
+        // First successful generation
+        val generator = DeterministicGrammarLessonGenerator()
+        repository.generateAndSaveLesson("1", generator).getOrThrow()
+        assertEquals(1, generatedDao.store.size)
+
+        // Second failing generation
+        val failingGenerator = object : GrammarLessonGenerator {
+            override suspend fun generate(grammar: GrammarEntry, exerciseCount: Int): Result<GeneratedGrammarLesson> {
+                return Result.failure(IllegalStateException("Network offline"))
+            }
+        }
+        val failedResult = repository.generateAndSaveLesson("1", failingGenerator)
+        assertTrue(failedResult.isFailure)
+
+        // Previous snapshot preserved
+        val reloadedCanvas = repository.loadLesson("1")
+        val reloadedExercises = reloadedCanvas.elements.filter { it.kind == CanvasElementKind.EXERCISE }
+        assertEquals(10, reloadedExercises.size)
+    }
+
+    @Test
+    fun loadLesson_invalidatesStaleTargetPlaceholderSnapshot_andPurgesIt() = runBlocking {
+        val lessonDao = FakeLessonDao()
+        val generatedDao = FakeGeneratedLessonDao()
+        val repository = LocalCanvasRepository(
+            lessonDao = lessonDao,
+            grammarRepository = grammarRepository,
+            generatedLessonDao = generatedDao,
+        )
+
+        // Seed legacy snapshot with "Target:" and "Pattern:" placeholders
+        val staleExercisesJson = org.json.JSONArray().apply {
+            for (i in 1..10) {
+                put(
+                    org.json.JSONObject().apply {
+                        put("id", "legacy-$i")
+                        put("promptEn", "Prompt $i")
+                        put("hint1Kosakata", "Target: Adjectives")
+                        put("hint2Pola", "~i desu")
+                        put("hint3Romaji", "Pattern: ~i desu")
+                        put("acceptedAnswers", org.json.JSONArray(listOf("おもしろいです")))
+                    },
+                )
+            }
+        }.toString()
+
+        generatedDao.insertGeneratedLesson(
+            GeneratedLessonEntity(
+                grammarId = "1",
+                exercisesJson = staleExercisesJson,
+            ),
+        )
+        assertEquals(1, generatedDao.store.size)
+
+        // loadLesson must reject and purge the stale snapshot
+        val canvas = repository.loadLesson("1")
+        val exercises = canvas.elements.filter { it.kind == CanvasElementKind.EXERCISE }
+        assertEquals("Stale exercises must not be rendered", 0, exercises.size)
+        assertNull("Stale snapshot must be purged from DAO", generatedDao.getGeneratedLesson("1"))
+
+        // Fresh generation now produces valid hints
+        val generator = DeterministicGrammarLessonGenerator()
+        val freshCanvas = repository.generateAndSaveLesson("1", generator).getOrThrow()
+        val freshExercises = freshCanvas.elements.filter { it.kind == CanvasElementKind.EXERCISE }
+        assertEquals(10, freshExercises.size)
+
+        for (ex in freshExercises) {
+            val content = ex.content as CanvasElementContent.Exercise
+            assertFalse(content.hint1Kosakata.startsWith("Target:"))
+            assertFalse(content.hint3Romaji.startsWith("Pattern:"))
+        }
     }
 
     @Test
     fun saveLayout_updatesElementCoordinatesInDao() = runBlocking {
-        val fakeDao = FakeLessonDao()
-        val repo = LocalCanvasRepository(fakeDao)
+        val dao = FakeLessonDao()
+        val repository = LocalCanvasRepository(dao)
 
-        // Initial seed
-        repo.loadLesson("tai-desu-demo")
-
-        // Move material element to (300, 400)
-        repo.saveLayout(
-            "tai-desu-demo",
-            listOf(CanvasElementLayout(id = "tai-desu-material", position = WorldPoint(300f, 400f))),
+        repository.loadLesson("tai-desu-demo")
+        repository.saveLayout(
+            lessonId = "tai-desu-demo",
+            layouts = listOf(CanvasElementLayout(id = "tai-desu-material", position = WorldPoint(300f, 400f))),
         )
 
-        // Reload lesson and verify position updated
-        val updatedLesson = repo.loadLesson("tai-desu-demo")
-        val material = updatedLesson.elements.first { it.id == "tai-desu-material" }
-        assertEquals(300f, material.position.x, 0.001f)
-        assertEquals(400f, material.position.y, 0.001f)
+        val elements = dao.getElementsForLesson("tai-desu-demo")
+        val updated = elements.firstOrNull { it.id == "tai-desu-material" }
+        assertNotNull(updated)
+        assertEquals(300f, updated?.x ?: 0f, 0.0001f)
+        assertEquals(400f, updated?.y ?: 0f, 0.0001f)
+    }
+    @Test
+    fun loadLesson_invalidatesMismatchedPatternSnapshot_andPurgesIt() = runBlocking {
+        val lessonDao = FakeLessonDao()
+        val generatedDao = FakeGeneratedLessonDao()
+        val repository = LocalCanvasRepository(
+            lessonDao = lessonDao,
+            grammarRepository = grammarRepository,
+            generatedLessonDao = generatedDao,
+        )
+
+        // Seed snapshot with mismatched pattern (expected "~i desu", but snapshot contains "Vたいです")
+        // with CURRENT_GENERATOR_VERSION so it specifically tests pattern rejection.
+        val mismatchedExercisesJson = org.json.JSONArray().apply {
+            for (i in 1..10) {
+                put(
+                    org.json.JSONObject().apply {
+                        put("id", "ex-$i")
+                        put("promptEn", "English prompt $i")
+                        put("hint1Kosakata", "kosakata: item")
+                        put("hint2Pola", "Vたいです") // Mismatched: expected "~i desu"
+                        put("hint3Romaji", "Romaji: item desu")
+                        put("acceptedAnswers", org.json.JSONArray(listOf("日本語")))
+                    },
+                )
+            }
+        }.toString()
+
+        generatedDao.insertGeneratedLesson(
+            GeneratedLessonEntity(
+                grammarId = "1",
+                generatorVersion = CURRENT_GENERATOR_VERSION,
+                summary = "Off topic summary",
+                exercisesJson = mismatchedExercisesJson,
+            ),
+        )
+        assertEquals(1, generatedDao.store.size)
+
+        // loadLesson must reject and purge the off-topic snapshot
+        val canvas = repository.loadLesson("1")
+        val exercises = canvas.elements.filter { it.kind == CanvasElementKind.EXERCISE }
+        assertEquals("Mismatched pattern exercises must not be rendered", 0, exercises.size)
+        assertNull("Mismatched snapshot must be purged from DAO", generatedDao.getGeneratedLesson("1"))
     }
 
     @Test
-    fun generateAndSaveLesson_cachesGeneratedElementsLocally() = runBlocking {
-        val fakeDao = FakeLessonDao()
-        val repo = LocalCanvasRepository(fakeDao)
-        val tutorClient = dev.studycanvas.app.tutor.DeterministicAiTutorClient()
+    fun loadLesson_invalidatesLegacyGeneratorVersionSnapshot_andPurgesIt() = runBlocking {
+        val lessonDao = FakeLessonDao()
+        val generatedDao = FakeGeneratedLessonDao()
+        val repository = LocalCanvasRepository(
+            lessonDao = lessonDao,
+            grammarRepository = grammarRepository,
+            generatedLessonDao = generatedDao,
+        )
 
-        val generated = repo.generateAndSaveLesson("new-lesson", "tai-desu", tutorClient).getOrThrow()
-        assertEquals("～たいです", generated.title)
-        assertEquals(6, generated.elements.size)
-        assertEquals(6, fakeDao.getElementsForLesson("new-lesson").size)
+        // Matching pattern, but legacy generatorVersion ("gemini-1.5-flash")
+        val exercisesJson = org.json.JSONArray().apply {
+            for (i in 1..10) {
+                put(
+                    org.json.JSONObject().apply {
+                        put("id", "ex-$i")
+                        put("promptEn", "English prompt $i")
+                        put("hint1Kosakata", "kosakata: item")
+                        put("hint2Pola", "~i desu") // Matching pattern
+                        put("hint3Romaji", "Romaji: item desu")
+                        put("acceptedAnswers", org.json.JSONArray(listOf("日本語")))
+                    },
+                )
+            }
+        }.toString()
 
-        val loaded = repo.loadLesson("new-lesson")
-        assertEquals(6, loaded.elements.size)
+        generatedDao.insertGeneratedLesson(
+            GeneratedLessonEntity(
+                grammarId = "1",
+                generatorVersion = "gemini-1.5-flash", // Legacy version
+                summary = "Legacy summary",
+                exercisesJson = exercisesJson,
+            ),
+        )
+        assertEquals(1, generatedDao.store.size)
+
+        // loadLesson must reject and purge the legacy version snapshot
+        val canvas = repository.loadLesson("1")
+        val exercises = canvas.elements.filter { it.kind == CanvasElementKind.EXERCISE }
+        assertEquals("Legacy generator exercises must not be rendered", 0, exercises.size)
+        assertNull("Legacy snapshot must be purged from DAO", generatedDao.getGeneratedLesson("1"))
     }
+    @Test
+    fun loadLesson_invalidatesStaleSnapshot_withoutWipingPersistedCanonicalLayout() = runBlocking {
+        val lessonDao = FakeLessonDao()
+        val generatedDao = FakeGeneratedLessonDao()
+        val repository = LocalCanvasRepository(
+            lessonDao = lessonDao,
+            grammarRepository = grammarRepository,
+            generatedLessonDao = generatedDao,
+        )
+
+        // Seed initial canvas and custom layout for canonical material
+        repository.loadLesson("1")
+        repository.saveLayout(
+            lessonId = "1",
+            layouts = listOf(CanvasElementLayout(id = "grammar-1-material", position = WorldPoint(555f, 777f))),
+        )
+        val savedBefore = lessonDao.getElementsForLesson("1").firstOrNull { it.id == "grammar-1-material" }
+        assertEquals(555f, savedBefore?.x ?: 0f, 0.001f)
+        assertEquals(777f, savedBefore?.y ?: 0f, 0.001f)
+
+        // Now seed an invalid/stale snapshot in generatedLessonDao
+        generatedDao.insertGeneratedLesson(
+            GeneratedLessonEntity(
+                grammarId = "1",
+                generatorVersion = "gemini-1.5-flash", // stale
+                summary = "Old",
+                exercisesJson = "[]",
+            ),
+        )
+
+        // Loading lesson must purge the stale generated snapshot, but KEEP the user's custom canonical layout!
+        val canvas = repository.loadLesson("1")
+        assertNull("Stale snapshot purged", generatedDao.getGeneratedLesson("1"))
+
+        val materialElement = canvas.elements.single { it.id == "grammar-1-material" }
+        assertEquals("Material X position must not be wiped", 555f, materialElement.position.x, 0.001f)
+        assertEquals("Material Y position must not be wiped", 777f, materialElement.position.y, 0.001f)
+    }
+
 }

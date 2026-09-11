@@ -1,6 +1,7 @@
 package dev.studycanvas.app
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.material3.MaterialTheme
@@ -14,5 +15,9 @@ class MainActivity : ComponentActivity() {
                 StudyCanvasScreen()
             }
         }
+        Log.i(
+            "StudyCanvas",
+            """{"event":"startup","status":"ready","surface":"canvas"}""",
+        )
     }
 }

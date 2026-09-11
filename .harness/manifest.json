@@ -1,0 +1,156 @@
+{
+  "schema_version": 2,
+  "profile": "standard",
+  "project": {
+    "kind": "mobile-app",
+    "stacks": [
+      "android",
+      "jetpack-compose",
+      "kotlin",
+      "room",
+      "sqlite"
+    ]
+  },
+  "capabilities": {
+    "application_scaffold": {
+      "status": "implemented",
+      "artifacts": [
+        "android/app/src/main/AndroidManifest.xml",
+        "android/app/src/main/java/dev/studycanvas/app/MainActivity.kt"
+      ],
+      "verify": [
+        "python scripts/repo.py setup"
+      ]
+    },
+    "architecture_boundaries": {
+      "status": "implemented",
+      "artifacts": [
+        "docs/architecture.md",
+        "scripts/repo.py"
+      ],
+      "verify": [
+        "python scripts/repo.py doctor"
+      ]
+    },
+    "ci": {
+      "status": "implemented",
+      "artifacts": [
+        ".github/workflows/android-ci.yml"
+      ],
+      "verify": [
+        "python scripts/repo.py doctor"
+      ]
+    },
+    "evaluation": {
+      "status": "implemented",
+      "artifacts": [
+        "scripts/repo.py",
+        "android/app/src/test/java/dev/studycanvas/app/SmokePathTest.kt",
+        "android/app/src/test/java/dev/studycanvas/app/checker/AnswerCheckerTest.kt",
+        "android/app/src/test/java/dev/studycanvas/app/grammar/GrammarDatasetTest.kt",
+        "android/app/src/test/java/dev/studycanvas/app/ink/InkGeometryTest.kt"
+      ],
+      "verify": [
+        "python scripts/repo.py eval"
+      ]
+    },
+    "interactive_legibility": {
+      "status": "partial",
+      "artifacts": [
+        "docs/index.md",
+        "scripts/run-tablet-emulator.bat"
+      ],
+      "verify": [
+        "inspect: adapter exposes the critical surface"
+      ]
+    },
+    "knowledge_base": {
+      "status": "implemented",
+      "artifacts": [
+        "docs/index.md",
+        "docs/knowledge-base.md"
+      ],
+      "verify": [
+        "inspect: links resolve"
+      ]
+    },
+    "observability": {
+      "status": "implemented",
+      "artifacts": [
+        "android/app/src/main/java/dev/studycanvas/app/MainActivity.kt",
+        "docs/knowledge-base.md"
+      ],
+      "verify": [
+        "python scripts/repo.py doctor"
+      ]
+    },
+    "quality_checks": {
+      "status": "implemented",
+      "artifacts": [
+        "scripts/repo.py",
+        "android/app/src/test"
+      ],
+      "verify": [
+        "python scripts/repo.py check",
+        "python scripts/repo.py format"
+      ]
+    },
+    "repository_commands": {
+      "status": "implemented",
+      "artifacts": [
+        "AGENTS.md",
+        "README.md",
+        "scripts/repo.py"
+      ],
+      "verify": [
+        "python scripts/repo.py doctor"
+      ]
+    },
+    "review_loop": {
+      "status": "implemented",
+      "artifacts": [
+        "docs/knowledge-base.md"
+      ],
+      "verify": [
+        "python scripts/repo.py doctor"
+      ]
+    },
+    "workspace_cleanup": {
+      "status": "implemented",
+      "artifacts": [
+        ".gitignore",
+        "scripts/repo.py"
+      ],
+      "verify": [
+        "python scripts/repo.py gc --dry-run"
+      ]
+    }
+  },
+  "managed_artifacts": [
+    ".github/workflows/android-ci.yml",
+    ".harness/manifest.json",
+    "AGENTS.md",
+    "README.md",
+    "docs/index.md",
+    "docs/knowledge-base.md",
+    "scripts/repo.py"
+  ],
+  "commands": {
+    "setup": "python scripts/repo.py setup",
+    "dev": "python scripts/repo.py dev",
+    "format": "python scripts/repo.py format",
+    "check": "python scripts/repo.py check",
+    "test": "python scripts/repo.py test",
+    "eval": "python scripts/repo.py eval",
+    "doctor": "python scripts/repo.py doctor",
+    "gc": "python scripts/repo.py gc --dry-run"
+  },
+  "deferred": [
+    {
+      "capability": "interactive_legibility",
+      "reason": "The Android adapter and manual device path exist, but no maintained instrumented multi-touch smoke suite is checked in.",
+      "next_step": "Add a focused androidTest only when a repeatable interactive regression requires automation."
+    }
+  ],
+  "evidence_gaps": []
+}

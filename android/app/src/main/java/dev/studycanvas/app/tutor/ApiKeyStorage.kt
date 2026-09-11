@@ -7,7 +7,8 @@ object ApiKeyStorage {
     private const val PREFS_NAME = "study_canvas_ai_prefs"
     private const val KEY_GEMINI = "gemini_api_key"
     private const val KEY_MODEL = "gemini_model_name"
-    const val DEFAULT_MODEL = "gemini-1.5-flash"
+    const val DEFAULT_MODEL = "gemini-3.5-flash"
+    private const val LEGACY_DEFAULT_MODEL = "gemini-1.5-flash"
 
     private fun getPrefs(context: Context): SharedPreferences =
         context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
@@ -23,8 +24,14 @@ object ApiKeyStorage {
         getPrefs(context).edit().remove(KEY_GEMINI).apply()
     }
 
-    fun getModel(context: Context): String =
-        getPrefs(context).getString(KEY_MODEL, DEFAULT_MODEL) ?: DEFAULT_MODEL
+    fun getModel(context: Context): String {
+        val raw = getPrefs(context).getString(KEY_MODEL, DEFAULT_MODEL) ?: DEFAULT_MODEL
+        if (raw == LEGACY_DEFAULT_MODEL) {
+            setModel(context, DEFAULT_MODEL)
+            return DEFAULT_MODEL
+        }
+        return raw
+    }
 
     fun setModel(context: Context, model: String) {
         val clean = model.trim().ifBlank { DEFAULT_MODEL }

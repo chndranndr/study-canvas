@@ -1,18 +1,64 @@
 package dev.studycanvas.app.canvas
 
+import dev.studycanvas.app.data.GeneratedLessonDao
+import dev.studycanvas.app.data.GeneratedLessonEntity
 import dev.studycanvas.app.data.LessonDao
 import dev.studycanvas.app.data.LessonElementEntity
 import dev.studycanvas.app.data.LessonEntity
+import dev.studycanvas.app.grammar.GrammarContentRepository
+import dev.studycanvas.app.grammar.GrammarEntry
+import dev.studycanvas.app.grammar.GrammarQuiz
+import dev.studycanvas.app.tutor.GeneratedGrammarLesson
+import dev.studycanvas.app.tutor.GrammarLessonGenerator
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import org.json.JSONArray
 import org.json.JSONObject
-import dev.studycanvas.app.tutor.AiTutorClient
 
+const val CURRENT_GENERATOR_VERSION = "v2-grounded"
 class LocalCanvasRepository(
     private val lessonDao: LessonDao,
+    private val grammarRepository: GrammarContentRepository? = null,
+    private val generatedLessonDao: GeneratedLessonDao? = null,
 ) : CanvasRepository {
 
     override suspend fun loadLesson(lessonId: String): LessonCanvas = withContext(Dispatchers.IO) {
+        val grammar = grammarRepository?.getLesson(lessonId)
+        if (grammar != null) {
+            val generatedEntity = generatedLessonDao?.getGeneratedLesson(lessonId)
+            val generatedExercises = parseGeneratedExercises(generatedEntity, grammar)
+            val enrichmentNotes = if (generatedExercises.isNotEmpty()) parseEnrichmentNotes(generatedEntity) else emptyList()
+            // If a snapshot existed in DB but contained stale or invalid content, purge the generated snapshot
+            // while preserving user's customized positions for canonical lesson elements.
+            if (generatedEntity != null && generatedExercises.isEmpty()) {
+                generatedLessonDao?.deleteGeneratedLesson(lessonId)
+            }
+            val baseCanvas = createGrammarLessonCanvas(
+                grammar = grammar,
+                generatedExercises = generatedExercises,
+                enrichmentNotes = enrichmentNotes,
+            )
+
+            val savedElements = lessonDao.getElementsForLesson(lessonId)
+            if (savedElements.isEmpty()) {
+                seedLesson(baseCanvas)
+                return@withContext baseCanvas
+            }
+
+            val positionMap = savedElements.associateBy({ it.id }, { WorldPoint(it.x, it.y) })
+            val mergedElements = baseCanvas.elements.map { element ->
+                val savedPos = positionMap[element.id]
+                if (savedPos != null && element.movable) {
+                    element.copy(position = savedPos)
+                } else {
+                    element
+                }
+            }
+
+            return@withContext baseCanvas.copy(elements = mergedElements)
+        }
+
+        // Fallback for legacy demo lessons (e.g., "tai-desu-demo")
         val existing = lessonDao.getLesson(lessonId)
         val fallback = phaseOneFallbackLesson()
         if (existing == null) {
@@ -45,66 +91,124 @@ class LocalCanvasRepository(
     }
 
     suspend fun generateAndSaveLesson(
-        lessonId: String,
-        conceptId: String,
-        tutorClient: AiTutorClient,
+        grammarId: String,
+        generator: GrammarLessonGenerator,
     ): Result<LessonCanvas> = withContext(Dispatchers.IO) {
         runCatching {
-            val material = tutorClient.generateLessonMaterial(conceptId).getOrThrow()
-            val exercises = tutorClient.generateExerciseBatch(conceptId, count = 5).getOrThrow()
+            val grammar = grammarRepository?.getLesson(grammarId)
+                ?: throw IllegalArgumentException("Grammar entry '$grammarId' not found")
 
-            val exampleText = material.examples.joinToString("\n") { "${it.japanese} (${it.meaning})" }
-            val materialBody = "${material.shortExplanation}\n\n${material.formationRule}\n\n$exampleText"
+            val generated = generator.generate(grammar, exerciseCount = 10).getOrThrow()
+            saveGeneratedSnapshot(generated)
 
-            val elements = mutableListOf<CanvasElement>()
-            elements += CanvasElement(
-                id = "${conceptId}-material",
-                kind = CanvasElementKind.LESSON_TEXT,
-                position = WorldPoint(180f, 100f),
-                size = WorldSize(880f, 320f),
-                zIndex = 10,
-                readOnly = true,
-                movable = true,
-                content = CanvasElementContent.LessonText(
-                    title = material.title,
-                    body = materialBody,
-                ),
-            )
+            val updatedCanvas = loadLesson(grammarId)
+            lessonDao.deleteElementsForLesson(grammarId)
+            seedLesson(updatedCanvas)
+            updatedCanvas
+        }
+    }
 
-            var yOffset = 460f
-            exercises.forEachIndexed { index, ex ->
-                elements += CanvasElement(
-                    id = "${conceptId}-exercise-${index + 1}",
-                    kind = CanvasElementKind.EXERCISE,
-                    position = WorldPoint(180f, yOffset),
-                    size = WorldSize(880f, 440f),
-                    zIndex = 5,
-                    readOnly = true,
-                    movable = false,
-                    content = CanvasElementContent.Exercise(
-                        title = "Latihan ${index + 1}",
-                        prompt = ex.prompt,
-                        hint1Kosakata = ex.hintVocabulary,
-                        hint2Pola = ex.hintPattern,
-                        hint3Romaji = ex.hintReadingFallback,
-                        solution = ex.referenceAnswers.firstOrNull().orEmpty(),
-                        targetConceptId = conceptId,
+
+    private suspend fun saveGeneratedSnapshot(generated: GeneratedGrammarLesson) {
+        if (generatedLessonDao == null) return
+
+        val exercisesJson = JSONArray().apply {
+            generated.exercises.forEach { ex ->
+                put(
+                    JSONObject().apply {
+                        put("id", ex.id)
+                        put("promptEn", ex.promptEn)
+                        put("hint1Kosakata", ex.hints.vocabulary)
+                        put("hint2Pola", ex.hints.pattern)
+                        put("hint3Romaji", ex.hints.readingFallback)
+                        put("acceptedAnswers", JSONArray(ex.acceptedAnswers))
+                    },
+                )
+            }
+        }.toString()
+
+        val entity = GeneratedLessonEntity(
+            grammarId = generated.grammarId,
+            generatorVersion = CURRENT_GENERATOR_VERSION,
+            summary = generated.enrichment.summary,
+            formation = generated.enrichment.formation,
+            commonMistakesJson = JSONArray(generated.enrichment.commonMistakes).toString(),
+            notesJson = JSONArray(generated.enrichment.notes).toString(),
+            exercisesJson = exercisesJson,
+            generatedAt = generated.generatedAt,
+        )
+
+        generatedLessonDao.insertGeneratedLesson(entity)
+    }
+
+    private fun parseGeneratedExercises(
+        entity: GeneratedLessonEntity?,
+        grammar: GrammarEntry? = null,
+    ): List<CanvasElementContent.Exercise> {
+        if (entity == null || entity.exercisesJson.isBlank()) return emptyList()
+        if (entity.generatorVersion != CURRENT_GENERATOR_VERSION) return emptyList()
+
+        return runCatching {
+            val array = JSONArray(entity.exercisesJson)
+            if (array.length() != 10) return emptyList()
+            val expectedPattern = grammar?.pattern?.trim()?.replace("\\s+".toRegex(), " ")
+            val japaneseCharRegex = Regex("[\\p{IsHiragana}\\p{IsKatakana}\\p{IsHan}]")
+
+            val list = mutableListOf<CanvasElementContent.Exercise>()
+            for (i in 0 until array.length()) {
+                val obj = array.getJSONObject(i)
+                val prompt = obj.optString("promptEn", "").trim()
+                val hint1 = obj.optString("hint1Kosakata", "").trim()
+                val hint2 = obj.optString("hint2Pola", "").trim()
+                val hint3 = obj.optString("hint3Romaji", "").trim()
+                val acceptedAnswers = obj.optJSONArray("acceptedAnswers")?.toStringList() ?: emptyList()
+
+                // Reject stale snapshots with generic placeholders, blank hints, mismatched pattern, or non-Japanese answers
+                if (prompt.isBlank() ||
+                    hint1.isBlank() ||
+                    hint1.startsWith("Target:", ignoreCase = true) ||
+                    hint1.equals("vocab hint", ignoreCase = true) ||
+                    hint1.equals(prompt, ignoreCase = true) ||
+                    hint2.isBlank() ||
+                    hint2.equals("pattern hint", ignoreCase = true) ||
+                    (expectedPattern != null && hint2.replace("\\s+".toRegex(), " ") != expectedPattern) ||
+                    hint3.isBlank() ||
+                    hint3.startsWith("Pattern:", ignoreCase = true) ||
+                    hint3.equals("reading hint", ignoreCase = true) ||
+                    acceptedAnswers.isEmpty() ||
+                    acceptedAnswers.any { it.isBlank() || !japaneseCharRegex.containsMatchIn(it) }
+                ) {
+                    return emptyList()
+                }
+                list.add(
+                    CanvasElementContent.Exercise(
+                        title = "Practice ${i + 1}",
+                        prompt = prompt,
+                        hint1Kosakata = hint1,
+                        hint2Pola = hint2,
+                        hint3Romaji = hint3,
+                        acceptedAnswers = acceptedAnswers,
+                        revealAnswer = acceptedAnswers.firstOrNull().orEmpty(),
+                        targetConceptId = entity.grammarId,
                     ),
                 )
-                yOffset += 480f
             }
+            list
+        }.getOrDefault(emptyList())
+    }
 
-            val newLesson = LessonCanvas(
-                id = lessonId,
-                title = material.title,
-                worldSize = WorldSize(2400f, maxOf(3600f, yOffset + 400f)),
-                elements = elements,
-            )
-
-            lessonDao.deleteElementsForLesson(lessonId)
-            seedLesson(newLesson)
-            newLesson
+    private fun parseEnrichmentNotes(entity: GeneratedLessonEntity?): List<String> {
+        if (entity == null) return emptyList()
+        val notes = mutableListOf<String>()
+        if (entity.summary.isNotBlank()) notes.add(entity.summary)
+        if (entity.formation.isNotBlank()) notes.add("Pembentukan: ${entity.formation}")
+        runCatching {
+            val mistakes = JSONArray(entity.commonMistakesJson).toStringList()
+            mistakes.forEach { notes.add("Perhatian: $it") }
+            val extraNotes = JSONArray(entity.notesJson).toStringList()
+            notes.addAll(extraNotes)
         }
+        return notes
     }
 
     private suspend fun seedLesson(lesson: LessonCanvas) {
@@ -130,7 +234,22 @@ class LocalCanvasRepository(
                     payload.put("hint2Pola", c.hint2Pola)
                     payload.put("hint3Romaji", c.hint3Romaji)
                     payload.put("solution", c.solution)
+                    payload.put("acceptedAnswers", JSONArray(c.acceptedAnswers))
                     payload.put("targetConceptId", c.targetConceptId)
+                }
+                is CanvasElementContent.CuratedQuiz -> {
+                    payload.put("quizId", c.quiz.id)
+                    payload.put("type", c.quiz.type)
+                    payload.put("questionEn", c.quiz.questionEn)
+                    c.quiz.questionJp?.let { payload.put("questionJp", it) }
+                    c.quiz.hintEn?.let { payload.put("hintEn", it) }
+                    c.quiz.targetJp?.let { payload.put("targetJp", it) }
+                    c.quiz.sentenceEn?.let { payload.put("sentenceEn", it) }
+                    payload.put("choices", JSONArray(c.quiz.choices))
+                    payload.put("answer", c.quiz.answer)
+                    payload.put("choicesRaw", JSONArray(c.quiz.choicesRaw))
+                    payload.put("answerRaw", c.quiz.answerRaw)
+                    payload.put("lessonId", c.lessonId)
                 }
             }
             LessonElementEntity(
@@ -154,6 +273,7 @@ class LocalCanvasRepository(
         val kindEnum = when (kind) {
             "lesson_text" -> CanvasElementKind.LESSON_TEXT
             "exercise" -> CanvasElementKind.EXERCISE
+            "curated_quiz" -> CanvasElementKind.CURATED_QUIZ
             else -> return null
         }
         val payload = runCatching { JSONObject(payloadJson) }.getOrDefault(JSONObject())
@@ -162,15 +282,41 @@ class LocalCanvasRepository(
                 title = payload.optString("title", ""),
                 body = payload.optString("body", ""),
             )
-            CanvasElementKind.EXERCISE -> CanvasElementContent.Exercise(
-                title = payload.optString("title", ""),
-                prompt = payload.optString("prompt", ""),
-                hint1Kosakata = payload.optString("hint1Kosakata", ""),
-                hint2Pola = payload.optString("hint2Pola", ""),
-                hint3Romaji = payload.optString("hint3Romaji", ""),
-                solution = payload.optString("solution", ""),
-                targetConceptId = payload.optString("targetConceptId", "tai-desu"),
-            )
+            CanvasElementKind.EXERCISE -> {
+                val accepted = payload.optJSONArray("acceptedAnswers")?.toStringList() ?: emptyList()
+                val sol = payload.optString("solution", "")
+                val finalAccepted = if (accepted.isEmpty() && sol.isNotBlank()) listOf(sol) else accepted
+                CanvasElementContent.Exercise(
+                    title = payload.optString("title", ""),
+                    prompt = payload.optString("prompt", ""),
+                    hint1Kosakata = payload.optString("hint1Kosakata", ""),
+                    hint2Pola = payload.optString("hint2Pola", ""),
+                    hint3Romaji = payload.optString("hint3Romaji", ""),
+                    acceptedAnswers = finalAccepted,
+                    revealAnswer = finalAccepted.firstOrNull().orEmpty(),
+                    targetConceptId = payload.optString("targetConceptId", "tai-desu"),
+                    solution = sol,
+                )
+            }
+            CanvasElementKind.CURATED_QUIZ -> {
+                val quiz = GrammarQuiz(
+                    id = payload.optInt("quizId", 1),
+                    type = payload.optString("type", "mc"),
+                    questionEn = payload.optString("questionEn", ""),
+                    questionJp = payload.optString("questionJp").takeIf { it.isNotBlank() },
+                    hintEn = payload.optString("hintEn").takeIf { it.isNotBlank() },
+                    targetJp = payload.optString("targetJp").takeIf { it.isNotBlank() },
+                    sentenceEn = payload.optString("sentenceEn").takeIf { it.isNotBlank() },
+                    choices = payload.optJSONArray("choices")?.toStringList() ?: emptyList(),
+                    answer = payload.optString("answer", ""),
+                    choicesRaw = payload.optJSONArray("choicesRaw")?.toStringList() ?: emptyList(),
+                    answerRaw = payload.optString("answerRaw", ""),
+                )
+                CanvasElementContent.CuratedQuiz(
+                    quiz = quiz,
+                    lessonId = payload.optString("lessonId", lessonId),
+                )
+            }
         }
         return CanvasElement(
             id = id,
@@ -182,5 +328,13 @@ class LocalCanvasRepository(
             movable = movable,
             content = content,
         )
+    }
+
+    private fun JSONArray.toStringList(): List<String> {
+        val list = mutableListOf<String>()
+        for (i in 0 until length()) {
+            list.add(getString(i))
+        }
+        return list
     }
 }

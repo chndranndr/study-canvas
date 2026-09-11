@@ -39,6 +39,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.input.pointer.PointerType
+import androidx.compose.ui.input.pointer.PointerId
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
@@ -49,9 +50,9 @@ import dev.studycanvas.app.canvas.CanvasElementContent
 import dev.studycanvas.app.canvas.ExerciseStage
 import dev.studycanvas.app.canvas.ExerciseState
 import dev.studycanvas.app.data.AppDatabase
+import dev.studycanvas.app.checker.AnswerChecker
+import dev.studycanvas.app.checker.DeterministicAnswerChecker
 import dev.studycanvas.app.data.ExerciseAttemptEntity
-import dev.studycanvas.app.tutor.AiTutorClient
-import dev.studycanvas.app.tutor.GeminiAiTutorClient
 import dev.studycanvas.app.tutor.GradeResult
 import java.util.UUID
 import kotlinx.coroutines.launch
@@ -66,8 +67,8 @@ private const val EraserRadius = 24f
 fun HandwritingSurface(
     lessonId: String,
     exerciseElementId: String,
+    viewportScale: Float,
     exerciseContent: CanvasElementContent.Exercise,
-    tutorClient: AiTutorClient = remember { GeminiAiTutorClient() },
     modifier: Modifier = Modifier,
 ) {
     val density = LocalDensity.current.density
@@ -77,6 +78,7 @@ fun HandwritingSurface(
 
     val recognizer = remember { JapaneseHandwritingRecognizer() }
     val renderer = remember { CanvasStrokeRenderer.create() }
+    val answerChecker: AnswerChecker = remember { DeterministicAnswerChecker() }
     val brush = remember { createJetpackBrush() }
     val scope = rememberCoroutineScope()
 
@@ -215,7 +217,7 @@ fun HandwritingSurface(
         statusText = "Mengenali tulisan tangan…"
 
         scope.launch {
-            val recognized = exerciseState.recognizedText?.takeIf { it.isNotBlank() } ?: runCatching {
+            val recResult = runCatching {
                 recognizer.recognize(
                     RecognitionRequest(
                         strokes = strokes,
@@ -225,43 +227,60 @@ fun HandwritingSurface(
                         ),
                     ),
                 )
-            }.getOrNull()?.candidates?.firstOrNull()?.text.orEmpty()
-            if (recognized.isBlank()) {
+            }.getOrNull()
+
+            val candidates = recResult?.candidates?.map { it.text.trim() }?.filter { it.isNotBlank() } ?: emptyList()
+            if (candidates.isEmpty()) {
                 statusText = "Tulisan belum terdeteksi jelas. Coba tulis kembali."
                 exerciseState = exerciseState.copy(stage = ExerciseStage.WRITING)
                 return@launch
             }
 
+            val recognized = candidates.first()
             exerciseState = exerciseState.onRecognized(recognized)
             exerciseState = exerciseState.onGrading()
-            statusText = "AI Tutor sedang memeriksa…"
+            statusText = "Memeriksa jawaban secara lokal…"
 
-            val grade = tutorClient.gradeAttempt(
-                exercisePrompt = exerciseContent.prompt,
-                recognizedText = recognized,
-                targetConceptId = exerciseContent.targetConceptId,
-            ).getOrElse {
+            val accepted = exerciseContent.acceptedAnswers.ifEmpty {
+                if (exerciseContent.solution.isNotBlank()) listOf(exerciseContent.solution) else emptyList()
+            }
+            val checkResult = answerChecker.check(
+                recognizedCandidates = candidates,
+                acceptedAnswers = accepted,
+            )
+
+            val grade = if (checkResult.correct) {
+                GradeResult(
+                    correct = true,
+                    meaningScore = 1f,
+                    grammarScore = 1f,
+                    naturalnessScore = 1f,
+                    explanation = "Jawaban cocok dengan kunci: ${checkResult.matchedAcceptedAnswer ?: recognized}",
+                )
+            } else {
                 GradeResult(
                     correct = false,
-                    meaningScore = 0.5f,
-                    grammarScore = 0.5f,
-                    naturalnessScore = 0.5f,
-                    explanation = "Gagal memeriksa jawaban. Coba periksa koneksi atau ulangi.",
+                    meaningScore = 0f,
+                    grammarScore = 0f,
+                    naturalnessScore = 0f,
+                    explanation = "Belum sesuai dengan kunci jawaban. Coba periksa petunjuk atau perbaiki tulisan.",
+                    errors = listOf("mismatch"),
                 )
             }
 
             exerciseState = exerciseState.onGraded(grade)
             statusText = ""
 
-            // Persist attempt evidence
+            // Persist deterministic attempt evidence
             runCatching {
                 db.attemptDao().insertAttempt(
                     ExerciseAttemptEntity(
                         id = UUID.randomUUID().toString(),
                         lessonId = lessonId,
                         exerciseElementId = exerciseElementId,
-                        recognizedText = recognized,
-                        correct = grade.correct,
+                        recognizedText = checkResult.matchedCandidate ?: recognized,
+                        correct = checkResult.correct,
+                        matchedAcceptedAnswer = checkResult.matchedAcceptedAnswer,
                         grammarScore = grade.grammarScore,
                         meaningScore = grade.meaningScore,
                         naturalnessScore = grade.naturalnessScore,
@@ -380,7 +399,7 @@ fun HandwritingSurface(
                 }
                 if (exerciseState.hintLevel >= 3 && exerciseContent.hint3Romaji.isNotBlank()) {
                     Text(
-                        text = "💡 Romaji: ${exerciseContent.hint3Romaji}",
+                        text = "💡 Bacaan/Romaji: ${exerciseContent.hint3Romaji}",
                         style = MaterialTheme.typography.bodySmall,
                         color = Color(0xFF5D4037),
                     )
@@ -407,7 +426,7 @@ fun HandwritingSurface(
                     color = if (exerciseState.isCompleted) Color(0xFF4CAF50) else Color(0xFFBDBDBD),
                     shape = RoundedCornerShape(8.dp),
                 )
-                .background(Color.White, RoundedCornerShape(8.dp)),
+                .background(Color.White, RoundedCornerShape(8.dp))
         ) {
             val renderedStrokes = remember(strokes) {
                 strokes.mapNotNull { stroke -> runCatching { stroke.toJetpackStroke() }.getOrNull() }
@@ -427,6 +446,7 @@ fun HandwritingSurface(
                 JetpackInkAuthoringLayer(
                     enabled = true,
                     brush = brush,
+                    viewportScale = viewportScale,
                     onStrokesFinished = ::commitFinished,
                     modifier = Modifier.fillMaxSize(),
                 )
@@ -437,45 +457,52 @@ fun HandwritingSurface(
                         .pointerInput(lessonId, exerciseElementId) {
                             awaitEachGesture {
                                 val down = awaitFirstDown(requireUnconsumed = false)
-                                if (down.type != PointerType.Stylus && down.type != PointerType.Eraser) {
-                                    while (true) {
-                                        val event = awaitPointerEvent()
-                                        if (event.changes.none { it.pressed }) break
-                                    }
-                                    return@awaitEachGesture
+                                var activePointerId: PointerId? = if (down.type == PointerType.Stylus || down.type == PointerType.Eraser) {
+                                    down.id
+                                } else {
+                                    null
                                 }
+
                                 val erasedIds = mutableSetOf<String>()
-                                var previousPosition = down.position
-                                eraseSegment.value(
-                                    previousPosition,
-                                    previousPosition,
-                                    erasedIds,
-                                )
+                                var previousPosition = if (activePointerId != null) down.position else Offset.Zero
+                                if (activePointerId != null) {
+                                    eraseSegment.value(previousPosition, previousPosition, erasedIds)
+                                }
 
                                 while (true) {
                                     val event = awaitPointerEvent()
-                                    val change = event.changes.firstOrNull { it.id == down.id }
-                                    if (change == null) {
-                                        break
+                                    // Consume non-stylus/palm events inside writing area only while actively erasing
+                                    if (activePointerId != null) {
+                                        event.changes.forEach {
+                                            if (it.type != PointerType.Stylus && it.type != PointerType.Eraser) {
+                                                it.consume()
+                                            }
+                                        }
+                                    }
+                                    // If active pointer exists, process its movement or final lift
+                                    if (activePointerId != null) {
+                                        val change = event.changes.firstOrNull { it.id == activePointerId }
+                                        if (change != null) {
+                                            val currentPosition = change.position
+                                            eraseSegment.value(previousPosition, currentPosition, erasedIds)
+                                            previousPosition = currentPosition
+                                            if (!change.pressed) {
+                                                activePointerId = null
+                                            }
+                                        }
+                                    } else {
+                                        // If palm touched down first, start eraser when stylus/eraser contacts surface
+                                        val stylusDown = event.changes.firstOrNull {
+                                            it.pressed && (it.type == PointerType.Stylus || it.type == PointerType.Eraser)
+                                        }
+                                        if (stylusDown != null) {
+                                            activePointerId = stylusDown.id
+                                            previousPosition = stylusDown.position
+                                            eraseSegment.value(previousPosition, previousPosition, erasedIds)
+                                        }
                                     }
 
-                                    val currentPosition = change.position
-                                    if (change.pressed) {
-                                        eraseSegment.value(
-                                            previousPosition,
-                                            currentPosition,
-                                            erasedIds,
-                                        )
-                                        previousPosition = currentPosition
-                                        change.consume()
-                                    } else {
-                                        eraseSegment.value(
-                                            previousPosition,
-                                            currentPosition,
-                                            erasedIds,
-                                        )
-                                        break
-                                    }
+                                    if (event.changes.none { it.pressed }) break
                                 }
                             }
                         },
@@ -519,7 +546,7 @@ fun HandwritingSurface(
         exerciseState.gradeResult?.let { feedback ->
             if (!feedback.correct) {
                 Text(
-                    text = "AI Tutor: ${feedback.explanation}",
+                    text = feedback.explanation,
                     modifier = Modifier
                         .width(WritingAreaWidth.dp)
                         .padding(top = 2.dp),

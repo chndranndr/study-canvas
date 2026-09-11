@@ -12,7 +12,8 @@ import androidx.room.PrimaryKey
 import androidx.room.Query
 import androidx.room.Room
 import androidx.room.RoomDatabase
-
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
 @Entity(tableName = "learner_profiles")
 data class LearnerProfileEntity(
     @PrimaryKey val id: String,
@@ -101,6 +102,7 @@ data class ExerciseAttemptEntity(
     val exerciseElementId: String,
     val recognizedText: String,
     val correct: Boolean,
+    val matchedAcceptedAnswer: String? = null,
     val grammarScore: Float? = null,
     val meaningScore: Float? = null,
     val naturalnessScore: Float? = null,
@@ -152,6 +154,18 @@ data class ReviewScheduleEntity(
     val createdAt: Long = System.currentTimeMillis(),
     val updatedAt: Long = System.currentTimeMillis(),
 )
+@Entity(tableName = "generated_lessons")
+data class GeneratedLessonEntity(
+    @PrimaryKey val grammarId: String,
+    val generatorVersion: String = "gemini-1.5-flash",
+    val summary: String = "",
+    val formation: String = "",
+    val commonMistakesJson: String = "[]",
+    val notesJson: String = "[]",
+    val exercisesJson: String = "[]",
+    val generatedAt: Long = System.currentTimeMillis(),
+)
+
 
 @Dao
 interface LessonDao {
@@ -233,6 +247,18 @@ interface ReviewDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun upsertReview(review: ReviewScheduleEntity)
 }
+@Dao
+interface GeneratedLessonDao {
+    @Query("SELECT * FROM generated_lessons WHERE grammarId = :grammarId")
+    suspend fun getGeneratedLesson(grammarId: String): GeneratedLessonEntity?
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertGeneratedLesson(lesson: GeneratedLessonEntity)
+
+    @Query("DELETE FROM generated_lessons WHERE grammarId = :grammarId")
+    suspend fun deleteGeneratedLesson(grammarId: String)
+}
+
 
 @Database(
     entities = [
@@ -244,8 +270,9 @@ interface ReviewDao {
         LearnerMasteryEntity::class,
         TutorMemoryEntity::class,
         ReviewScheduleEntity::class,
+        GeneratedLessonEntity::class,
     ],
-    version = 1,
+    version = 3,
     exportSchema = false,
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -255,10 +282,46 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun attemptDao(): AttemptDao
     abstract fun tutorMemoryDao(): TutorMemoryDao
     abstract fun reviewDao(): ReviewDao
+    abstract fun generatedLessonDao(): GeneratedLessonDao
 
     companion object {
         @Volatile
         private var INSTANCE: AppDatabase? = null
+
+        val MIGRATION_1_2 = object : Migration(1, 2) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL(
+                    """
+                    CREATE TABLE IF NOT EXISTS `generated_lessons` (
+                        `grammarId` TEXT NOT NULL,
+                        `generatorVersion` TEXT NOT NULL,
+                        `summary` TEXT NOT NULL,
+                        `formation` TEXT NOT NULL,
+                        `commonMistakesJson` TEXT NOT NULL,
+                        `notesJson` TEXT NOT NULL,
+                        `exercisesJson` TEXT NOT NULL,
+                        `generatedAt` INTEGER NOT NULL,
+                        PRIMARY KEY(`grammarId`)
+                    )
+                    """.trimIndent(),
+                )
+            }
+        }
+
+        val MIGRATION_2_3 = object : Migration(2, 3) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE `exercise_attempts` ADD COLUMN `matchedAcceptedAnswer` TEXT")
+            }
+        }
+
+        val MIGRATION_1_3 = object : Migration(1, 3) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                MIGRATION_1_2.migrate(db)
+                MIGRATION_2_3.migrate(db)
+            }
+        }
+
+        val ALL_MIGRATIONS = arrayOf(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_1_3)
 
         fun getInstance(context: Context): AppDatabase =
             INSTANCE ?: synchronized(this) {
@@ -267,11 +330,10 @@ abstract class AppDatabase : RoomDatabase() {
                     AppDatabase::class.java,
                     "study_canvas.db",
                 )
-                    .fallbackToDestructiveMigration()
+                    .addMigrations(*ALL_MIGRATIONS)
                     .build()
                     .also { INSTANCE = it }
             }
-
         fun createInMemory(context: Context): AppDatabase =
             Room.inMemoryDatabaseBuilder(context, AppDatabase::class.java)
                 .allowMainThreadQueries()
